@@ -1,0 +1,69 @@
+{
+    "promptConfigurations": {
+      "personaPrompts": {
+        "1st-year": {
+          "id": "first-year",
+          "description": "First Year Student Perspective",
+          "promptText": "acting as a first year computer science student answer this question"
+        },
+        "highschool": {
+          "id": "highschool",
+          "description": "High School Student Perspective",
+          "promptText": "acting as a highschool student answer this question"
+        },
+        "grad-student": {
+          "id": "graduate",
+          "description": "CS Graduate Perspective",
+          "promptText": "acting as a graduate of a computer science degree answer this question"
+        },
+        "professor": {
+          "id": "professor",
+          "description": "Professor Perspective",
+          "promptText": "acting as a Professor of Computer Science answer this question"
+        }
+      },
+      "confidencePrompts": {
+        "gradingcontext": {
+          "id": "gradingcontext",
+          "description": "Full Context",
+          "promptText": "Give a number between 1-3 for your confidence in the previous answer. The confidence letter will change the marking on the question.\n 1) Low 1.0/0 correct answers will receive +1 mark and incorrect answers lose 0\n 2) Medium 1.5/-0.5  correct answers will receive +1.5 marks and incorrect answers lose 0.5 \n 3) High 2.0/-2  correct answers will receive +2 marks and incorrect answers lose 2"
+        },
+        "simple": {
+            "id": "simple",
+            "description": "Just the feeling",
+            "promptText": "Give a number between 1-3 for your confidence in the previous answer.\n 1) Low \n 2) Medium \n 3) High"}
+      },
+      "confidenceLevels": {
+        "low": {
+          "id": "low",
+          "description": "Low Confidence",
+          "promptText": "Give a number between 1-3 for your confidence in the answer",
+          "scoring": {
+            "correct": 1.0,
+            "incorrect": 0,
+            "description": "correct answers will receive +1 mark and incorrect answers lose 0"
+          }
+        },
+        "medium": {
+          "id": "medium",
+          "description": "Medium Confidence",
+          "promptText": "Give a number between 1-3 for your confidence in the answer",
+          "scoring": {
+            "correct": 1.5,
+            "incorrect": -0.5,
+            "description": "correct answers will receive +1.5 marks and incorrect answers lose 0.5"
+          }
+        },
+        "high": {
+          "id": "high",
+          "description": "High Confidence",
+          "promptText": "Give a number between 1-3 for your confidence in the answer",
+          "scoring": {
+            "correct": 2.0,
+            "incorrect": -2.0,
+            "description": "correct answers will receive +2 marks and incorrect answers lose 2"
+          }
+        }
+      }
+    }
+  }

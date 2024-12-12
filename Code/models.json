@@ -1,0 +1,21 @@
+{
+    "OpenAI": {
+      "models": [
+        "gpt-4",
+        "gpt-3.5-turbo"
+      ]
+    },
+    "Claude": {
+      "models": [
+        "claude-v1",
+        "claude-v2"
+      ]
+    },
+    "Gemini": {
+      "models": [
+        "gemini-alpha",
+        "gemini-beta"
+      ]
+    }
+  }
+  
