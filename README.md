@@ -20,3 +20,9 @@ Running the analysis script generates statistics and data for the graphs:
 ```bash
 python3 Code/score_analysis.py
 ```
+
+The PDF can be built from `Documentation/generated/main.tex`:
+
+```bash
+pdflatex Documentation/generated/main.tex
+```
