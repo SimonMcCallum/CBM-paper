@@ -1,0 +1,13 @@
+Human Statistics:
+mean_score: 9.236434108527131
+median_score: 9.5
+mean_correct: 6.333333333333333
+median_correct: 7
+count: 129
+
+AI Statistics:
+mean_score: 13.882352941176471
+median_score: 14.5
+mean_correct: 8.35
+median_correct: 8.5
+count: 20
