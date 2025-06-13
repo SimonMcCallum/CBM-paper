@@ -28,7 +28,7 @@ class MultichoiceQuestion:
     def load_questions(self):
         with open(QUESTION_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
-        return data["questions"]
+        return data["eval_data"]
 
     def load_models(self):
         with open(MODEL_FILE, "r", encoding="utf-8") as f:
