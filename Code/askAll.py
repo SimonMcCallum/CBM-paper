@@ -2,6 +2,7 @@ import json
 import os
 import uuid
 from datetime import datetime
+import requests
 from config import (
     QUESTION_FILE,
     MODEL_FILE,
@@ -11,7 +12,10 @@ from config import (
     NUM_REPETITIONS,
     OPENAI_API_KEY,
     CLAUDE_API_KEY,
-    GEMINI_API_KEY
+    GEMINI_API_KEY,
+    OPENAI_ENDPOINT,
+    CLAUDE_ENDPOINT,
+    GEMINI_ENDPOINT
 )
 from anthropic import Anthropic
 
@@ -54,33 +58,65 @@ class MultichoiceQuestion:
         with open(ANSWERS_FILE, "w", encoding="utf-8") as f:
             json.dump(answers, f, indent=2)
 
-    # Placeholder for sending queries to each vendor's model
-    def send_to_openai(self,question_text, model, temperature):
-        # Implement OpenAI API call here
-        # Return the model's answer as a string
-        return "OpenAI response placeholder"
+    def send_to_openai(self, question_text, model, temperature):
+        """Send a prompt to the OpenAI API."""
+        if not OPENAI_API_KEY:
+            return None
+        headers = {
+            "Authorization": f"Bearer {OPENAI_API_KEY}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "model": model,
+            "messages": [{"role": "user", "content": question_text}],
+            "temperature": temperature,
+        }
+        try:
+            resp = requests.post(OPENAI_ENDPOINT, headers=headers, json=payload)
+            resp.raise_for_status()
+            data = resp.json()
+            return data["choices"][0]["message"]["content"].strip()
+        except Exception as e:
+            print(f"Error calling OpenAI API: {e}")
+            return None
 
-    def send_to_claude(self,question_text, model, temperature):
-        """Generate document using Claude API"""
+    def send_to_claude(self, question_text, model, temperature):
+        """Send a prompt to Anthropic Claude."""
+        if not CLAUDE_API_KEY:
+            return None
         try:
             message = self.anthropic.messages.create(
                 model=model,
                 max_tokens=100,
                 temperature=temperature,
-                messages=[
-                    {"role": "user", "content": question_text}
-                ]
+                messages=[{"role": "user", "content": question_text}],
             )
             return message.content
-            
         except Exception as e:
             print(f"Error calling Claude API: {e}")
             return None
-        return "Claude response placeholder"
 
-    def send_to_gemini(self,question_text, model, temperature):
-        # Implement Gemini API call here
-        return "Gemini response placeholder"
+    def send_to_gemini(self, question_text, model, temperature):
+        """Send a prompt to the Gemini API."""
+        if not GEMINI_API_KEY:
+            return None
+        headers = {
+            "Authorization": f"Bearer {GEMINI_API_KEY}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "model": model,
+            "messages": [{"role": "user", "content": question_text}],
+            "temperature": temperature,
+        }
+        try:
+            resp = requests.post(GEMINI_ENDPOINT, headers=headers, json=payload)
+            resp.raise_for_status()
+            data = resp.json()
+            return data["choices"][0]["message"]["content"].strip()
+        except Exception as e:
+            print(f"Error calling Gemini API: {e}")
+            return None
 
     def send_confidence_request(self,answer_text, model, vendor, temperature):
         # You mentioned "then sending confidence to assess confidence in the answer."
@@ -96,6 +132,19 @@ def main():
     questions = mcq.load_questions()
     models = mcq.load_models()
 
+    api_keys = {
+        "OpenAI": OPENAI_API_KEY,
+        "Claude": CLAUDE_API_KEY,
+        "Gemini": GEMINI_API_KEY,
+    }
+
+    # Filter vendors by available API keys
+    available_models = {
+        vendor: data
+        for vendor, data in models.items()
+        if api_keys.get(vendor)
+    }
+
     # Structure to hold answers:
     # {
     #   question_id: {
@@ -109,12 +158,12 @@ def main():
     collected_answers = {}
 
     for question in questions:
-        qid = question["id"]
-        qtext = question["question"]
+        qid = question["question_id"]
+        qtext = question["prompt"]
         collected_answers[qid] = {}
 
-        # Work through each vendor
-        for vendor, vendor_data in models.items():
+        # Work through each vendor that has an API key
+        for vendor, vendor_data in available_models.items():
             collected_answers[qid][vendor] = {}
             for model_name in vendor_data["models"]:
                 collected_answers[qid][vendor][model_name] = {}
