@@ -2,7 +2,7 @@
 import os
 
 # File paths
-QUESTION_FILE = "mcq_eval_formal.json"
+QUESTION_FILE = "mqc_eval_format.json"
 MODEL_FILE = "models.json"
 INTERACTION_LOG = "logs/interaction_log.json"
 ANSWERS_FILE = "results/answers.json"
