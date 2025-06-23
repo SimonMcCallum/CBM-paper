@@ -1,0 +1,1517 @@
+
+strong {
+    font-weight: bolder;
+  }
+  
+  img {
+    vertical-align: middle;
+   max-width: 100% !important;
+    border-style: none;
+  }
+  
+  table {
+    border-collapse: collapse;
+  }
+  
+  caption {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    color: #6c757d;
+    text-align: left;
+    caption-side: bottom;
+  }
+  
+  th {
+    text-align: inherit;
+  }
+  
+  button {
+    border-radius: 0;
+  }
+  
+  button:focus {
+    outline: 1px dotted;
+    outline: 5px auto -webkit-focus-ring-color;
+  }
+  
+  button,
+  input {
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+  }
+  
+  button,
+  input {
+    overflow: visible;
+  }
+  
+  button {
+    text-transform: none;
+  }
+  
+  [type='reset'],
+  [type='submit'],
+  button,
+  html [type='button'] {
+    -webkit-appearance: button;
+  }
+  
+  [type='button']::-moz-focus-inner,
+  [type='reset']::-moz-focus-inner,
+  [type='submit']::-moz-focus-inner,
+  button::-moz-focus-inner {
+    padding: 0;
+    border-style: none;
+  }
+  
+  input[type='checkbox'],
+  input[type='radio'] {
+    box-sizing: border-box;
+    padding: 0;
+  }
+  
+  input[type='date'],
+  input[type='datetime-local'],
+  input[type='month'],
+  input[type='time'] {
+    -webkit-appearance: listbox;
+  }
+  
+  [type='number']::-webkit-inner-spin-button,
+  [type='number']::-webkit-outer-spin-button {
+    height: auto;
+  }
+  
+  [type='search'] {
+    outline-offset: -2px;
+    -webkit-appearance: none;
+  }
+  
+  [type='search']::-webkit-search-cancel-button,
+  [type='search']::-webkit-search-decoration {
+    -webkit-appearance: none;
+  }
+  
+  ::-webkit-file-upload-button {
+    font: inherit;
+    -webkit-appearance: button;
+  }
+  
+  [hidden] {
+    display: none;
+  }
+  
+  .img-fluid {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  
+  .row {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+  }
+  
+  .col,
+  .col-1,
+  .col-2,
+  .col-3,
+  .col-4,
+  .col-5,
+  .col-6,
+  .col-7,
+  .col-8,
+  .col-9,
+  .col-10,
+  .col-11,
+  .col-12,
+  .col-auto,
+  .col-xs-1,
+  .col-xs-2,
+  .col-xs-3,
+  .col-xs-4,
+  .col-xs-5,
+  .col-xs-6,
+  .col-xs-7,
+  .col-xs-8,
+  .col-xs-9,
+  .col-xs-10,
+  .col-xs-11,
+  .col-xs-12,
+  .col-xs-auto,
+  .col-sm-1,
+  .col-sm-2,
+  .col-sm-3,
+  .col-sm-4,
+  .col-sm-5,
+  .col-sm-6,
+  .col-sm-7,
+  .col-sm-8,
+  .col-sm-9,
+  .col-sm-10,
+  .col-sm-11,
+  .col-sm-12,
+  .col-sm-auto,
+  .col-md-1,
+  .col-md-2,
+  .col-md-3,
+  .col-md-4,
+  .col-md-5,
+  .col-md-6,
+  .col-md-7,
+  .col-md-8,
+  .col-md-9,
+  .col-md-10,
+  .col-md-11,
+  .col-md-12,
+  .col-md-auto,
+  .col-lg-1,
+  .col-lg-2,
+  .col-lg-3,
+  .col-lg-4,
+  .col-lg-5,
+  .col-lg-6,
+  .col-lg-7,
+  .col-lg-8,
+  .col-lg-9,
+  .col-lg-10,
+  .col-lg-11,
+  .col-lg-12,
+  .col-lg-auto,
+  .col-xl-1,
+  .col-xl-2,
+  .col-xl-3,
+  .col-xl-4,
+  .col-xl-5,
+  .col-xl-6,
+  .col-xl-7,
+  .col-xl-8,
+  .col-xl-9,
+  .col-xl-10,
+  .col-xl-11,
+  .col-xl-12,
+  .col-xl-auto {
+    position: relative;
+    width: 100%;
+    /* padding-right: 15px;
+      padding-left: 15px */
+    /* this allows the users to change the padding for section blocks*/
+  }
+  
+  .col-auto {
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 100%;
+  }
+  
+  .col-1 {
+    -ms-flex: 0 0 8.333333%;
+    flex: 0 0 8.333333%;
+    max-width: 8.333333%;
+  }
+  
+  .col-2 {
+    -ms-flex: 0 0 16.666667%;
+    flex: 0 0 16.666667%;
+    max-width: 16.666667%;
+  }
+  
+  .col-3 {
+    -ms-flex: 0 0 25%;
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+  
+  .col-4 {
+    -ms-flex: 0 0 33.333333%;
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+  }
+  
+  .col-5 {
+    -ms-flex: 0 0 41.666667%;
+    flex: 0 0 41.666667%;
+    max-width: 41.666667%;
+  }
+  
+  .col-6 {
+    -ms-flex: 0 0 50%;
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  
+  .col-7 {
+    -ms-flex: 0 0 58.333333%;
+    flex: 0 0 58.333333%;
+    max-width: 58.333333%;
+  }
+  
+  .col-8 {
+    -ms-flex: 0 0 66.666667%;
+    flex: 0 0 66.666667%;
+    max-width: 66.666667%;
+  }
+  
+  .col-9 {
+    -ms-flex: 0 0 75%;
+    flex: 0 0 75%;
+    max-width: 75%;
+  }
+  
+  .col-10 {
+    -ms-flex: 0 0 83.333333%;
+    flex: 0 0 83.333333%;
+    max-width: 83.333333%;
+  }
+  
+  .col-11 {
+    -ms-flex: 0 0 91.666667%;
+    flex: 0 0 91.666667%;
+    max-width: 91.666667%;
+  }
+  
+  .col-12 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  
+  @media (max-width: 576px) {
+    .col-xs-1 {
+      -ms-flex: 0 0 8.333333%;
+      flex: 0 0 8.333333%;
+      max-width: 8.333333%;
+    }
+    .col-xs-2 {
+      -ms-flex: 0 0 16.666667%;
+      flex: 0 0 16.666667%;
+      max-width: 16.666667%;
+    }
+    .col-xs-3 {
+      -ms-flex: 0 0 25%;
+      flex: 0 0 25%;
+      max-width: 25%;
+    }
+    .col-xs-4 {
+      -ms-flex: 0 0 33.333333%;
+      flex: 0 0 33.333333%;
+      max-width: 33.333333%;
+    }
+    .col-xs-5 {
+      -ms-flex: 0 0 41.666667%;
+      flex: 0 0 41.666667%;
+      max-width: 41.666667%;
+    }
+    .col-xs-6 {
+      -ms-flex: 0 0 50%;
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+    .col-xs-7 {
+      -ms-flex: 0 0 58.333333%;
+      flex: 0 0 58.333333%;
+      max-width: 58.333333%;
+    }
+    .col-xs-8 {
+      -ms-flex: 0 0 66.666667%;
+      flex: 0 0 66.666667%;
+      max-width: 66.666667%;
+    }
+    .col-xs-9 {
+      -ms-flex: 0 0 75%;
+      flex: 0 0 75%;
+      max-width: 75%;
+    }
+    .col-xs-10 {
+      -ms-flex: 0 0 83.333333%;
+      flex: 0 0 83.333333%;
+      max-width: 83.333333%;
+    }
+    .col-xs-11 {
+      -ms-flex: 0 0 91.666667%;
+      flex: 0 0 91.666667%;
+      max-width: 91.666667%;
+    }
+    .col-xs-12 {
+      -ms-flex: 0 0 100%;
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+  
+  /* ================Small Devices============================ */
+  @media (min-width: 576px) {
+    .col-sm-auto {
+      -ms-flex: 0 0 auto;
+      flex: 0 0 auto;
+      width: auto;
+      max-width: 100%;
+    }
+    .col-sm-1 {
+      -ms-flex: 0 0 8.333333%;
+      flex: 0 0 8.333333%;
+      max-width: 8.333333%;
+    }
+    .col-sm-2 {
+      -ms-flex: 0 0 16.666667%;
+      flex: 0 0 16.666667%;
+      max-width: 16.666667%;
+    }
+    .col-sm-3 {
+      -ms-flex: 0 0 25%;
+      flex: 0 0 25%;
+      max-width: 25%;
+    }
+    .col-sm-4 {
+      -ms-flex: 0 0 33.333333%;
+      flex: 0 0 33.333333%;
+      max-width: 33.333333%;
+    }
+    .col-sm-5 {
+      -ms-flex: 0 0 41.666667%;
+      flex: 0 0 41.666667%;
+      max-width: 41.666667%;
+    }
+    .col-sm-6 {
+      -ms-flex: 0 0 50%;
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+    .col-sm-7 {
+      -ms-flex: 0 0 58.333333%;
+      flex: 0 0 58.333333%;
+      max-width: 58.333333%;
+    }
+    .col-sm-8 {
+      -ms-flex: 0 0 66.666667%;
+      flex: 0 0 66.666667%;
+      max-width: 66.666667%;
+    }
+    .col-sm-9 {
+      -ms-flex: 0 0 75%;
+      flex: 0 0 75%;
+      max-width: 75%;
+    }
+    .col-sm-10 {
+      -ms-flex: 0 0 83.333333%;
+      flex: 0 0 83.333333%;
+      max-width: 83.333333%;
+    }
+    .col-sm-11 {
+      -ms-flex: 0 0 91.666667%;
+      flex: 0 0 91.666667%;
+      max-width: 91.666667%;
+    }
+    .col-sm-12 {
+      -ms-flex: 0 0 100%;
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+  
+  /* ==================Medium Devices =================== */
+  @media (min-width: 768px) {
+    .col-md-auto {
+      -ms-flex: 0 0 auto;
+      flex: 0 0 auto;
+      width: auto;
+      max-width: 100%;
+    }
+    .col-md-1 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 8.333333%;
+      flex: 0 0 8.333333%;
+      max-width: 8.333333%;
+    }
+    .col-md-2 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 16.666667%;
+      flex: 0 0 16.666667%;
+      max-width: 16.666667%;
+    }
+    .col-md-3 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 25%;
+      flex: 0 0 25%;
+      max-width: 25%;
+    }
+    .col-md-4 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 33.333333%;
+      flex: 0 0 33.333333%;
+      max-width: 33.333333%;
+    }
+    .col-md-5 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 41.666667%;
+      flex: 0 0 41.666667%;
+      max-width: 41.666667%;
+    }
+    .col-md-6 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 50%;
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+    .col-md-7 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 58.333333%;
+      flex: 0 0 58.333333%;
+      max-width: 58.333333%;
+    }
+    .col-md-8 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 66.666667%;
+      flex: 0 0 66.666667%;
+      max-width: 66.666667%;
+    }
+    .col-md-9 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 75%;
+      flex: 0 0 75%;
+      max-width: 75%;
+    }
+    .col-md-10 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 83.333333%;
+      flex: 0 0 83.333333%;
+      max-width: 83.333333%;
+    }
+    .col-md-11 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 91.666667%;
+      flex: 0 0 91.666667%;
+      max-width: 91.666667%;
+    }
+    .col-md-12 {
+      -ms-flex: 0 0 100%;
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+  
+  /* ================= Large Devices ====================== */
+  @media (min-width: 992px) {
+    .col-lg-auto {
+      -ms-flex: 0 0 auto;
+      flex: 0 0 auto;
+      width: auto;
+      max-width: 100%;
+    }
+    .col-lg-1 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 8.333333%;
+      flex: 0 0 8.333333%;
+      max-width: 8.333333%;
+    }
+    .col-lg-2 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 16.666667%;
+      flex: 0 0 16.666667%;
+      max-width: 16.666667%;
+    }
+    .col-lg-3 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 25%;
+      flex: 0 0 25%;
+      max-width: 25%;
+    }
+    .col-lg-4 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 33.333333%;
+      flex: 0 0 33.333333%;
+      max-width: 33.333333%;
+    }
+    .col-lg-5 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 41.666667%;
+      flex: 0 0 41.666667%;
+      max-width: 41.666667%;
+    }
+    .col-lg-6 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 50%;
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+    .col-lg-7 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 58.333333%;
+      flex: 0 0 58.333333%;
+      max-width: 58.333333%;
+    }
+    .col-lg-8 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 66.666667%;
+      flex: 0 0 66.666667%;
+      max-width: 66.666667%;
+    }
+    .col-lg-9 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 75%;
+      flex: 0 0 75%;
+      max-width: 75%;
+    }
+    .col-lg-10 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 83.333333%;
+      flex: 0 0 83.333333%;
+      max-width: 83.333333%;
+    }
+    .col-lg-11 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 91.666667%;
+      flex: 0 0 91.666667%;
+      max-width: 91.666667%;
+    }
+    .col-lg-12 {
+      -ms-flex: 0 0 100%;
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+  
+  /* ================= Extra Large Devices ======================= */
+  @media (min-width: 1200px) {
+    .col-xl-auto {
+      -ms-flex: 0 0 auto;
+      flex: 0 0 auto;
+      width: auto;
+      max-width: 100%;
+    }
+    .col-xl-1 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 8.333333%;
+      flex: 0 0 8.333333%;
+      max-width: 8.333333%;
+    }
+    .col-xl-2 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 16.666667%;
+      flex: 0 0 16.666667%;
+      max-width: 16.666667%;
+    }
+    .col-xl-3 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 25%;
+      flex: 0 0 25%;
+      max-width: 25%;
+    }
+    .col-xl-4 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 33.333333%;
+      flex: 0 0 33.333333%;
+      max-width: 33.333333%;
+    }
+    .col-xl-5 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 41.666667%;
+      flex: 0 0 41.666667%;
+      max-width: 41.666667%;
+    }
+    .col-xl-6 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 50%;
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+    .col-xl-7 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 58.333333%;
+      flex: 0 0 58.333333%;
+      max-width: 58.333333%;
+    }
+    .col-xl-8 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 66.666667%;
+      flex: 0 0 66.666667%;
+      max-width: 66.666667%;
+    }
+    .col-xl-9 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 75%;
+      flex: 0 0 75%;
+      max-width: 75%;
+    }
+    .col-xl-10 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 83.333333%;
+      flex: 0 0 83.333333%;
+      max-width: 83.333333%;
+    }
+    .col-xl-11 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 91.666667%;
+      flex: 0 0 91.666667%;
+      max-width: 91.666667%;
+    }
+    .col-xl-12 {
+      -ms-flex: 0 0 100%;
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+  
+  /* ===================== Custom Five Column Style ================= */
+  @media screen and (min-width: 700px) {
+    .col-xl-5col {
+      -ms-flex: 0 0 20%;
+      flex: 0 0 20%;
+      max-width: 20%;
+    }
+  }
+  
+  /* Other custom CSS */
+  /* Images */
+  
+  .table {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 1rem;
+    background-color: #fff;
+  }
+  
+  .table td,
+  .table th {
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+    word-break: break-word;
+  }
+  
+  .table .table {
+    background-color: #fff;
+  }
+  
+  .table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+  }
+  
+  @-webkit-keyframes progress-bar-stripes {
+    from {
+      background-position: 1rem 0;
+    }
+    to {
+      background-position: 0 0;
+    }
+  }
+  
+  @keyframes progress-bar-stripes {
+    from {
+      background-position: 1rem 0;
+    }
+    to {
+      background-position: 0 0;
+    }
+  }
+  
+  .border {
+    border: 1px solid #dee2e6 !important;
+  }
+  
+  @media print {
+    *,
+    ::after,
+    ::before {
+      text-shadow: none !important;
+      box-shadow: none !important;
+    }
+    .img,
+    .tr {
+      page-break-inside: avoid;
+    }
+    .p {
+      orphans: 3;
+      widows: 3;
+    }
+    @page {
+      size: a3;
+    }
+    .body {
+      min-width: 992px !important;
+      word-break: break-all !important;
+    }
+    .table {
+      border-collapse: collapse !important;
+    }
+    .table td,
+    .table th {
+      background-color: #fff !important;
+    }
+  }
+  
+  .backgroundImageCustomclass {
+    position: absolute;
+    pointer-events: none;
+    z-index: -1;
+    margin: 0px;
+    padding: 0px;
+    object-fit: cover;
+    overflow: hidden;
+  }
+  
+  .bg-img {
+    background-image: url ('https://loree.io/wp-content/uploads/2019/06/Loree_Logo_Final.png');
+  }
+  
+  /* Loree-v2 temporary-css */
+  
+  .object-position-top {
+    object-position: top;
+  }
+  
+  .object-position-bottom {
+    object-position: bottom;
+  }
+  
+  .object-position-center {
+    object-position: center;
+  }
+  
+  .object-fit-cover {
+    object-fit: cover;
+  }
+  
+  .loree-list-style-position {
+    list-style-position: inside;
+  }
+  
+  .bStyle {
+    font-weight: bold !important;
+  }
+  
+  .normalStyle {
+    font-weight: normal !important;
+  }
+  
+  .text-lowercase {
+    text-transform: lowercase !important;
+  }
+  
+  .text-uppercase {
+    text-transform: uppercase !important;
+  }
+  
+  .text-capitalize {
+    text-transform: capitalize !important;
+  }
+  
+  [class*='loree-iframe-'] {
+    box-sizing: border-box;
+  }
+  
+  @font-face {
+    font-family: 'Brush Script MT';
+    src: url("https://db.onlinewebfonts.com/t/7655d129d0addb2f08a5c1dc994aaa4b.eot");
+    src: url("https://db.onlinewebfonts.com/t/7655d129d0addb2f08a5c1dc994aaa4b.eot?#iefix") format("embedded-opentype"), url("https://db.onlinewebfonts.com/t/7655d129d0addb2f08a5c1dc994aaa4b.woff2") format("woff2"), url("https://db.onlinewebfonts.com/t/7655d129d0addb2f08a5c1dc994aaa4b.woff") format("woff"), url("https://db.onlinewebfonts.com/t/7655d129d0addb2f08a5c1dc994aaa4b.ttf") format("truetype"), url("https://db.onlinewebfonts.com/t/7655d129d0addb2f08a5c1dc994aaa4b.svg#Brush Script MT") format("svg");
+  }
+  
+  @font-face {
+    font-family: 'Arial Black';
+    src: url("https://db.onlinewebfonts.com/t/8984ea7fcbebdcfe77fbbc1b86e7cfe6.eot");
+    src: url("https://db.onlinewebfonts.com/t/8984ea7fcbebdcfe77fbbc1b86e7cfe6.eot?#iefix") format("embedded-opentype"), url("https://db.onlinewebfonts.com/t/8984ea7fcbebdcfe77fbbc1b86e7cfe6.woff2") format("woff2"), url("https://db.onlinewebfonts.com/t/8984ea7fcbebdcfe77fbbc1b86e7cfe6.woff") format("woff"), url("https://db.onlinewebfonts.com/t/8984ea7fcbebdcfe77fbbc1b86e7cfe6.ttf") format("truetype"), url("https://db.onlinewebfonts.com/t/8984ea7fcbebdcfe77fbbc1b86e7cfe6.svg#Arial Black") format("svg");
+  }
+  
+  @font-face {
+    font-family: 'Comic Sans MS';
+    src: url("https://db.onlinewebfonts.com/t/7cc6719bd5f0310be3150ba33418e72e.eot");
+    src: url("https://db.onlinewebfonts.com/t/7cc6719bd5f0310be3150ba33418e72e.eot?#iefix") format("embedded-opentype"), url("https://db.onlinewebfonts.com/t/7cc6719bd5f0310be3150ba33418e72e.woff2") format("woff2"), url("https://db.onlinewebfonts.com/t/7cc6719bd5f0310be3150ba33418e72e.woff") format("woff"), url("https://db.onlinewebfonts.com/t/7cc6719bd5f0310be3150ba33418e72e.ttf") format("truetype"), url("https://db.onlinewebfonts.com/t/7cc6719bd5f0310be3150ba33418e72e.svg#Comic Sans MS") format("svg");
+  }
+  
+  @font-face {
+    font-family: 'Courier';
+    src: url("https://db.onlinewebfonts.com/t/2c922424939d2493163f367b07507e07.eot");
+    src: url("https://db.onlinewebfonts.com/t/2c922424939d2493163f367b07507e07.eot?#iefix") format("embedded-opentype"), url("https://db.onlinewebfonts.com/t/2c922424939d2493163f367b07507e07.woff2") format("woff2"), url("https://db.onlinewebfonts.com/t/2c922424939d2493163f367b07507e07.woff") format("woff"), url("https://db.onlinewebfonts.com/t/2c922424939d2493163f367b07507e07.ttf") format("truetype"), url("https://db.onlinewebfonts.com/t/2c922424939d2493163f367b07507e07.svg#Courier") format("svg");
+  }
+  
+  @font-face {
+    font-family: 'Georgia';
+    src: url("https://db.onlinewebfonts.com/t/7dca09e227fdfe16908cebb4244589e4.eot");
+    src: url("https://db.onlinewebfonts.com/t/7dca09e227fdfe16908cebb4244589e4.eot?#iefix") format("embedded-opentype"), url("https://db.onlinewebfonts.com/t/7dca09e227fdfe16908cebb4244589e4.woff2") format("woff2"), url("https://db.onlinewebfonts.com/t/7dca09e227fdfe16908cebb4244589e4.woff") format("woff"), url("https://db.onlinewebfonts.com/t/7dca09e227fdfe16908cebb4244589e4.ttf") format("truetype"), url("https://db.onlinewebfonts.com/t/7dca09e227fdfe16908cebb4244589e4.svg#Georgia") format("svg");
+  }
+  
+  @font-face {
+    font-family: 'Lucida Sans Unicode';
+    src: url("https://db.onlinewebfonts.com/t/26c724b3b181aad246aa1321eaa9ea21.eot");
+    src: url("https://db.onlinewebfonts.com/t/26c724b3b181aad246aa1321eaa9ea21.eot?#iefix") format("embedded-opentype"), url("https://db.onlinewebfonts.com/t/26c724b3b181aad246aa1321eaa9ea21.woff2") format("woff2"), url("https://db.onlinewebfonts.com/t/26c724b3b181aad246aa1321eaa9ea21.woff") format("woff"), url("https://db.onlinewebfonts.com/t/26c724b3b181aad246aa1321eaa9ea21.ttf") format("truetype"), url("https://db.onlinewebfonts.com/t/26c724b3b181aad246aa1321eaa9ea21.svg#Lucida Sans Unicode") format("svg");
+  }
+  
+  @font-face {
+    font-family: 'Verdana';
+    src: url("https://db.onlinewebfonts.com/t/562fa31bba08b3f71cb71257ddb880d5.eot");
+    src: url("https://db.onlinewebfonts.com/t/562fa31bba08b3f71cb71257ddb880d5.eot?#iefix") format("embedded-opentype"), url("https://db.onlinewebfonts.com/t/562fa31bba08b3f71cb71257ddb880d5.woff2") format("woff2"), url("https://db.onlinewebfonts.com/t/562fa31bba08b3f71cb71257ddb880d5.woff") format("woff"), url("https://db.onlinewebfonts.com/t/562fa31bba08b3f71cb71257ddb880d5.ttf") format("truetype"), url("https://db.onlinewebfonts.com/t/562fa31bba08b3f71cb71257ddb880d5.svg#Verdana") format("svg");
+  }
+  
+  @font-face {
+    font-family: 'Trebuchet MS';
+    src: url("https://db.onlinewebfonts.com/t/03e852a9d1635cf25800b41001ee80c7.eot");
+    src: url("https://db.onlinewebfonts.com/t/03e852a9d1635cf25800b41001ee80c7.eot?#iefix") format("embedded-opentype"), url("https://db.onlinewebfonts.com/t/03e852a9d1635cf25800b41001ee80c7.woff2") format("woff2"), url("https://db.onlinewebfonts.com/t/03e852a9d1635cf25800b41001ee80c7.woff") format("woff"), url("https://db.onlinewebfonts.com/t/03e852a9d1635cf25800b41001ee80c7.ttf") format("truetype"), url("https://db.onlinewebfonts.com/t/03e852a9d1635cf25800b41001ee80c7.svg#Trebuchet MS") format("svg");
+  }
+  
+  @font-face {
+    font-family: 'Impact';
+    src: url("https://db.onlinewebfonts.com/t/6330ddc0d8e61db73c521dbe6288743b.eot");
+    src: url("https://db.onlinewebfonts.com/t/6330ddc0d8e61db73c521dbe6288743b.eot?#iefix") format("embedded-opentype"), url("https://db.onlinewebfonts.com/t/6330ddc0d8e61db73c521dbe6288743b.woff2") format("woff2"), url("https://db.onlinewebfonts.com/t/6330ddc0d8e61db73c521dbe6288743b.woff") format("woff"), url("https://db.onlinewebfonts.com/t/6330ddc0d8e61db73c521dbe6288743b.ttf") format("truetype"), url("https://db.onlinewebfonts.com/t/6330ddc0d8e61db73c521dbe6288743b.svg#Impact LT Std") format("svg");
+  }
+  
+  @font-face {
+    font-family: 'Tahoma';
+    src: url("https://db.onlinewebfonts.com/t/cd0381aa3322dff4babd137f03829c8c.eot");
+    src: url("https://db.onlinewebfonts.com/t/cd0381aa3322dff4babd137f03829c8c.eot?#iefix") format("embedded-opentype"), url("https://db.onlinewebfonts.com/t/cd0381aa3322dff4babd137f03829c8c.woff2") format("woff2"), url("https://db.onlinewebfonts.com/t/cd0381aa3322dff4babd137f03829c8c.woff") format("woff"), url("https://db.onlinewebfonts.com/t/cd0381aa3322dff4babd137f03829c8c.ttf") format("truetype"), url("https://db.onlinewebfonts.com/t/cd0381aa3322dff4babd137f03829c8c.svg#Tahoma") format("svg");
+  }
+  
+  /* Upskilled fonts */
+  /* Mont fonts */
+  @font-face {
+    font-family: 'Mont Semi Bold';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+SemiBold.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Thin';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+Thin.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Regular';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric-Mont-Regular.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Bold';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+Bold.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Heavy';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+Heavy.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Semi Bold Italic';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+SemiBold+Italic.otf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Extra Light Italic';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+ExtraLight+Italic.otf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Light';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+Light.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Extra Light';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+ExtraLight.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Black';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+Black.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Book';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+Book.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Heavy DEMO';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+Heavy+DEMO.otf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Thin Italic';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+Light+Italic.otf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Bold Italic';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+Bold+Italic.otf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Extra Light DEMO';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+ExtraLight+DEMO.otf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Heavy Italic';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+Heavy+Italic.otf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Regular Italic';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+Regular+Italic.otf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Hairline';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+Hairline.otf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Hairline Italic';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+Hairline+Italic.otf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Black Italic';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+Black+Italic.otf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Book Italic';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+Book+Italic.otf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Light Italic';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/assets/fonts/Upskilled's_font/Fontfabric+-+Mont+Book+Italic.otf");
+  }
+  
+  /* Arial fonts */
+  @font-face {
+    font-family: 'Arial Regular';
+    src: url("https://loree-files.s3-ap-southeast-2.amazonaws.com/custom-fonts/Arial.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Arial Black';
+    src: url("https://loree-files.s3-ap-southeast-2.amazonaws.com/custom-fonts/Arial+Black.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Arial Bold';
+    src: url("https://loree-files.s3-ap-southeast-2.amazonaws.com/custom-fonts/arialbd.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Arial Italic';
+    src: url("https://loree-files.s3-ap-southeast-2.amazonaws.com/custom-fonts/Arial+Italic.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Arial Bold Italic';
+    src: url("https://loree-files.s3-ap-southeast-2.amazonaws.com/custom-fonts/Arial+Bold+Italic.ttf");
+  }
+  
+  /* Nexa fonts */
+  @font-face {
+    font-family: 'Nexa Bold';
+    src: url("https://loree-files.s3-ap-southeast-2.amazonaws.com/custom-fonts/Nexa+Bold.otf");
+  }
+  
+  @font-face {
+    font-family: 'Nexa Book';
+    src: url("https://loree-files.s3-ap-southeast-2.amazonaws.com/custom-fonts/Nexa-Book.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Nexa Light';
+    src: url("https://loree-files.s3-ap-southeast-2.amazonaws.com/custom-fonts/Nexa+Light.otf");
+  }
+  
+  @font-face {
+    font-family: 'VIC-Bold';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/VIC-Bold.ttf");
+  }
+  
+  @font-face {
+    font-family: 'VIC-Italic';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/VIC-Italic.ttf");
+  }
+  
+  @font-face {
+    font-family: 'VIC-Medium';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/VIC-Medium.ttf");
+  }
+  
+  @font-face {
+    font-family: 'VIC-MediumItalic';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/VIC-MediumItalic.ttf");
+  }
+  
+  @font-face {
+    font-family: 'VIC-Regular';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/VIC-Regular.ttf");
+  }
+  
+  @font-face {
+    font-family: 'VIC-SemiBold';
+    src: url("https://wysiwyg-page-builder.s3-ap-southeast-2.amazonaws.com/VIC-SemiBold.ttf");
+  }
+  
+  @font-face {
+    font-family: 'DINNextLTProBold';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/DINNextLTProBold.woff");
+  }
+  
+  @font-face {
+    font-family: 'DINNextLTProBlackItalic';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/DINNextLTProBlackItalic.woff");
+  }
+  
+  @font-face {
+    font-family: 'DINNextLTProHeavy';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/DINNextLTProHeavy.woff");
+  }
+  
+  @font-face {
+    font-family: 'DINNextLTProBoldItalic';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/DINNextLTProBoldItalic.woff");
+  }
+  
+  @font-face {
+    font-family: 'DINNextLTProHeavyItalic';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/DINNextLTProHeavyItalic.woff");
+  }
+  
+  @font-face {
+    font-family: 'DINNextLTProItalic';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/DINNextLTProItalic.woff");
+  }
+  
+  @font-face {
+    font-family: 'DINNextLTProLight';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/DINNextLTProLight.woff");
+  }
+  
+  @font-face {
+    font-family: 'DINNextLTProLightItalic';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/DINNextLTProLightItalic.woff");
+  }
+  
+  @font-face {
+    font-family: 'DINNextLTProMedium';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/DINNextLTProMedium.woff");
+  }
+  
+  @font-face {
+    font-family: 'DINNextLTProBlack';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/DINNextLTProBlack.woff");
+  }
+  
+  @font-face {
+    font-family: 'DINNextLTProMediumItalic';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/DINNextLTProMediumItalic.woff");
+  }
+  
+  @font-face {
+    font-family: 'DINNextLTProRegular';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/DINNextLTProRegular.woff");
+  }
+  
+  @font-face {
+    font-family: 'DINNextLTProUltraLight';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/DINNextLTProUltraLight.woff");
+  }
+  
+  @font-face {
+    font-family: 'DINNextLTProUltraLightIt';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/DINNextLTProUltraLightIt.woff");
+  }
+  
+  @font-face {
+    font-family: 'DINNextLTProBoldCondensed';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/DINNextLTProBoldCondensed.woff");
+  }
+  
+  @font-face {
+    font-family: 'DINNextLTProMediumCond';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/DINNextLTProMediumCond.woff");
+  }
+  
+  @font-face {
+    font-family: 'Gothic';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/GOTHIC.TTF");
+  }
+  
+  @font-face {
+    font-family: 'Gotham-Book-Regular';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/Gotham+Book+Regular.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Gotham Bold';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/Gotham-Bold.otf");
+  }
+  
+  @font-face {
+    font-family: 'Gotham Medium';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/Gotham-Medium.otf");
+  }
+  
+  @font-face {
+    font-family: 'Calibri';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/calibri.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Bold';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/Fontfabric+-+Mont+Bold.otf");
+  }
+  
+  @font-face {
+    font-family: 'Mont Regular';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/Fontfabric+-+Mont+Regular.otf");
+  }
+  
+  @font-face {
+    font-family: 'Lato Italic';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/Lato-Italic.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Lato Bold';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/Lato-Bold.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Lato Bold Italic';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/Lato-BoldItalic.ttf");
+  }
+  
+  /*  ACF fonts  */
+  @font-face {
+    font-family: 'HelveticaNeue';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/HelveticaNeue.ttf");
+  }
+  
+  @font-face {
+    font-family: 'HelveticaNeueBoldItalic';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/HelveticaNeue-BoldItalic-04.ttf");
+  }
+  
+  @font-face {
+    font-family: 'HelveticaNeueCondensedBlack';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/HelveticaNeue-CondensedBlack-10.ttf");
+  }
+  
+  @font-face {
+    font-family: 'HelveticaNeueCondensedBold';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/HelveticaNeue-CondensedBold-05.ttf");
+  }
+  
+  @font-face {
+    font-family: 'HelveticaNeueItalic';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/HelveticaNeue-Italic-03.ttf");
+  }
+  
+  @font-face {
+    font-family: 'HelveticaNeueLight';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/HelveticaNeue-Light-08.ttf");
+  }
+  
+  @font-face {
+    font-family: 'HelveticaNeueLightItalic';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/HelveticaNeue-LightItalic-09.ttf");
+  }
+  
+  @font-face {
+    font-family: 'HelveticaNeueMedium';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/HelveticaNeue-Medium-11.ttf");
+  }
+  
+  @font-face {
+    font-family: 'HelveticaNeueMediumItalic';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/HelveticaNeue-MediumItalic-12.ttf");
+  }
+  
+  @font-face {
+    font-family: 'HelveticaNeueThin';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/HelveticaNeue-Thin-13.ttf");
+  }
+  
+  @font-face {
+    font-family: 'HelveticaNeueThinItalic';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/HelveticaNeue-ThinItalic-14.ttf");
+  }
+  
+  @font-face {
+    font-family: 'HelveticaNeueUltraLight';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/HelveticaNeue-UltraLight-06.ttf");
+  }
+  
+  @font-face {
+    font-family: 'HelveticaNeueUltraLightItalic';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/HelveticaNeue-UltraLightItalic-07.ttf");
+  }
+  
+  @font-face {
+    font-family: 'HelveticaNeueBold';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/HelveticaNeue-Bold-02.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Poppins-Bold';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/Poppins-Bold.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Poppins-SemiBold';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/Poppins-SemiBold.ttf");
+  }
+  
+  @font-face {
+    font-family: 'Calibrib';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/CALIBRIB.TTF");
+  }
+  
+  @font-face {
+    font-family: 'Proxima Nova Alt Bold';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/Proxima+Nova+Alt+Bold.otf");
+  }
+  
+  @font-face {
+    font-family: 'Proxima Nova Bold';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/Proxima+Nova+Bold.otf");
+  }
+  
+  @font-face {
+    font-family: 'Proxima Nova Thin';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/Proxima+Nova+Thin.otf");
+  }
+  
+  @font-face {
+    font-family: 'Proxima Nova-Regular';
+    src: url("https://loree-files.s3.ap-southeast-2.amazonaws.com/custom-fonts/ProximaNova-Regular.otf");
+  }
+  
+  /* Loree Nav bar */
+  .font-weight-bold {
+    font-weight: 700 !important;
+  }
+  
+  .font-weight-normal {
+    font-weight: 400 !important;
+  }
+  
+  .font-weight-thin {
+    font-weight: 300 !important;
+  }
+  
+  .d-flex {
+    display: flex;
+  }
+  
+  .justify-content-start {
+    justify-content: flex-start !important;
+  }
+  
+  .align-items-start {
+    align-items: flex-start !important;
+  }
+  
+  /* Navigation bar*/
+  .navbar {
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+  }
+  
+  .navbar-nav {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+  }
+  
+  .navigation1 .loree-iframe-content-menu nav {
+    width: 100%;
+  }
+  
+  .navigation2 .loree-navigation-image-section {
+    text-align: left;
+  }
+  
+  .navigation3 .loree-navigation-image-section {
+    text-align: right;
+  }
+  
+  ul.loree-iframe-content-menu {
+    flex-wrap: wrap;
+  }
+  
+  .navigation1 ul.loree-iframe-content-menu,
+  .navigation3 ul.loree-iframe-content-menu {
+    justify-content: flex-start;
+    width: auto;
+    text-align: center;
+  }
+  
+  .navigation2 ul.loree-iframe-content-menu {
+    justify-content: flex-end;
+    width: auto;
+    text-align: center;
+  }
+  
+  .navigation9 ul.loree-iframe-content-menu {
+    /*Not sure why we use navigation9 class since we have only 4 elements as predefined*/
+    justify-content: center;
+    width: auto;
+    text-align: center;
+  }
+  
+  /* Min width*/
+  @media screen and (min-width: 568px) {
+    .navbar-expand-sm {
+      -ms-flex-flow: row nowrap;
+      flex-flow: row nowrap;
+      -ms-flex-pack: start;
+      justify-content: flex-start;
+    }
+    .navbar-expand-sm .navbar-nav {
+      -ms-flex-direction: row;
+      flex-direction: row;
+    }
+  }
+  
+  @media screen and (min-width: 992px) {
+    .navbar-expand-lg {
+      -ms-flex-flow: row nowrap;
+      flex-flow: row nowrap;
+      -ms-flex-pack: start;
+      justify-content: flex-start;
+    }
+    .navbar-expand-lg .navbar-nav {
+      -ms-flex-direction: row;
+      flex-direction: row;
+    }
+  }
+  
+  /* Setting center alignment for Nav bar logo on mobile devices*/
+  /* Max width*/
+  @media screen and (max-width: 568px) {
+    .loree-navigation-image-section {
+      width: 100%;
+      max-width: 100% !important;
+      /* For the full width of the image section in tablet and mobile view */
+      text-align: center !important;
+      /* Make the image centered in the image section in tablet and mobile view */
+    }
+    ul.loree-iframe-content-menu,
+    .loree-iframe-content-menu nav {
+      width: 100% !important;
+      /* FOr the full width of navigation element in nav bar only for mobile responsive */
+    }
+  }
+  
+  /* Accessibility */
+  .loree-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    word-wrap: normal;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+  }
+  
+  a.nav-btns {
+    padding: 30px 20px;
+    text-decoration: none !important;
+    color: #000;
+    border-top: 2px solid #f56600;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  a.nav-btns:hover {
+    border-top: 2px solid #123c78 !important;
+    background-color: #e2e2e2;
+  }
+  
+  /* Max-width for Course page view -- Uncomment it based on client need */
+  /* #wiki_page_show{
+      max-width:1204px !important;
+    } */
+
+  
+
+  
+  div.ModuleButtonBox{
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+/* fix for issue where Canvas's stylin of external links from the 
+GUI themes editor was generating buttons with VUW green as both BG and text color
+(by Michael Kelly @CAD)
+*/
+a.Button{
+text-decoration: none !important;
+}
+a.Button--secondary{
+    color: #fff !important;
+}
+/* removes the external link indicator icon*/
+a.external>span>img{
+    display: none !important;
+}
+
+/*re-instate missing X icon in modal menus*/
+  .ui-icon.ui-icon-closethick {
+    display: block!important;
+  }
+
+/* Adding CSS for Quick Link container (bex from CAD)*/
+.THW-quick-link {
+    overflow: hidden;
+	
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; 
+    margin-bottom: 10px;
+    padding: 0px;
+    min-width: 150px;
+    max-width: 300px;
+}
+
+.THW-quick-link p{
+    padding:0px;
+    margin:0px;
+}
+
+.THW-quick-link a{
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+div.THW-quick-link-container{
+    justify-content: left;
+    align-items: stretch;
+    border: 1px solid #eaeaea; 
+    border-style: solid none solid none;
+    padding-top: 10px;
+}
+
+.email_meta {
+display: none;
+}

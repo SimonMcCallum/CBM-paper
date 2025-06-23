@@ -1,0 +1,280 @@
+#eesy-tab-inner{
+  transform: rotate(180deg);
+  bottom: 250px;
+  left:0px !important;
+  position: relative !important;
+  margin-top:-2px !important;
+  height:50px !important;
+  border-top-right-radius:8px;
+  opacity: 1;
+  border-bottom-right-radius:8px;
+}
+
+.eesy-tab2-container {
+  left:0px;
+  width:0px;
+}
+
+.eesy-tab2-btn {
+  opacity: 1;
+  color: #115737;
+}
+
+.eesy-tab2-btn-text {
+  transform: rotate(180deg);
+
+}
+
+.eesy-tab2-btn-icon {
+  transform: rotate(180deg);
+}
+
+.eesy-tab2-btn-handle i.fa.fa-chevron-up, .eesy-tab2-btn-handle i.fa.fa-chevron-down {
+  margin-left: 10px;
+}   
+
+.eesy-tab2-btn-handle {
+  color: #1874A4;
+  left: -100px;
+}
+
+.eesy__modal-scope .eesy__modal__box {
+  font-family: LatoWeb !important;
+}
+
+
+.eesy__modal-scope .layout__header {
+  background-color: #FFFFFF;
+  color: #0D4C38;
+}
+
+.eesy__modal-scope .section.___primary {
+  background-color: #ffffff;
+  color: #0D4C38;
+} 
+
+.eesy__modal-scope .section {
+  background-color: #0D4C38;
+  color: #ffffff;
+}
+
+.eesy__modal-scope .header__close:before {
+  color: #000;
+}
+
+.eesy__modal-scope .header__back:before {
+  color: #000;
+}
+
+.eesy__modal-scope .header__back:focus, .eesy__modal-scope .header__back:hover, .eesy__modal-scope .header__close:focus, .eesy__modal-scope .header__close:hover{
+  background-color: #fff;
+  color: #000;
+ } 
+
+.eesy__modal-scope .selector__option:hover,
+.eesy__modal-scope .results__show-all,
+.eesy__modal-scope .article a {
+  color: var(--ic-link-color);
+}
+
+.eesy__modal-scope .results__result {
+  color: #fff;
+}
+
+.eesy__modal-scope .results__result:hover {
+  color: #4f4f4f;
+}
+
+.eesy__modal-scope .form__submit.___call::before,.eesy__modal-scope .form__submit.___email::before,.eesy__modal-scope .form__submit.___pagecontext::before { 
+ color: #000;
+}
+
+.eesy__modal-scope .main__title.___call:after,.eesy__modal-scope .main__title.___email:after {
+  color: #fff;
+}
+
+.eesy__modal-scope .form__upload__first-message {
+  color:  #fff;
+}
+
+.eesy__modal-scope .form__item label {
+  color: #fff;
+}
+
+.eesy__modal-scope .tag.___is-selected {
+  background-color: var(--ic-link-color);
+  border-color: var(--ic-link-color);
+}
+
+
+.eesy__modal-scope .filter__category {
+  background-color: #0D4C38;
+  color: #FFFFFF;
+}
+
+.eesy__modal-scope .filter__category:hover,.eesy__modal-scope .filter__category.___is-selected:focus,.eesy__modal-scope .filter__category.___is-selected {
+  background-color: #4F4F4F;
+  color: #FFFFFF;
+}
+
+.eesy__modal-scope .isFocusable.focusStyleOutline:focus{
+   outline: 2px solid #fce500;
+   background-color: #4F4F4F;
+   color: #fff;
+}
+
+.eesy__modal-scope .xbutton__close:before{
+  color: #fff;
+}
+
+.eesy__modal-scope .results__show-all:before{
+  color: #fff;
+}
+
+.eesy__modal-scope .selector__option:hover,.eesy__modal-scope .results__show-all,.eesy__modal-scope .article a{
+  color: #fff;
+}
+
+.eesy__modal-scope .results__vote-up:before {
+  color: #fff;
+}
+
+.eesy__modal-scope .results__vote-down:before{
+  color: #fff;
+}
+
+.eesy__modal-scope .results__cat.___article:before{
+  color: #fff;
+}
+
+.eesy__modal-scope .header__search:before {
+  color: #333333;
+}
+
+.eesy__modal-scope .section.contact_options {
+  background-color: #F0F0F0;
+  color: #000000;
+}
+
+
+.eesy__modal-scope .contact__button {
+  border-style: solid;
+  border-color: #0D4C38;
+  background-color: #0D4C38;
+  border-width: 1px;
+  color: #fff;
+}
+
+.eesy__modal-scope .contact__button.___email:after {
+  color: #fff;
+  font-size: 17.0625px;
+}
+
+.eesy__modal-scope .contact__button.___call:after {
+  color: #fff;
+  font-size: 24.375px;
+}
+
+.eesy__modal-scope .contact__button.___chat:after {
+  color:#fff;
+  font-size: 24.375px;
+}
+
+.eesy__modal-scope .eesy__footer {
+  background-color: #4F4F4F;
+  color: #ffffff;
+}
+
+
+
+/* V3 styling */
+
+
+ .eesy_container.eesy_container_v3.eesy_canvas {
+    background-color: #666;
+}
+
+.eesy_container_v3.eesy_canvas .eesy_systray_header,
+.eesy_container_v3.eesy_canvas .eesy_systray_footer,
+.eesy_container_v3.eesy_canvas .eesy_header,
+.eesy_container_v3.eesy_canvas .eesy_footer,
+.eesy_container_v3.eesy_canvas .eesy_hint_header,
+.eesy_container_v3.eesy_canvas .eesy_hint_footer {
+    background-color: #666;
+ }
+
+.eesy_container_v3.eesy_canvas .eesy_hide_slider:before {
+  background-color: var(--ic-link-color);
+
+}
+
+input:checked + .eesy_hide_slider {
+  background-color: var(--ic-link-color);
+}
+
+.eesy_container_v3.eesy_canvas input:checked + .eesy_hide_slider {
+  background-color: var(--ic-link-color);
+}
+
+.eesy_container_v3.eesy_canvas .eesyarrow.left,
+.eesy_container_v3.eesy_canvas .eesyarrow.left:after { 
+    border-left-color: #666;  
+}
+
+.eesy_container_v3.eesy_canvas .eesyarrow.right,
+.eesy_container_v3.eesy_canvas .eesyarrow.right:after {
+    border-right-color: #666;
+}
+
+.eesy_container_v3.eesy_canvas .eesyarrow.up,
+.eesy_container_v3.eesy_canvas .eesyarrow.up:after { 
+    border-bottom-color: #666; 
+}
+
+.eesy_container_v3.eesy_canvas .eesyarrow.down,
+.eesy_container_v3.eesy_canvas .eesyarrow.down:after { 
+    border-top-color: #666; 
+}
+
+.eesy_container_v3.eesy_canvas .eesy_systray_footer,
+.eesy_container_v3.eesy_canvas .eesy_footer,
+.eesy_container_v3.eesy_canvas .eesy_hint_footer,
+.eesy_container_v3.eesy_canvas .voting-enabled.eesy_hint_footer, 
+.eesy_container_v3.eesy_canvas .voting-enabled.eesy_systray_footer, 
+.eesy_container_v3.eesy_canvas .voting-enabled.eesy_footer, 
+.eesy_container_v3.eesy_canvas .voting-enabled.eesy_systray_footer {
+  height: 25px;
+}
+
+.eesy_container_v3.eesy_canvas .quick-survey-section {
+  bottom: 0;
+  background-color: #666;
+}
+
+.eesy-tab2-btn-handle i.fa.fa-chevron-up,
+.eesy-tab2-btn-handle i.fa.fa-chevron-down {
+  display: block;
+  color: #666;
+}
+
+/* Build Mode */
+#pageshortcut {
+    position: fixed;
+    bottom: 14px;
+    right: 161px;
+    z-index: 100000000;
+    border: none;
+    color: #ff9000;
+    background-color: white;
+    border-radius: 5px;
+    padding: 6px 31px;
+    margin-top: 2px;
+    font-family: Arial;
+    font-size: 15px;
+}
+
+#pageshortcut:hover {
+    background-color: #ff9000;
+    color: white;
+    cursor: pointer;
+}
