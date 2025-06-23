@@ -18,8 +18,8 @@ Key `[ ]` means open task, `[~]` means in progress, `[?]` means needs review, `[
 5. Store extracted question metadata in a JSON file for debugging.
 
 ## Tasks
-- [ ] Examine QTI elements that change between `preQuiz.zip` and `postCBM.zip`.
-- [ ] Implement functions to parse a quiz zip and return question details. *(Started with `extract_question_types.py`)*
+- [?] Examine QTI elements that change between `preQuiz.zip` and `postCBM.zip`.
+- [?] Implement functions to parse a quiz zip and return question details. *(Started with `extract_question_types.py`)*
 - [ ] Define confidence question templates in code.
 - [ ] Implement zip patcher that adds confidence questions and writes a new archive.
 - [ ] Test with provided sample zips.
