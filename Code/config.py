@@ -19,7 +19,10 @@ NUM_REPETITIONS = 3
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY_CBM")
 CLAUDE_API_KEY = os.environ.get("ANTHROPIC_API_KEY_CBM")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY_CBM")
+DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY_CBM")
 
 OPENAI_ENDPOINT = "https://api.openai.com/v1/chat/completions"
 CLAUDE_ENDPOINT = "https://api.anthropic.com/v1/complete"
 GEMINI_ENDPOINT = "https://api.gemini.com/v1/chat/completions"
+DEEPSEEK_ENDPOINT = "https://api.deepseek.com/v1/chat/completions"
+# Ensure the output directory exists

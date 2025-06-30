@@ -1,0 +1,21 @@
+AI, Score ,Correct
+Claude 3.5 sonnet 20240107,  8.0 ,7
+Claude 3 opus 20240107,  5.5 ,6
+ChatGPT 4o1,  20.0 ,10
+ChatGPT 4o,  14.5 ,8
+ChatGPT 4,  13.0 ,8
+Gemini 2.0 Advanced,  16.0 ,9
+Gemini 2.0 Flash,  -   ,5
+Gemini 1.5 Pro,  12.0 ,8
+DeepSeek,  15.0 ,9
+DeepSeek R1,  20.0 ,10
+Claude 3.5 sonnet 20240107 - combined,  16.0 ,9
+Claude 3 opus 20240107 - combined,  14.5 ,9
+ChatGPT 4o1 - combined,  17.5 ,9
+ChatGPT 4o - combined,  13.5 ,8
+ChatGPT 4 - combined,  13.0 ,8
+Gemini 2.0 Advanced - combined,  12.0 ,8
+Gemini 2.0 Flash - combined,#N/A,10
+Gemini 1.5 Pro - combined,#N/A,10
+DeekSeek,  7.0 ,6
+DeepSeek R1,  18.5 ,10

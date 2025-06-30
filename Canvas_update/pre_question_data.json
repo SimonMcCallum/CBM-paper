@@ -1,0 +1,20 @@
+[
+  {
+    "ident": "g71cd8b8975c244d0febc60db1369eafb",
+    "title": "Question",
+    "question_type": "multiple_choice_question",
+    "text": "<div><p><span>How tall is Aoraki Mount Cook?</span><img role=\"presentation\" src=\"https://nuku.wgtn.ac.nz/assessment_questions/22385/files/80112/download?verifier=uLenulsOhAzedBJldOHsN1aotkj0Rktgn9oZXBMR\" alt=\"\" loading=\"lazy\"></p></div>"
+  },
+  {
+    "ident": "g9d052f72e615c12885bd1767945e9838",
+    "title": "Question",
+    "question_type": "short_answer_question",
+    "text": "<div><p>The longest river in New Zealand is</p></div>"
+  },
+  {
+    "ident": "gbd4da2668dba6aa33810273524f09269",
+    "title": "Question",
+    "question_type": "true_false_question",
+    "text": "<div><p>The first movie shot in New Zealand was in 1898.</p>\n<p><img role=\"presentation\" src=\"https://nuku.wgtn.ac.nz/assessment_questions/22387/files/80117/download?verifier=cewgeJWgh5SA7vS2hL2LfEa9Ie90bpD30pAU9fKI\" alt=\"\" loading=\"lazy\"></p></div>"
+  }
+]

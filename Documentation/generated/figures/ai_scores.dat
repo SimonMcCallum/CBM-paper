@@ -1,0 +1,18 @@
+key,AI,Score
+Claude3.5sonnet20240107,Claude 3.5 sonnet 20240107,8.0
+Claude3opus20240107,Claude 3 opus 20240107,5.5
+ChatGPT4o1,ChatGPT 4o1,20.0
+ChatGPT4o,ChatGPT 4o,14.5
+ChatGPT4,ChatGPT 4,13.0
+Gemini2.0Advanced,Gemini 2.0 Advanced,16.0
+Gemini1.5Pro,Gemini 1.5 Pro,12.0
+DeepSeek,DeepSeek,15.0
+DeepSeekR1,DeepSeek R1,20.0
+Claude3.5sonnet20240107combined,Claude 3.5 sonnet 20240107 - combined,16.0
+Claude3opus20240107combined,Claude 3 opus 20240107 - combined,14.5
+ChatGPT4o1combined,ChatGPT 4o1 - combined,17.5
+ChatGPT4ocombined,ChatGPT 4o - combined,13.5
+ChatGPT4combined,ChatGPT 4 - combined,13.0
+Gemini2.0Advancedcombined,Gemini 2.0 Advanced - combined,12.0
+DeekSeek,DeekSeek,7.0
+DeepSeekR12,DeepSeek R1-2,18.5
