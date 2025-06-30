@@ -1,0 +1,1096 @@
+{
+  "1": {
+    "OpenAI": {
+      "gpt-4": {
+        "0.0": [
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.304005",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.304005",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.326721",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.342032",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.356474",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.372156",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.388607",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.403504",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.417452",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.431783",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.445949",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.460549",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.475810",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.490323",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.505525",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.521831",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.537805",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.552857",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.567642",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.582294",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.597368",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.612790",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.627852",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.645329",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          }
+        ],
+        "0.7": [
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.660250",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.675922",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.690479",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.706421",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.721084",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.737863",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.753938",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.769039",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.785331",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.801840",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.817104",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.832492",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.848979",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.864735",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.880028",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.896605",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.920229",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.936593",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.953871",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.971172",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:47.986930",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.004584",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.021576",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.037827",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          }
+        ],
+        "1.0": [
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.054415",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.072694",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.090018",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.107469",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.124702",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.142164",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.166709",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.181258",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.198570",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.216301",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.232908",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.250004",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.267456",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.284491",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.301873",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.318616",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.336104",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.352913",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.374621",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.392959",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.411938",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.429038",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.448975",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.468329",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          }
+        ]
+      },
+      "gpt-3.5-turbo": {
+        "0.0": [
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.488221",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.505123",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.526264",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.543965",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.560537",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.580548",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.598074",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.617855",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.635862",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.654462",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.681035",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.699867",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.716578",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.734109",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.752236",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.768278",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.787025",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.807356",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.825685",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.845090",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.864348",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.886125",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.923120",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.942539",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          }
+        ],
+        "0.7": [
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.961803",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:48.980771",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.000262",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.019525",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.038440",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.057522",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.083318",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.105484",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.123883",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.144481",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.164563",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.181908",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.202107",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.220869",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.239991",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.258412",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.279633",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.298438",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.319627",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.341510",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.361000",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.381236",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.401085",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.421630",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          }
+        ],
+        "1.0": [
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.440986",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.461865",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.481230",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.499496",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.516147",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a first year computer science student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.542976",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.562676",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.583268",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.604037",
+            "persona": "highschool",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.624765",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.648370",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a highschool student answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.668013",
+            "persona": "highschool",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.690876",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.711737",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.731460",
+            "persona": "grad-student",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.764406",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.783809",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a graduate of a computer science degree answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.806073",
+            "persona": "grad-student",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.825702",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.847897",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.868976",
+            "persona": "professor",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.890301",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.910547",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": "OpenAI response placeholder for: What do we mean by meaningful play? with persona acting as a Professor of Computer Science answer this question",
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:49.932353",
+            "persona": "professor",
+            "confidence_prompt": "simple"
+          }
+        ]
+      }
+    },
+    "Claude": {
+      "claude-3-5-sonnet-20241022": {
+        "0.0": [
+          {
+            "answer": {
+              "text": "As a first year computer science student, I understand that meaningful play refers to how players interact with a game system and experience enjoyment through actions that have clear consequences and make sense within the game's context.\n\nFrom what I've learned in my game design lectures, meaningful play happens when:\n\n1. Players can understand how their actions affect the game (like knowing that pressing the jump button makes my character jump)\n\n2. The outcomes of actions matter and contribute to the overall game experience (like jumping over an obstacle to reach a power-up)\n\n3. The game's responses to player actions are consistent and make sense (if jumping worked one way before, it should work the same way again)\n\nI think a good example would be in Minecraft, where mining resources has a clear purpose (to build things), and the consequences are obvious (if I mine coal, I can use it for torches). This makes the gameplay meaningful because my actions have purpose and impact.\n\nOn the other hand, if a game had random outcomes that didn't connect to player actions, or if actions didn't contribute to any goals, that wouldn't be meaningful play - it would just be confusing and probably not very fun.\n\nIs this the kind of explanation you were looking for? I'm still learning about game design concepts, but this is my current understanding of meaningful play.",
+              "type": "text"
+            },
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:03:55.960183",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": {
+              "text": "As a first year computer science student, I understand that meaningful play refers to how players interact with a game and how their actions create experiences that are both understandable and impactful to the overall gameplay experience.\n\nFrom what I've learned in my game design lectures, meaningful play happens when:\n\n1. Players can understand the relationship between their actions and the outcomes in the game\n2. These actions and outcomes matter in the context of the larger game experience\n\nFor example, in a game like Minecraft, when I place blocks to build a shelter, I can clearly see how my actions (placing blocks) lead to an outcome (creating a safe space), and this matters because it helps me survive the night and progress in the game. That's meaningful play!\n\nI think it's different from random button mashing or doing things that don't really affect the game experience. Like, if I'm playing a game and pressing a button doesn't do anything noticeable or important, that wouldn't be meaningful play.\n\nFrom my understanding, meaningful play is really important for good game design because it keeps players engaged and makes them feel like their choices and actions actually matter in the game world.\n\nIs this what you were looking for in terms of explaining meaningful play?",
+              "type": "text"
+            },
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:04:01.808533",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": {
+              "text": "As a first year computer science student, I understand that meaningful play refers to how players interact with a game system and experience enjoyment through actions that have clear consequences and make sense within the game's context.\n\nFrom what I've learned in my game design lectures, meaningful play happens when:\n\n1. Players can understand how their actions affect the game (like knowing that pressing the jump button makes my character jump)\n\n2. The outcomes of actions matter and contribute to the overall game experience (like jumping over an obstacle to reach a power-up)\n\n3. The game's responses to player actions are consistent and make sense (if jumping worked one way before, it should work the same way again)\n\nI think a good example would be in Minecraft, where mining resources has a clear purpose (to build things), and the consequences are obvious (if I mine coal, I can use it for torches). This makes the gameplay meaningful because my actions have purpose and impact.\n\nOn the other hand, if a game had random outcomes that didn't connect to player actions, or if actions didn't contribute to any goals, that wouldn't be meaningful play - it would just be confusing and probably not very fun.\n\nIs this the kind of explanation you were looking for? I'm still learning about game design concepts, but this is my current understanding of meaningful play.",
+              "type": "text"
+            },
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:04:07.430677",
+            "persona": "1st-year",
+            "confidence_prompt": "gradingcontext"
+          },
+          {
+            "answer": {
+              "text": "As a first year computer science student, I understand that meaningful play refers to how players interact with a game and experience it in a way that makes sense and feels rewarding. From what I've learned in my game design lectures, meaningful play happens when:\n\n1. The actions I take in a game have clear consequences that I can understand\n2. These consequences actually matter in the context of the game\n3. The game gives me feedback about my actions that I can use to make better decisions\n\nFor example, in a game like Minecraft, when I mine blocks, I immediately see them break (clear feedback), I can collect the resources (obvious consequence), and I can use these resources to build things or craft items (meaningful impact on gameplay).\n\nI think it's different from just random button mashing or playing without purpose. The game needs to make me feel like my choices and actions have real significance within the game world.\n\nFrom what I understand, without meaningful play, games can feel boring or pointless because players don't see how their actions connect to outcomes, or the outcomes don't feel important enough to care about.\n\nIs this the right way to think about it? I'm still learning about game design concepts, so I'd appreciate any feedback!",
+              "type": "text"
+            },
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:04:12.628433",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": {
+              "text": "As a first year computer science student, I understand that meaningful play refers to how players interact with a game system and experience enjoyment through actions that have clear consequences and make sense within the game's context.\n\nFrom what I've learned in my game design lectures, meaningful play happens when:\n\n1. Players can understand how their actions affect the game (like when I press jump, my character actually jumps)\n2. The outcomes of these actions matter in the bigger picture of the game (like collecting coins actually helps you progress)\n3. The game's responses to player actions are consistent and make sense (if fire hurts my character once, it should hurt them every time)\n\nA good example I can think of is Minecraft - when I place blocks, I can immediately see what I've built, and these structures help me survive and progress in the game. That's meaningful play because my actions have clear, understandable consequences that matter in the game world.\n\nThe opposite would be if I was playing a game where my actions had random or confusing outcomes, or if what I did didn't seem to matter to the game at all. That wouldn't be meaningful play because I wouldn't understand how my choices affected anything.\n\nI'm still learning about game design concepts, but this is my current understanding of meaningful play based on what we've covered in class so far.",
+              "type": "text"
+            },
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:04:18.140812",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          },
+          {
+            "answer": {
+              "text": "As a first year computer science student, I understand that meaningful play refers to how players interact with a game and experience it in a way that makes sense and feels rewarding. From what I've learned in my game design lectures, meaningful play happens when:\n\n1. The actions I take in a game have clear consequences that I can understand\n2. These consequences actually matter in the context of the game\n3. The game gives me feedback about my actions that I can use to make better decisions\n\nFor example, in a game like Minecraft, when I mine blocks, I immediately see them break (clear feedback), I can collect the resources (obvious consequence), and I can use these resources to build things or craft items (meaningful impact on gameplay).\n\nI think it's different from just random button mashing or playing without purpose. The game needs to make me feel like my choices and actions have real significance within the game world.\n\nFrom what I understand, without meaningful play, games can feel boring or pointless because players don't see how their actions connect to outcomes, or the outcomes don't feel important enough to care about.\n\nIs this the right way to think about it? I'm still learning about game design concepts, so I'd appreciate any feedback!",
+              "type": "text"
+            },
+            "confidence": "High",
+            "timestamp": "2024-12-21T18:04:23.294944",
+            "persona": "1st-year",
+            "confidence_prompt": "simple"
+          }
+        ]
+      }
+    }
+  }
+}

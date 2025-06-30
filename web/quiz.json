@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "quiz_title": "General Knowledge Quiz",
+    "quiz_description": "Test your knowledge on various topics. Also indicate how confident you are in your answers!",
+    "questions": [
+      {
+        "question_id": "q1",
+        "question_type": "multiple_choice",
+        "question_title": "Capital of France",
+        "question_body": "What is the capital city of France?",
+        "points_possible": 5,
+        "details": {
+          "shuffle_answers": true,
+          "choices": [
+            { "text": "Paris", "correct": true, "feedback": "Correct! Paris is the capital." },
+            { "text": "Marseille", "correct": false, "feedback": "Incorrect. Marseille is not the capital." },
+            { "text": "Lyon", "correct": false, "feedback": "Incorrect. Lyon is an important city but not the capital." },
+            { "text": "Nice", "correct": false, "feedback": "No, Nice is not the capital." }
+          ]
+        },
+        "general_feedback": "Remember that the capital is the administrative center."
+      },
+      {
+        "question_id": "q2",
+        "question_type": "multiple_choice",
+        "question_title": "Largest Planet",
+        "question_body": "Which is the largest planet in our Solar System?",
+        "points_possible": 5,
+        "details": {
+          "shuffle_answers": false,
+          "choices": [
+            { "text": "Earth", "correct": false, "feedback": "Earth is not the largest." },
+            { "text": "Jupiter", "correct": true, "feedback": "Correct! Jupiter is the largest." },
+            { "text": "Saturn", "correct": false, "feedback": "No, Saturn is not the largest." },
+            { "text": "Mars", "correct": false, "feedback": "Mars is too small." }
+          ]
+        },
+        "general_feedback": "Jupiter is known for its massive size."
+      }
+    ]
+  }
+  

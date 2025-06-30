@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_item_v2p1" 
+                identifier="{{ question.identifier }}"
+                title="{{ question.question_title }}"
+                adaptive="false"
+                timeDependent="false">
+    <responseDeclaration identifier="{{ question.response_id }}" cardinality="single" baseType="identifier">
+        <correctResponse>
+            <value>{{ 'true' if question.details.correct_answer else 'false' }}</value>
+        </correctResponse>
+    </responseDeclaration>
+    <outcomeDeclaration identifier="{{ question.outcome_id }}" cardinality="single" baseType="float">
+        <defaultValue>0</defaultValue>
+    </outcomeDeclaration>
+    <itemBody>
+        {{ question.question_body|safe }}
+        <choiceInteraction responseIdentifier="{{ question.response_id }}" shuffle="false">
+            <simpleChoice identifier="true">True</simpleChoice>
+            <simpleChoice identifier="false">False</simpleChoice>
+        </choiceInteraction>
+    </itemBody>
+    <responseProcessing template="http://www.imsglobal.org/question/qti_v2p1/rptemplates/match_correct"/>
+</assessmentItem>

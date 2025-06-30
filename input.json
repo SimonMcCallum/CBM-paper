@@ -1,0 +1,29 @@
+{
+    "quiz_title": "Sample Quiz",
+    "questions": [
+      {
+        "question_id": "q1",
+        "question_type": "multiple_choice",
+        "question_title": "Capital of France",
+        "question_body": "<p>What is the capital of France?</p>",
+        "points_possible": 1,
+        "details": {
+          "shuffle_answers": true,
+          "choices": [
+            {
+              "text": "Paris",
+              "correct": true,
+              "feedback": "Correct! Paris is the capital."
+            },
+            {
+              "text": "London",
+              "correct": false,
+              "feedback": "London is the capital of England."
+            }
+          ]
+        },
+        "general_feedback": "Remember that Paris is also known as the City of Light."
+      }
+    ]
+  }
+  

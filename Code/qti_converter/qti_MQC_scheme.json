@@ -1,0 +1,91 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "QTI 2.1 Compatible Question Schema",
+    "type": "object",
+    "properties": {
+      "quiz_title": {
+        "type": "string",
+        "description": "Title of the quiz/assessment"
+      },
+      "quiz_description": {
+        "type": "string",
+        "description": "Optional description of the quiz"
+      },
+      "questions": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "question_id": {
+              "type": "string",
+              "description": "Unique identifier for the question"
+            },
+            "question_type": {
+              "type": "string",
+              "enum": [
+                "multiple_choice"
+              ]
+            },
+            "question_title": {
+              "type": "string",
+              "description": "Short question title/identifier"
+            },
+            "question_body": {
+              "type": "string",
+              "description": "Formatted question text (HTML allowed)"
+            },
+            "points_possible": {
+              "type": "number",
+              "minimum": 0
+            },
+            "details": {
+              "type": "object",
+              "oneOf": [
+                {
+                  "title": "Multiple Choice",
+                  "properties": {
+                    "shuffle_answers": {
+                      "type": "boolean"
+                    },
+                    "choices": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "text": {
+                            "type": "string",
+                            "description": "Choice text (HTML allowed)"
+                          },
+                          "correct": {
+                            "type": "boolean"
+                          },
+                          "feedback": {
+                            "type": "string",
+                            "description": "Optional answer feedback"
+                          }
+                        },
+                        "required": ["text", "correct"]
+                      }
+                    }
+                  },
+                  "required": ["choices"]
+                }
+              ]
+            },
+            "general_feedback": {
+              "type": "string",
+              "description": "General feedback for all answers"
+            }
+          },
+          "required": [
+            "question_id",
+            "question_type",
+            "question_body",
+            "points_possible",
+            "details"
+          ]
+        }
+      }
+    },
+    "required": ["quiz_title", "questions"]
+  }

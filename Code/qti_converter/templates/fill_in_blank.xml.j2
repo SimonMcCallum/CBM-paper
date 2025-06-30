@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_item_v2p1" 
+                identifier="{{ question.identifier }}"
+                title="{{ question.question_title }}"
+                adaptive="false"
+                timeDependent="false">
+    <responseDeclaration identifier="{{ question.response_id }}" cardinality="single" baseType="string">
+        <correctResponse>
+            {% for answer in question.details.answers %}
+            <value>{{ answer.text }}</value>
+            {% endfor %}
+        </correctResponse>
+    </responseDeclaration>
+    <outcomeDeclaration identifier="{{ question.outcome_id }}" cardinality="single" baseType="float">
+        <defaultValue>0</defaultValue>
+    </outcomeDeclaration>
+    <itemBody>
+        {{ question.question_body|safe }}
+        <textEntryInteraction responseIdentifier="{{ question.response_id}}"
+                             expectedLength="50"
+                             caseSensitive="{{ 'true' if question.details.answers[0].case_sensitive else 'false' }}"/>
+    </itemBody>
+    <responseProcessing template="http://www.imsglobal.org/question/qti_v2p1/rptemplates/map_response"/>
+</assessmentItem>
