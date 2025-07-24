@@ -1,2 +1,117 @@
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.npm
+.eslintcache
+.yarn-integrity
+*.tgz
+
+# Environment variables
+.env
+.env.test
+.env.local
+.env.production
+.env.development
+
+# Logs
+logs/
+*.log
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# OS files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.code-workspace
+
+# Archives
 *.zip
+*.tar.gz
+*.rar
+
+# Large files and downloads
+*.download
+*_files/
+*.mhtml
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Research outputs
+results/
+AI_Scores.csv
+Human_Scores.csv
+CBM_Assessment.csv
+scatter_plot.*
+
+# Canvas exports
+Canvas_update/Quiz_*.html
+Canvas_update/Quiz_*_files/
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+*.bak
+*~
+.#*
+#*#
+
+# LaTeX
+*.aux
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.bbl
+*.blg
+
+# Uploads and user data
+uploads/
+cbm-question-system/uploads/
+cbm-question-system/database/
