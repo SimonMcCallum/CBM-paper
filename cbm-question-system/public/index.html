@@ -26,6 +26,7 @@
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="#" onclick="showSection('upload')">Upload QTI</a>
                 <a class="nav-link" href="#" onclick="showSection('questions')">Questions</a>
+                <a class="nav-link" href="#" onclick="showSection('ai-testing')">AI Testing</a>
                 <a class="nav-link" href="#" onclick="showSection('stats')">Statistics</a>
             </div>
         </div>
@@ -133,6 +134,200 @@
             </div>
         </div>
 
+        <!-- AI Testing Section -->
+        <div id="ai-testingSection" class="section" style="display: none;">
+            <div class="row">
+                <div class="col-12">
+                    <h2><i class="fas fa-robot"></i> AI Testing Dashboard</h2>
+                    <p class="text-muted">Test various AI models with confidence-based marking (CBM) on multiple choice questions.</p>
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-play"></i> Test Controls</h5>
+                        </div>
+                        <div class="card-body">
+                            <button id="configTestBtn" class="btn btn-primary btn-lg w-100 mb-2" onclick="showConfigModal()">
+                                <i class="fas fa-cog"></i> Configure Test Parameters
+                            </button>
+                            <button id="runTestBtn" class="btn btn-success btn-lg w-100 mb-3" onclick="runAITest()" disabled>
+                                <i class="fas fa-play"></i> Run AI Testing
+                            </button>
+                            <div id="testProgress" class="progress mb-3" style="display: none;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                            </div>
+                            <div id="testStatus" class="alert" style="display: none;"></div>
+                            <small class="text-muted">Configure test parameters first, then run AI testing with confidence-based marking.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle"></i> Test Configuration</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Models:</strong>
+                                    <ul class="list-unstyled small">
+                                        <li>• OpenAI GPT-4o</li>
+                                        <li>• Claude 3.5 Sonnet</li>
+                                        <li>• Gemini 1.5 Pro</li>
+                                        <li>• DeepSeek Chat</li>
+                                    </ul>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Parameters:</strong>
+                                    <ul class="list-unstyled small">
+                                        <li>• Temperatures: 0.0, 0.7, 1.0</li>
+                                        <li>• Repetitions: 3 per model</li>
+                                        <li>• CBM Scoring: Enabled</li>
+                                        <li>• Confidence Analysis: Yes</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Overview -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-white bg-primary">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 id="totalTests">-</h4>
+                                    <p>Total Tests</p>
+                                </div>
+                                <i class="fas fa-vial fa-2x align-self-center"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-success">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 id="overallAccuracy">-</h4>
+                                    <p>Overall Accuracy</p>
+                                </div>
+                                <i class="fas fa-bullseye fa-2x align-self-center"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-warning">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 id="avgConfidence">-</h4>
+                                    <p>Avg Confidence</p>
+                                </div>
+                                <i class="fas fa-chart-line fa-2x align-self-center"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-info">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 id="avgCBMScore">-</h4>
+                                    <p>Avg CBM Score</p>
+                                </div>
+                                <i class="fas fa-trophy fa-2x align-self-center"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Results -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <ul class="nav nav-tabs card-header-tabs" id="resultsTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="vendor-tab" data-bs-toggle="tab" data-bs-target="#vendor-results" type="button" role="tab">
+                                        <i class="fas fa-building"></i> By Vendor
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="confidence-tab" data-bs-toggle="tab" data-bs-target="#confidence-analysis" type="button" role="tab">
+                                        <i class="fas fa-chart-bar"></i> Confidence Analysis
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="cbm-tab" data-bs-toggle="tab" data-bs-target="#cbm-analysis" type="button" role="tab">
+                                        <i class="fas fa-medal"></i> CBM Analysis
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="detailed-tab" data-bs-toggle="tab" data-bs-target="#detailed-results" type="button" role="tab">
+                                        <i class="fas fa-list-alt"></i> Detailed Results
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content" id="resultsTabContent">
+                                <!-- Vendor Results Tab -->
+                                <div class="tab-pane fade show active" id="vendor-results" role="tabpanel">
+                                    <div id="vendorResultsContent">
+                                        <div class="text-center py-5">
+                                            <i class="fas fa-robot fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">No AI testing results available. Run a test to see vendor performance comparison.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Confidence Analysis Tab -->
+                                <div class="tab-pane fade" id="confidence-analysis" role="tabpanel">
+                                    <div id="confidenceAnalysisContent">
+                                        <div class="text-center py-5">
+                                            <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">No confidence analysis available. Run a test to see confidence vs accuracy correlation.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CBM Analysis Tab -->
+                                <div class="tab-pane fade" id="cbm-analysis" role="tabpanel">
+                                    <div id="cbmAnalysisContent">
+                                        <div class="text-center py-5">
+                                            <i class="fas fa-medal fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">No CBM analysis available. Run a test to see confidence-based marking performance.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Detailed Results Tab -->
+                                <div class="tab-pane fade" id="detailed-results" role="tabpanel">
+                                    <div id="detailedResultsContent">
+                                        <div class="text-center py-5">
+                                            <i class="fas fa-list-alt fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">No detailed results available. Run a test to see individual test results.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Statistics Section -->
         <div id="statsSection" class="section" style="display: none;">
             <div class="row">
@@ -192,6 +387,110 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Test Configuration Modal -->
+    <div class="modal fade" id="configModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-cog"></i> Configure AI Testing Parameters</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="configForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">AI Vendors to Test</label>
+                                    <div id="vendorSelection">
+                                        <!-- Populated dynamically -->
+                                    </div>
+                                    <div class="form-text">Select which AI providers to include in testing</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="numRepetitions" class="form-label">Repetitions per Test</label>
+                                    <input type="number" class="form-control" id="numRepetitions" min="1" max="10" value="3">
+                                    <div class="form-text">How many times to test each model/temperature combination</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Temperature Settings</label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="temp0" value="0.0" checked>
+                                        <label class="form-check-label" for="temp0">
+                                            0.0 (Deterministic)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="temp07" value="0.7" checked>
+                                        <label class="form-check-label" for="temp07">
+                                            0.7 (Balanced)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="temp1" value="1.0" checked>
+                                        <label class="form-check-label" for="temp1">
+                                            1.0 (Creative)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="temp05" value="0.5">
+                                        <label class="form-check-label" for="temp05">
+                                            0.5 (Conservative)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="temp15" value="1.5">
+                                        <label class="form-check-label" for="temp15">
+                                            1.5 (Very Creative)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="temp2" value="2.0">
+                                        <label class="form-check-label" for="temp2">
+                                            2.0 (Maximum)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-text">Select temperature values to test (affects randomness in AI responses)</div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle"></i> Test Estimation</h6>
+                            <p class="mb-0" id="testEstimation">Configure parameters to see test estimation</p>
+                        </div>
+
+                        <div id="configErrors" class="alert alert-danger" style="display: none;"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveConfiguration()">
+                        <i class="fas fa-save"></i> Save Configuration
+                    </button>
                 </div>
             </div>
         </div>

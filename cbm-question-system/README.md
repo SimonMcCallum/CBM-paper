@@ -158,11 +158,9 @@ Default CBM scoring rules:
 
 | Confidence Level | Correct Score | Incorrect Score |
 |------------------|---------------|-----------------|
-| 1 (Very Low) | +0.2 | -0.1 |
-| 2 (Low) | +0.4 | -0.2 |
-| 3 (Medium) | +0.6 | -0.4 |
-| 4 (High) | +0.8 | -0.6 |
-| 5 (Very High) | +1.0 | -1.0 |
+| 1 (Guessing) | +1 | 0. 0|
+| 3 (Somewhat) | +1.5 | -0.5 |
+| 5 (Very Confident) | +2.0 | -2.0 |
 
 ## Database Schema
 

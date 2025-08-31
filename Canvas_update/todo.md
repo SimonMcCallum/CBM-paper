@@ -5,7 +5,7 @@ Key `[ ]` means open task, `[~]` means in progress, `[?]` means needs review, `[
 1. Analyse QTI format used by Canvas. Use `preQuiz.zip` as the source quiz and `postCBM.zip` as reference output.
 2. Build a Python script that inserts CBM questions after each normal question.
    - Support two templates:
-     - Five choice confidence question (not confident → very confident).
+     - Three choice confidence question (not confident → very confident).
      - True/False confidence question.
    - Preserve UUIDs and update `imsmanifest.xml` accordingly.
 3. Workflow of the script:

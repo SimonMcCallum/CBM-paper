@@ -8,3 +8,8 @@ anthropic>=0.25.0
 beautifulsoup4>=4.12.0
 jinja2>=3.1.0
 python-dotenv>=1.0.0
+
+# Enhanced AI testing dependencies
+aiohttp>=3.8.0
+openai>=1.0.0
+google-generativeai>=0.3.0

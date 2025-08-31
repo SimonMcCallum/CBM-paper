@@ -43,7 +43,7 @@ const questionSchema = Joi.object({
   correct_answer: Joi.string().required(),
   options: Joi.array().items(Joi.string()).when('question_type', {
     is: 'multiple_choice',
-    then: Joi.required().min(2),
+    then: Joi.array().min(2).required(),
     otherwise: Joi.optional()
   }),
   complexity_level: Joi.number().integer().min(1).max(10).required(),
