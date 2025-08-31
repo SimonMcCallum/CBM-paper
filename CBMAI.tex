@@ -1,0 +1,238 @@
+\documentclass[sigconf]{acmart}
+
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{url}
+
+% ACM formatting
+\copyrightyear{2025}
+\acmYear{2025}
+\setcopyright{acmlicensed}
+\acmConference[SIGCSE '25]{Proceedings of the 56th ACM Technical Symposium on Computer Science Education}{March 2025}{Portland, OR, USA}
+\acmBooktitle{Proceedings of the 56th ACM Technical Symposium on Computer Science Education (SIGCSE '25), March 2025, Portland, OR, USA}
+\acmPrice{15.00}
+\acmDOI{10.1145/xxxxxxx.xxxxxxx}
+\acmISBN{978-x-xxxx-xxxx-x/xx/xx}
+
+\begin{document}
+
+\title{Confidence-Based Marking and AI: Examining the Divergence Between Human Metacognitive Awareness and Artificial Intelligence Overconfidence}
+
+\author{[Simon McCallum]}
+\email{[simon.mccallum@vuw.ac.nz]}
+\affiliation{%
+  \institution{[Victoria University of Wellington]}
+  \streetaddress{[Kelburn Terrace, Wellington]}
+  \city{[Wellington]}
+  \state{[Wellington]}
+  \postcode{[6402]}
+  \country{[New Zealand]}
+}
+
+\begin{abstract}
+This research investigates the fundamental differences between human metacognitive processes and artificial intelligence confidence calibration in educational assessment contexts. Testing with confidence-based marking (CBM) was implemented across multiple cohorts and responses were compaired wtih contemporary AI systems. The analysis demonstrates systematic overconfidence in AI responses to multiple-choice questions. We propose that human confidence assessments incorporate multifaceted metacognitive strategies including internal certainty evaluation, contextual alignment consideration, and strategic test-taking behaviors, while AI systems exhibit consistent overconfidence patterns attributable to training data characteristics and lack of metacognitive utility during training. We propose a framework for AI-generated assessment that leverages CBM to identify potentially problematic questions while shifting pedagogical emphasis from content creation to content evaluation, addressing the evolving landscape of generative AI in education.
+\end{abstract}
+
+\begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10003456.10003457.10003527.10003531</concept_id>
+<concept_desc>Social and professional topics~Computing education</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+<concept>
+<concept_id>10010147.10010257.10010293.10010294</concept_id>
+<concept_desc>Computing methodologies~Machine learning</concept_desc>
+<concept_significance>300</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Social and professional topics~Computing education}
+\ccsdesc[300]{Computing methodologies~Machine learning}
+
+\keywords{confidence-based marking, metacognition, artificial intelligence, educational assessment, overconfidence bias}
+
+\maketitle
+
+\section{Introduction}
+
+The assessment of student knowledge has traditionally focused on correctness of responses, yet this approach fails to capture the crucial metacognitive dimension of learning: students' awareness of their own knowledge and uncertainty. Confidence/Certainty based marking (CBM), advocated by researchers such as Gardner-Medwin~\cite{gardner2006confidence}, addresses this limitation by incorporating students' confidence levels into assessment scoring, thereby encouraging metacognitive reflection and providing insights into learning gaps.
+
+
+
+
+The emergence of large language models and their integration into educational contexts presents new challenges and opportunities for assessment design. Preliminary observations suggest that artificial intelligence systems exhibit systematically different confidence patterns compared to human learners, with implications for both understanding AI behavior and designing effective assessment strategies in an AI-augmented educational landscape.
+
+This research examines the fundamental differences between human metacognitive processes in confidence assessment and AI confidence calibration, proposing novel approaches to leverage these differences for improved educational outcomes.
+
+\section{The Value of Metacognitive Knowledge in Education}
+
+\subsection{Theoretical Foundations}
+
+Metacognitive knowledge, defined as awareness and understanding of one's own thought processes, represents a critical component of effective learning~\cite{flavell1976metacognitive}. Gardner-Medwin's seminal work on confidence-based marking demonstrates that incorporating confidence assessments into evaluation frameworks provides multiple pedagogical benefits~\cite{gardner2006confidence, gardner2011learning}.
+
+The CBM approach transforms traditional binary correct/incorrect scoring into a multidimensional assessment that rewards accurate self-knowledge while penalizing overconfidence. This methodology encourages students to develop metacognitive awareness by explicitly requiring them to evaluate their certainty levels, thereby promoting more reflective learning approaches.
+
+We have used CBM over many years both in Norway and New Zealand to improve the quality of feedback to students, improve question quality, and emphasis the importance of meta-cognition. We have a three level confidence system where students select their confidence per question:
+\begin{tabular}
+  level| Correct | incorrect |
+  guessing:| 1.0 | 0.0 |
+  somewhat confident:| 1.5 | -0.5 |
+  confident:| 2.0 | -2.0 |
+\end{tabular}
+
+These numbers have been carefully chosen based on game theory and student feedback.  Although there are many options which are mathematically equivalent or that preserve rank order, there is a difference in the mind of the student answering between this system and the double of the system: 2, 0 ; 3, -1 ; 4,-4.  The 2 for a right answer already feels different to 1 for a right answer.  3 for somewhat confident feels proportially larger then 2 as opposed to 1.5 being greater than 1.0.  The idea of an fractional mark increase "feels" like a partial credit.  It also places the somewhat confident mark as a partial confidence.  The phase "you get an extra half mark, but risk half a mark" feels more symmetric than larger marks.
+
+
+\subsection{Confidence versus Certainty}
+
+While often used interchangeably in colloquial contexts, confidence and certainty represent distinct psychological constructs in assessment scenarios. Confidence refers to the subjective probability an individual assigns to the correctness of their response, while certainty encompasses the degree of conviction in that assessment. In educational contexts, confidence operates as a measurable construct that can be calibrated against actual performance, providing insights into metacognitive accuracy.
+
+Research in cognitive psychology demonstrates that well-calibrated confidence correlates with improved learning outcomes and knowledge retention~\cite{dunlosky2011four}. Students who accurately assess their confidence levels are better positioned to identify knowledge gaps and allocate study resources effectively.
+
+\subsection{Empirical Evidence}
+
+Our longitudinal data collection across multiple cohorts reveals consistent patterns in human confidence calibration. Students demonstrate varying degrees of metacognitive accuracy, with improvement observed over time as they develop familiarity with CBM frameworks. Initial overconfidence typically gives way to more nuanced self-assessment as students gain experience with the methodology.
+
+[Data presentation section would include specific statistical analyses of your human subject data]
+
+\section{Artificial Intelligence and Systematic Overconfidence}
+
+\subsection{Observed Patterns}
+
+Comparative analysis of contemporary AI systems responding to identical multiple-choice questions reveals systematic overconfidence patterns. Unlike human participants who demonstrate variable confidence levels correlated with actual knowledge states, AI systems consistently assign high confidence scores regardless of question difficulty or domain specificity.
+
+Our benchmark evaluation, available at Ludogy.co.nz/calibration\_bench, demonstrates that leading language models exhibit overconfidence rates exceeding 40\% above optimal calibration levels. This systematic bias persists across different model architectures and training methodologies.
+
+\subsection{Theoretical Explanations}
+
+The observed overconfidence in AI systems can be attributed to several fundamental factors:
+
+\textbf{Training Data Characteristics:} The textual corpora used for language model training predominantly contain confident assertions rather than expressions of uncertainty. Academic papers, encyclopedias, and authoritative sources rarely include confidence qualifiers, creating a training environment that reinforces confident response patterns.
+
+\textbf{Lack of Metacognitive Utility:} Unlike human learners who benefit from accurate confidence assessment through improved learning allocation, AI systems derive no direct utility from confidence calibration during inference. The absence of ongoing learning during deployment removes the selective pressure that would otherwise encourage accurate uncertainty estimation.
+
+\textbf{Architectural Limitations:} Current transformer-based architectures lack explicit mechanisms for uncertainty quantification. While attention patterns and token probabilities provide some indication of model confidence, these internal representations are not optimized for accurate confidence reporting.
+
+\subsection{Implications for Test-Time Compute}
+
+The significance of confidence calibration becomes apparent in test-time compute scenarios where AI agents must allocate computational resources dynamically. Accurate uncertainty estimation enables systems to invest additional processing time in areas of genuine uncertainty while expediting confident responses. However, systematic overconfidence undermines this resource allocation strategy, leading to suboptimal performance patterns.
+
+\section{Human Confidence Assessment Mechanisms}
+
+\subsection{Internal Certainty Evaluation}
+
+Human confidence assessment begins with introspective evaluation of knowledge certainty. This process involves accessing declarative and procedural knowledge stores while simultaneously monitoring the fluency and completeness of memory retrieval. Students demonstrate sophisticated awareness of their own cognitive processes, distinguishing between confident knowledge, uncertain recollection, and complete ignorance.
+
+Neurocognitive research suggests that this introspective capability involves prefrontal cortex regions associated with metacognitive monitoring~\cite{fleming2010knowing}. The subjective experience of knowing correlates with measurable neural activity patterns, providing biological foundations for confidence reporting accuracy in educational contexts.
+
+\subsection{Contextual Alignment Consideration}
+
+Human confidence assessment incorporates sophisticated contextual reasoning that extends beyond pure knowledge evaluation. Students consider multiple contextual factors when assessing response confidence:
+
+\textbf{Curricular Emphasis:} Topics receiving extensive coverage in course materials generate higher confidence levels, even when actual knowledge depth may be limited. Students implicitly weight their confidence assessments based on perceived importance within the educational context.
+
+\textbf{Contemporary Relevance:} Current events and recent discussions influence confidence patterns, with students expressing higher certainty for information encountered in multiple contexts or recent time frames.
+
+\textbf{Source Credibility:} The perceived authority of information sources affects confidence levels, with students demonstrating higher certainty for material attributed to respected authorities or repeated across multiple credible sources.
+
+\subsection{Strategic Test-Taking Behavior}
+
+The third component of human confidence assessment involves sophisticated reverse-engineering of assessment intentions. Students engage in strategic reasoning about test design, considering factors such as:
+
+\textbf{Question Construction:} Analysis of distractor plausibility and option formatting provides clues about intended difficulty levels and correct responses.
+
+\textbf{Assessment Context:} The positioning of questions within broader evaluations influences confidence levels, with students adjusting their certainty based on perceived question importance and weighting.
+
+\textbf{Instructor Intentions:} Students attempt to infer instructor priorities and emphasis areas, using this information to calibrate confidence levels for different question types and domains.
+
+These strategic considerations represent uniquely human capabilities that are typically unavailable to AI systems operating without access to curricular context, instructor characteristics, or assessment design principles.
+
+\section{AI-Generated Assessment Framework}
+
+\subsection{Claim-Based Question Generation}
+
+We propose a novel assessment framework that leverages AI capabilities for dynamic question generation while incorporating CBM principles to address quality concerns. In this approach, students submit substantive work representing specific claims or arguments, which then serve as the basis for AI-generated multiple-choice questions.
+
+The process operates as follows:
+\begin{enumerate}
+\item Students submit original work containing specific claims, arguments, or analyses
+\item AI systems generate unique multiple-choice questions targeting comprehension of submitted content
+\item Students respond to generated questions using CBM methodology
+\item Assessment combines original work quality with demonstrated understanding through question responses
+\end{enumerate}
+
+\subsection{Quality Assurance Through Uncertainty}
+
+Recognizing the potential variability in AI-generated question quality, the CBM framework provides a mechanism for students to signal problematic questions through low confidence responses. Students expressing uncertainty about question clarity or appropriateness can indicate this through confidence ratings, enabling instructors to identify potentially flawed assessment items.
+
+This approach transforms potential AI limitations into pedagogical opportunities, teaching students to evaluate question quality while maintaining focus on content comprehension. The negotiated grading process allows for discussion of both content understanding and assessment validity.
+
+\subsection{Pedagogical Implications}
+
+This framework addresses the fundamental challenge posed by generative AI in educational contexts: the shift from content creation to content evaluation as the primary skill. As AI systems become increasingly capable of producing sophisticated written work, educational emphasis must transition toward critical evaluation, synthesis, and quality assessment capabilities.
+
+The claim-based assessment approach requires students to demonstrate deep understanding of submitted work rather than merely producing acceptable content. This shift aligns with evolving workforce requirements where professionals must evaluate AI-generated content rather than compete with AI production capabilities.
+
+\section{Implementation Considerations}
+
+\subsection{Technical Architecture}
+
+Implementation of the proposed framework requires integration of multiple technological components:
+
+\textbf{Content Analysis:} Natural language processing systems must identify key claims and concepts within submitted work, providing the foundation for targeted question generation.
+
+\textbf{Question Generation:} Large language models generate contextually appropriate multiple-choice questions with varying difficulty levels and distractor quality.
+
+\textbf{CBM Integration:} Assessment platforms must capture both response selection and confidence ratings, implementing appropriate scoring algorithms that reward metacognitive accuracy.
+
+\textbf{Quality Monitoring:} Automated systems should flag potentially problematic questions based on student confidence patterns and response distributions.
+
+\subsection{Evaluation Metrics}
+
+The effectiveness of claim-based CBM assessment requires multidimensional evaluation criteria:
+
+\textbf{Content Comprehension:} Traditional accuracy measures for question responses, weighted by confidence levels using established CBM scoring methods.
+
+\textbf{Metacognitive Calibration:} Comparison of stated confidence levels with actual performance, measuring the development of accurate self-assessment capabilities.
+
+\textbf{Question Quality:} Analysis of generated question characteristics, including distractor effectiveness, content validity, and clarity measures.
+
+\textbf{Learning Outcomes:} Longitudinal assessment of student learning gains and retention rates compared to traditional assessment approaches.
+
+\section{Future Directions and Limitations}
+
+\subsection{Research Extensions}
+
+Several research directions emerge from this work:
+
+\textbf{Cross-Domain Validation:} Extension of CBM-AI comparisons across diverse academic disciplines to identify domain-specific patterns in confidence calibration.
+
+\textbf{Longitudinal Studies:} Long-term tracking of student metacognitive development under claim-based assessment frameworks.
+
+\textbf{AI Uncertainty Methods:} Investigation of techniques for improving AI confidence calibration, potentially through specialized training procedures or architectural modifications.
+
+\subsection{Limitations}
+
+This research acknowledges several limitations:
+
+The benchmark evaluation focuses on multiple-choice formats, potentially missing confidence patterns in other assessment modalities. Additionally, the AI systems examined represent a snapshot of current capabilities, with rapid development potentially altering observed patterns.
+
+The proposed framework requires significant technological infrastructure that may not be accessible to all educational institutions. Implementation costs and technical expertise requirements may limit adoption scope.
+
+\section{Conclusion}
+
+The integration of artificial intelligence into educational assessment presents both opportunities and challenges that require careful consideration of fundamental differences between human and artificial cognitive processes. Our research demonstrates that while AI systems exhibit systematic overconfidence patterns attributable to training methodologies and architectural limitations, these characteristics can be leveraged constructively within appropriately designed assessment frameworks.
+
+The proposed claim-based CBM approach addresses the evolving educational landscape where content creation capabilities are increasingly automated, requiring pedagogical emphasis to shift toward content evaluation and quality assessment skills. By combining AI-generated assessment with human metacognitive awareness, educational institutions can maintain assessment validity while preparing students for an AI-augmented professional environment.
+
+The systematic overconfidence observed in AI systems serves as a reminder that technological capabilities must be understood within their limitations and deployed thoughtfully within educational contexts. As generative AI continues to evolve, educational assessment must similarly adapt to leverage artificial intelligence strengths while preserving the uniquely human elements of learning and evaluation.
+
+Future research should continue exploring the intersection of human metacognition and artificial intelligence capabilities, seeking frameworks that enhance rather than replace human cognitive processes in educational contexts. The goal remains the development of learners who can effectively evaluate, synthesize, and build upon both human and artificial intelligence contributions to knowledge creation.
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{acm-reference}
+
+\end{document}

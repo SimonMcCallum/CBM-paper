@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBM Question System - QTI Upload & Rating</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .navbar-brand { font-weight: 600; }
+        .card { border: none; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); margin-bottom: 1.5rem; }
+        .question-card { transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
+        .question-card:hover { transform: translateY(-2px); box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); }
+        .star-rating { font-size: 1.2rem; color: #ddd; cursor: pointer; }
+        .star-rating .fas.active, .star-rating .fas:hover { color: #ffc107; }
+        .rating-display { color: #ffc107; }
+        .complexity-badge { font-size: 0.75rem; }
+        .upload-progress { margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-question-circle"></i> CBM Question System</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="#" onclick="showSection('upload')">Upload QTI</a>
+                <a class="nav-link" href="#" onclick="showSection('questions')">Questions</a>
+                <a class="nav-link" href="#" onclick="showSection('stats')">Statistics</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Upload Section -->
+        <div id="uploadSection" class="section">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0"><i class="fas fa-upload"></i> Upload QTI Questions</h4>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">Upload QTI format questions downloaded from Canvas LMS or other systems.</p>
+                            <form id="uploadForm" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label for="qtiFile" class="form-label">Select QTI File</label>
+                                    <input type="file" class="form-control" id="qtiFile" accept=".xml,.qti,.zip" required>
+                                    <div class="form-text">Supported formats: XML, QTI files (max 10MB)</div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-upload"></i> Upload & Parse Questions
+                                </button>
+                            </form>
+                            
+                            <div id="uploadProgress" class="upload-progress" style="display: none;">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                                </div>
+                                <p class="mt-2 text-center">Processing QTI file...</p>
+                            </div>
+                            
+                            <div id="uploadResults" class="mt-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions Section -->
+        <div id="questionsSection" class="section" style="display: none;">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-list"></i> Question Bank</h2>
+                        <div>
+                            <input type="text" id="searchInput" class="form-control d-inline-block" style="width: 300px;" placeholder="Search questions...">
+                            <button class="btn btn-secondary ms-2" onclick="loadQuestions()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Filters</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Question Type</label>
+                                <select id="typeFilter" class="form-select form-select-sm">
+                                    <option value="">All Types</option>
+                                    <option value="multiple_choice">Multiple Choice</option>
+                                    <option value="true_false">True/False</option>
+                                    <option value="short_answer">Short Answer</option>
+                                    <option value="essay">Essay</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Complexity</label>
+                                <select id="complexityFilter" class="form-select form-select-sm">
+                                    <option value="">All Levels</option>
+                                    <option value="1">1 - Very Easy</option>
+                                    <option value="2">2 - Easy</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5 - Medium</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8 - Hard</option>
+                                    <option value="9">9 - Very Hard</option>
+                                    <option value="10">10 - Expert</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary btn-sm w-100" onclick="loadQuestions()">Apply Filters</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div id="questionsList">
+                        <div class="text-center py-5">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3">Loading questions...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div id="statsSection" class="section" style="display: none;">
+            <div class="row">
+                <div class="col-12">
+                    <h2><i class="fas fa-chart-bar"></i> Question Bank Statistics</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card text-white bg-primary">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 id="totalQuestions">-</h4>
+                                    <p>Total Questions</p>
+                                </div>
+                                <i class="fas fa-question-circle fa-2x align-self-center"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-success">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 id="avgComplexity">-</h4>
+                                    <p>Avg Complexity</p>
+                                </div>
+                                <i class="fas fa-chart-line fa-2x align-self-center"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-warning">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 id="totalRatings">-</h4>
+                                    <p>Total Ratings</p>
+                                </div>
+                                <i class="fas fa-star fa-2x align-self-center"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-info">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 id="avgRating">-</h4>
+                                    <p>Avg Rating</p>
+                                </div>
+                                <i class="fas fa-thumbs-up fa-2x align-self-center"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rating Modal -->
+    <div class="modal fade" id="ratingModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Rate Question</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Rating (1-5 stars)</label>
+                        <div id="starRating" class="star-rating">
+                            <i class="fas fa-star" data-rating="1"></i>
+                            <i class="fas fa-star" data-rating="2"></i>
+                            <i class="fas fa-star" data-rating="3"></i>
+                            <i class="fas fa-star" data-rating="4"></i>
+                            <i class="fas fa-star" data-rating="5"></i>
+                        </div>
+                        <input type="hidden" id="ratingValue" value="0">
+                        <input type="hidden" id="ratingQuestionId" value="">
+                    </div>
+                    <div class="mb-3">
+                        <label for="reviewerName" class="form-label">Your Name (Optional)</label>
+                        <input type="text" class="form-control" id="reviewerName" placeholder="Enter your name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="ratingFeedback" class="form-label">Feedback (Optional)</label>
+                        <textarea class="form-control" id="ratingFeedback" rows="3" placeholder="Provide feedback about this question..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitRating()">Submit Rating</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

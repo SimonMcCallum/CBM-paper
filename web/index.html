@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz with Confidence Indicator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .question {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .question h3 {
+      margin-top: 0;
+    }
+    .choices, .confidence {
+      margin-left: 20px;
+      margin-top: 10px;
+    }
+    .confidence p {
+      margin: 0 0 5px;
+      font-style: italic;
+    }
+    #submit-btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    #results {
+      margin-top: 20px;
+      padding: 15px;
+      border: 2px solid #000;
+      border-radius: 4px;
+      background-color: #f8f8f8;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="quiz-container">
+    <!-- Quiz questions will be dynamically inserted here -->
+  </div>
+  
+  <button id="submit-btn">Submit Quiz</button>
+  
+  <div id="results"></div>
+  
+  <script>
+    /*********************** 
+     * CONFIGURATION OBJECT
+     ***********************/
+    // Each confidence level has a label, multipliers (for correct and incorrect answers),
+    // and an “expected” accuracy. For guessing the expected accuracy is computed based on
+    // the number of choices.
+    const confidenceLevels = {
+      guessing: {
+        label: "Guessing (<50%)",
+        multiplierCorrect: 1,
+        multiplierIncorrect: 0,
+        // For guessing, the expected probability of a correct answer is 1/(number of choices).
+        getExpected: function(numChoices) { return 1 / numChoices; }
+      },
+      somewhat: {
+        label: "Somewhat confident (50%-75%)",
+        multiplierCorrect: 1.5,
+        multiplierIncorrect: -0.5,
+        // Optimal range for somewhat confident responses (as a fraction)
+        expected: { min: 0.50, max: 0.75 }
+      },
+      confident: {
+        label: "Confident (>75%)",
+        multiplierCorrect: 2,
+        multiplierIncorrect: -2,
+        // Optimal range for confident responses (as a fraction)
+        expected: { min: 0.75, max: 1.00 }
+      }
+    };
+
+    /*********************** 
+     * UTILITY FUNCTIONS
+     ***********************/
+    // Shuffle an array (Fisher–Yates shuffle)
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    /*********************** 
+     * GLOBAL VARIABLES
+     ***********************/
+    // These globals will store the quiz data and the order in which answer choices were displayed.
+    let quizData = null;
+    // For questions that use shuffling we need to store the displayed order so grading is correct.
+    let displayedChoices = {};
+
+    /*********************** 
+     * LOAD QUIZ JSON AND INITIALIZE
+     ***********************/
+    fetch('quiz.json')
+      .then(response => response.json())
+      .then(data => {
+        quizData = data;  // store globally for later grading
+        initQuiz(quizData);
+      })
+      .catch(error => {
+        console.error('Error loading quiz JSON:', error);
+        document.getElementById('quiz-container').innerHTML = '<p>Error loading quiz data.</p>';
+      });
+
+    /*********************** 
+     * RENDER THE QUIZ
+     ***********************/
+    function initQuiz(data) {
+      const container = document.getElementById('quiz-container');
+      let html = '';
+      
+      // Display the quiz title and description (if available)
+      html += `<h1>${data.quiz_title}</h1>`;
+      if (data.quiz_description) {
+        html += `<p>${data.quiz_description}</p>`;
+      }
+      
+      // Loop through each question in the quiz
+      data.questions.forEach((question, index) => {
+        html += `<div class="question" id="question-${question.question_id}">`;
+        html += `<h3>Question ${index + 1}: ${question.question_title || ''}</h3>`;
+        html += `<div class="question-body">${question.question_body}</div>`;
+        
+        // Process the answer choices.
+        // If the question asks to shuffle answers, clone and shuffle the choices array.
+        let choices = question.details.choices;
+        if (question.details.shuffle_answers) {
+          const shuffled = shuffleArray(choices.slice());
+          displayedChoices[question.question_id] = shuffled;
+          choices = shuffled;
+        } else {
+          displayedChoices[question.question_id] = choices;
+        }
+        
+        html += `<div class="choices">`;
+        choices.forEach((choice, cIndex) => {
+          // Create a unique id for each radio button.
+          const choiceId = `q${question.question_id}_choice${cIndex}`;
+          html += `
+            <div>
+              <input type="radio" name="question_${question.question_id}" id="${choiceId}" value="${cIndex}">
+              <label for="${choiceId}">${choice.text}</label>
+            </div>
+          `;
+        });
+        html += `</div>`; // end choices
+        
+        // Add the confidence indicator immediately after the question.
+        html += `<div class="confidence">
+                  <p>How confident are you in your answer?</p>`;
+        // Create a radio button for each confidence level (keys in the configuration)
+        for (const key in confidenceLevels) {
+          if (confidenceLevels.hasOwnProperty(key)) {
+            const conf = confidenceLevels[key];
+            const confId = `q${question.question_id}_conf_${key}`;
+            html += `
+              <div>
+                <input type="radio" name="confidence_${question.question_id}" id="${confId}" value="${key}">
+                <label for="${confId}">${conf.label}</label>
+              </div>
+            `;
+          }
+        }
+        html += `</div>`; // end confidence
+        
+        html += `</div>`; // end question
+      });
+      
+      container.innerHTML = html;
+    }
+
+    /*********************** 
+     * GRADE THE QUIZ
+     ***********************/
+    document.getElementById('submit-btn').addEventListener('click', gradeQuiz);
+
+    function gradeQuiz() {
+      let totalScore = 0;
+      let resultsHtml = '';
+      
+      // For calibration, we track counts for each confidence level.
+      let calibration = {
+        guessing: { count: 0, correct: 0, expectedSum: 0 },
+        somewhat: { count: 0, correct: 0 },
+        confident: { count: 0, correct: 0 }
+      };
+      
+      // Loop through each question (as stored in quizData)
+      quizData.questions.forEach(question => {
+        // Retrieve the displayed choices (to handle any shuffling)
+        const choices = displayedChoices[question.question_id];
+        
+        // Get the selected answer for this question.
+        const answerEls = document.getElementsByName(`question_${question.question_id}`);
+        let selectedAnswerIndex = null;
+        for (const el of answerEls) {
+          if (el.checked) {
+            selectedAnswerIndex = parseInt(el.value);
+            break;
+          }
+        }
+        
+        // Get the selected confidence level for this question.
+        const confEls = document.getElementsByName(`confidence_${question.question_id}`);
+        let selectedConfidence = null;
+        for (const el of confEls) {
+          if (el.checked) {
+            selectedConfidence = el.value;
+            break;
+          }
+        }
+        
+        // If either an answer or a confidence level was not selected, skip scoring for this question.
+        if (selectedAnswerIndex === null || !selectedConfidence) {
+          resultsHtml += `<p><em>Question ${question.question_id} was not fully answered and will be skipped.</em></p>`;
+          return;
+        }
+        
+        // Determine whether the selected answer is correct.
+        const chosenChoice = choices[selectedAnswerIndex];
+        const isCorrect = (chosenChoice.correct === true);
+        
+        // Calculate the score for the question.
+        // The base points come from the question’s "points_possible".
+        const basePoints = question.points_possible;
+        const confConfig = confidenceLevels[selectedConfidence];
+        let scoreForQuestion = 0;
+        if (isCorrect) {
+          scoreForQuestion = basePoints * confConfig.multiplierCorrect;
+        } else {
+          scoreForQuestion = basePoints * confConfig.multiplierIncorrect;
+        }
+        totalScore += scoreForQuestion;
+        
+        // Update calibration data based on the confidence level.
+        if (selectedConfidence === 'guessing') {
+          calibration.guessing.count++;
+          if (isCorrect) calibration.guessing.correct++;
+          // For guessing, the expected accuracy is 1 divided by the number of answer choices.
+          const numChoices = choices.length;
+          const expectedAccuracy = confConfig.getExpected(numChoices);
+          calibration.guessing.expectedSum += expectedAccuracy;
+        } else if (selectedConfidence === 'somewhat') {
+          calibration.somewhat.count++;
+          if (isCorrect) calibration.somewhat.correct++;
+        } else if (selectedConfidence === 'confident') {
+          calibration.confident.count++;
+          if (isCorrect) calibration.confident.correct++;
+        }
+      });
+      
+      resultsHtml += `<h2>Results</h2>`;
+      resultsHtml += `<p><strong>Total Score:</strong> ${totalScore.toFixed(2)}</p>`;
+      
+      // Now output calibration (confidence–accuracy) summary.
+      resultsHtml += `<h3>Confidence Calibration:</h3>`;
+      
+      // For guessing:
+      if (calibration.guessing.count > 0) {
+        const actualAccuracy = calibration.guessing.correct / calibration.guessing.count;
+        const avgExpected = calibration.guessing.expectedSum / calibration.guessing.count;
+        resultsHtml += `<p><strong>${confidenceLevels.guessing.label}:</strong> You answered ${(actualAccuracy*100).toFixed(1)}% correctly (expected about ${(avgExpected*100).toFixed(1)}%).</p>`;
+      }
+      
+      // For somewhat confident:
+      if (calibration.somewhat.count > 0) {
+        const actualAccuracy = calibration.somewhat.correct / calibration.somewhat.count;
+        const expectedMin = confidenceLevels.somewhat.expected.min;
+        const expectedMax = confidenceLevels.somewhat.expected.max;
+        resultsHtml += `<p><strong>${confidenceLevels.somewhat.label}:</strong> You answered ${(actualAccuracy*100).toFixed(1)}% correctly (optimal range: ${(expectedMin*100).toFixed(0)}%-${(expectedMax*100).toFixed(0)}%).</p>`;
+      }
+      
+      // For confident:
+      if (calibration.confident.count > 0) {
+        const actualAccuracy = calibration.confident.correct / calibration.confident.count;
+        const expectedMin = confidenceLevels.confident.expected.min;
+        const expectedMax = confidenceLevels.confident.expected.max;
+        resultsHtml += `<p><strong>${confidenceLevels.confident.label}:</strong> You answered ${(actualAccuracy*100).toFixed(1)}% correctly (optimal range: ${(expectedMin*100).toFixed(0)}%-${(expectedMax*100).toFixed(0)}%).</p>`;
+      }
+      
+      document.getElementById('results').innerHTML = resultsHtml;
+    }
+  </script>
+</body>
+</html>

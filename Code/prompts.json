@@ -23,15 +23,16 @@
         }
       },
       "confidencePrompts": {
-        "gradingcontext": {
-          "id": "gradingcontext",
+        "combined": {
+          "id": "combined",
           "description": "Full Context",
-          "promptText": "Give a number between 1-3 for your confidence in the previous answer. The confidence letter will change the marking on the question.\n 1) Low 1.0/0 correct answers will receive +1 mark and incorrect answers lose 0\n 2) Medium 1.5/-0.5  correct answers will receive +1.5 marks and incorrect answers lose 0.5 \n 3) High 2.0/-2  correct answers will receive +2 marks and incorrect answers lose 2"
+          "promptText": "Give a single character answer to the mcq and Give a number between 1-3 for your confidence in the answer. The confidence number will change the marking on the question.\n 1) Low 1.0/0 correct answers will receive +1 mark and incorrect answers lose 0\n 2) Medium 1.5/-0.5  correct answers will receive +1.5 marks and incorrect answers lose 0.5 \n 3) High 2.0/-2  correct answers will receive +2 marks and incorrect answers lose 2 For the question.  Respond with ONLY a single letter and a single number, for example: a 2\n"
         },
-        "simple": {
-            "id": "simple",
-            "description": "Just the feeling",
-            "promptText": "Give a number between 1-3 for your confidence in the previous answer.\n 1) Low \n 2) Medium \n 3) High"}
+        "linear": {
+            "id": "linear",
+            "description": "Follow up",
+            "promptText": "Give a single character answer to the mcq.  Respond with ONLY a single letter for example: a\n",
+            "folloupText": "Give a number between 1-3 for your confidence in the previous answer. The confidence number will change the marking on the question.\n 1) Low 1.0/0 correct answers will receive +1 mark and incorrect answers lose 0\n 2) Medium 1.5/-0.5  correct answers will receive +1.5 marks and incorrect answers lose 0.5 \n 3) High 2.0/-2  correct answers will receive +2 marks and incorrect answers lose 2 For the question.  Respond with ONLY a single number, for example: 2\n" 
       },
       "confidenceLevels": {
         "low": {
@@ -67,3 +68,4 @@
       }
     }
   }
+}

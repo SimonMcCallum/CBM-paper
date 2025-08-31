@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_item_v2p1" 
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                identifier="{{ question.identifier }}"
+                title="{{ question.question_title }}"
+                adaptive="false"
+                timeDependent="false">
+    <responseDeclaration identifier="{{ question.response_id }}" cardinality="single" baseType="identifier">
+        <correctResponse>
+            <value>{{ question.details.choices|selectattr('correct')|map(attribute='text')|first }}</value>
+        </correctResponse>
+    </responseDeclaration>
+    <outcomeDeclaration identifier="{{ question.outcome_id }}" cardinality="single" baseType="float">
+        <defaultValue>0</defaultValue>
+    </outcomeDeclaration>
+    <itemBody>
+        {{ question.question_body|safe }}
+        <choiceInteraction responseIdentifier="{{ question.response_id }}" shuffle="{{ 'true' if question.details.shuffle_answers else 'false' }}">
+            {% for choice in question.details.choices %}
+            <simpleChoice identifier="choice{{ loop.index }}">{{ choice.text|safe }}</simpleChoice>
+            {% endfor %}
+        </choiceInteraction>
+    </itemBody>
+    <responseProcessing template="http://www.imsglobal.org/question/qti_v2p1/rptemplates/match_correct"/>
+</assessmentItem>

@@ -2,16 +2,18 @@
 import os
 
 # File paths
-QUESTION_FILE = "mqc_eval_format.json"
-MODEL_FILE = "models.json"
+QUESTION_FILE = "code/mcq.json"
+MODEL_FILE = "code/models.json"
 INTERACTION_LOG = "logs/interaction_log.json"
 ANSWERS_FILE = "results/answers.json"
+PROMPTS_FILE = "code/prompts.json"
+EVAL_FILE = "results/evaluations.json" 
 
 # Temperature settings to cycle through
 TEMPERATURES = [0.0, 0.7, 1.0]
 
 # How many times to ask each model at each temperature for each question
-NUM_REPETITIONS = 10
+NUM_REPETITIONS = 3
 
 # Example API Keys and Endpoints (replace with valid values for your environment)
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY_CBM")
