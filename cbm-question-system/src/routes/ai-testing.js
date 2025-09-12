@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs').promises;
 const path = require('path');
+const XAIProvider = require('../services/xaiService');
 const router = express.Router();
 
 // Get AI testing results
@@ -279,7 +280,8 @@ router.get('/config', async (req, res) => {
       'OPENAI_API_KEY_CBM': 'OpenAI',
       'ANTHROPIC_API_KEY_CBM': 'Claude',
       'GEMINI_API_KEY_CBM': 'Gemini',
-      'DEEPSEEK_API_KEY_CBM': 'DeepSeek'
+      'DEEPSEEK_API_KEY_CBM': 'DeepSeek',
+      'XAI_API_KEY_CBM': 'XAI'
     };
     
     for (const [envVar, vendor] of Object.entries(apiKeys)) {
@@ -323,7 +325,8 @@ router.post('/config', async (req, res) => {
       'OpenAI': 'OPENAI_API_KEY_CBM',
       'Claude': 'ANTHROPIC_API_KEY_CBM',
       'Gemini': 'GEMINI_API_KEY_CBM',
-      'DeepSeek': 'DEEPSEEK_API_KEY_CBM'
+      'DeepSeek': 'DEEPSEEK_API_KEY_CBM',
+      'XAI': 'XAI_API_KEY_CBM'
     };
     
     const missingKeys = [];
@@ -386,7 +389,8 @@ router.post('/run-test', async (req, res) => {
       'OpenAI': 'OPENAI_API_KEY_CBM',
       'Claude': 'ANTHROPIC_API_KEY_CBM',
       'Gemini': 'GEMINI_API_KEY_CBM',
-      'DeepSeek': 'DEEPSEEK_API_KEY_CBM'
+      'DeepSeek': 'DEEPSEEK_API_KEY_CBM',
+      'XAI': 'XAI_API_KEY_CBM'
     };
     
     const missingKeys = [];
@@ -443,6 +447,147 @@ router.post('/run-test', async (req, res) => {
   } catch (error) {
     console.error('Error starting AI test:', error);
     res.status(500).json({ error: 'Failed to start AI test' });
+  }
+});
+
+// Test single question with XAI
+router.post('/test-single-question', async (req, res) => {
+  try {
+    const { question, options, correctAnswer, includeConfidence } = req.body;
+    
+    // Validate input
+    if (!question) {
+      return res.status(400).json({ error: 'Question text is required' });
+    }
+    
+    // Initialize XAI provider
+    const xaiProvider = new XAIProvider();
+    
+    // Ask the question
+    const result = await xaiProvider.askSingleQuestion(
+      question, 
+      options || [], 
+      includeConfidence !== false
+    );
+    
+    // Calculate CBM score if correct answer is provided
+    let cbmScore = null;
+    let isCorrect = null;
+    
+    if (correctAnswer && result.answer) {
+      isCorrect = result.answer.toLowerCase() === correctAnswer.toLowerCase();
+      cbmScore = xaiProvider.calculateCBMScore(result.answer, correctAnswer, result.confidence_level);
+    }
+    
+    // Format response
+    const response = {
+      success: true,
+      result: {
+        ...result,
+        is_correct: isCorrect,
+        cbm_score: cbmScore,
+        correct_answer: correctAnswer,
+        timestamp: new Date().toISOString()
+      }
+    };
+    
+    res.json(response);
+    
+  } catch (error) {
+    console.error('Error testing single question with XAI:', error);
+    res.status(500).json({ 
+      error: 'Failed to test question with XAI', 
+      details: error.message 
+    });
+  }
+});
+
+// Test single question from MCQ database
+router.post('/test-mcq-question', async (req, res) => {
+  try {
+    const { questionId } = req.body;
+    
+    // Load MCQ questions
+    const mcqPath = path.join(__dirname, '../../../Code/mcq.json');
+    const mcqData = await fs.readFile(mcqPath, 'utf8');
+    const mcq = JSON.parse(mcqData);
+    
+    // Find the question
+    const question = mcq.questions.find(q => q.id === parseInt(questionId));
+    
+    if (!question) {
+      return res.status(404).json({ error: 'Question not found' });
+    }
+    
+    // Initialize XAI provider
+    const xaiProvider = new XAIProvider();
+    
+    // Ask the question
+    const result = await xaiProvider.askSingleQuestion(
+      question.question, 
+      question.options, 
+      true
+    );
+    
+    // Calculate results
+    const isCorrect = result.answer && result.answer.toLowerCase() === question.correctAnswer.toLowerCase();
+    const cbmScore = xaiProvider.calculateCBMScore(result.answer, question.correctAnswer, result.confidence_level);
+    
+    // Format response
+    const response = {
+      success: true,
+      question: {
+        id: question.id,
+        text: question.question,
+        options: question.options,
+        correct_answer: question.correctAnswer
+      },
+      result: {
+        ...result,
+        is_correct: isCorrect,
+        cbm_score: cbmScore,
+        timestamp: new Date().toISOString()
+      }
+    };
+    
+    res.json(response);
+    
+  } catch (error) {
+    console.error('Error testing MCQ question with XAI:', error);
+    res.status(500).json({ 
+      error: 'Failed to test MCQ question with XAI', 
+      details: error.message 
+    });
+  }
+});
+
+// Get available MCQ questions for testing
+router.get('/mcq-questions', async (req, res) => {
+  try {
+    const mcqPath = path.join(__dirname, '../../../Code/mcq.json');
+    const mcqData = await fs.readFile(mcqPath, 'utf8');
+    const mcq = JSON.parse(mcqData);
+    
+    // Return simplified question list
+    const questions = mcq.questions.map(q => ({
+      id: q.id,
+      question: q.question,
+      options: q.options,
+      correctAnswer: q.correctAnswer
+    }));
+    
+    res.json({
+      success: true,
+      questions: questions,
+      total: questions.length
+    });
+    
+  } catch (error) {
+    console.error('Error loading MCQ questions:', error);
+    res.status(500).json({ 
+      error: 'Failed to load MCQ questions', 
+      details: error.message 
+    });
   }
 });
 
