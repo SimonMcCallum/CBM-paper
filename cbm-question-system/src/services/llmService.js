@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { getDatabase } = require('../models/database');
+const XAIProvider = require('./xaiService');
 
 class LLMService {
   constructor() {
@@ -8,6 +9,7 @@ class LLMService {
       claude: new ClaudeProvider(),
       openai: new OpenAIProvider(),
       deepseek: new DeepseekProvider(),
+      xai: new XAIProvider(),
       custom: new CustomProvider()
     };
   }

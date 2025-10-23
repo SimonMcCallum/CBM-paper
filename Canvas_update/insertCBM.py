@@ -54,7 +54,7 @@ def confidence_item(for_tf: bool = False) -> ET.Element:
     render = ET.SubElement(resp, qti("render_choice"))
 
     labels = (
-        ["Not confident", "Somewhat", "Very"]
+        ["Guessing", "Somewhat", "Confident"]
         if not for_tf
         else ["no confidence", "somewhat confident", "Very confident"]
     )

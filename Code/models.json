@@ -1,6 +1,9 @@
 {
     "OpenAI": {
       "models": [
+        "gpt-4o",
+        "gpt-4o-mini",
+        "gpt-4-turbo",
         "gpt-4",
         "gpt-3.5-turbo"
       ]
@@ -15,9 +18,15 @@
     },
     "Gemini": {
       "models": [
-        "gemini-alpha",
-        "gemini-beta"
+        "gemini-1.5-pro",
+        "gemini-1.5-flash",
+        "gemini-1.0-pro"
+      ]
+    },
+    "DeepSeek": {
+      "models": [
+        "deepseek-chat",
+        "deepseek-coder"
       ]
     }
   }
-  

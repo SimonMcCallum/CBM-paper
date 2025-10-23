@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confidence-Based Quiz System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .subject-selection {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .subject-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+        
+        .subject-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .subject-btn.active {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .question-container {
+            background: #f8f9fa;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        
+        .options {
+            margin: 15px 0;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .option:hover {
+            background: #e9ecef;
+        }
+        
+        .option input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+        
+        .confidence-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 8px;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .confidence-label {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .confidence-slider {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .confidence-slider input[type="range"] {
+            flex: 1;
+            height: 8px;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .confidence-slider input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #007bff;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .confidence-value {
+            font-weight: bold;
+            color: #007bff;
+            min-width: 120px;
+        }
+        
+        .control-buttons {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        
+        .results {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .result-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        
+        .result-item.correct {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        
+        .result-item.incorrect {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        
+        .result-summary {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .score-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            margin: 10px 0;
+        }
+        
+        .explanation {
+            font-style: italic;
+            color: #666;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .nav-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav-link:hover {
+            background: #0056b3;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="nav-link">← QTI Processor</a>
+    
+    <div class="container">
+        <h1>🎯 Confidence-Based Quiz System</h1>
+        
+        <!-- Subject Selection -->
+        <div id="subjectSelection" class="subject-selection">
+            <h2>Choose Your Subject:</h2>
+            <button class="subject-btn" onclick="loadQuiz('mechanical_engineering')">
+                ⚙️ Mechanical Engineering
+            </button>
+            <button class="subject-btn" onclick="loadQuiz('chemistry')">
+                🧪 Chemistry
+            </button>
+        </div>
+        
+        <!-- Quiz Interface -->
+        <div id="quizInterface" class="hidden">
+            <div id="quizTitle"></div>
+            <div id="questionsContainer"></div>
+            
+            <div class="control-buttons">
+                <button class="btn btn-primary" onclick="submitQuiz()">📊 Submit Quiz</button>
+                <button class="btn btn-success" onclick="resetQuiz()">🔄 Try Another Subject</button>
+            </div>
+        </div>
+        
+        <!-- Results Display -->
+        <div id="resultsContainer" class="hidden">
+            <div class="results">
+                <h2>📈 Your Results</h2>
+                <div id="resultsSummary"></div>
+                <div id="detailedResults"></div>
+                <div class="control-buttons">
+                    <button class="btn btn-primary" onclick="resetQuiz()">🎯 Take Another Quiz</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading indicator -->
+        <div id="loading" class="loading hidden">
+            <p>Loading quiz questions...</p>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestions = [];
+        let currentSubject = '';
+        
+        const confidenceLabels = {
+            1: "Very Unsure",
+            2: "Unsure", 
+            3: "Somewhat Sure",
+            4: "Sure",
+            5: "Very Sure"
+        };
+
+        async function loadQuiz(subject) {
+            currentSubject = subject;
+            showElement('loading');
+            hideElement('subjectSelection');
+            
+            try {
+                const response = await fetch(`/api/quiz/${subject}`);
+                const questions = await response.json();
+                currentQuestions = questions;
+                
+                displayQuiz(subject, questions);
+                hideElement('loading');
+                showElement('quizInterface');
+            } catch (error) {
+                console.error('Error loading quiz:', error);
+                alert('Error loading quiz. Please try again.');
+                resetQuiz();
+            }
+        }
+
+        function displayQuiz(subject, questions) {
+            const titleEl = document.getElementById('quizTitle');
+            titleEl.innerHTML = `<h2>📚 ${formatSubjectName(subject)} Quiz</h2>
+                               <p>Answer each question and rate your confidence level (1-5 scale)</p>`;
+            
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            
+            questions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-container';
+                questionDiv.innerHTML = `
+                    <div class="question-text">
+                        Question ${index + 1}: ${question.question}
+                    </div>
+                    <div class="options">
+                        ${question.options.map((option, optIndex) => `
+                            <label class="option">
+                                <input type="radio" name="question_${question.id}" value="${optIndex}">
+                                ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div class="confidence-section">
+                        <div class="confidence-label">How confident are you in your answer?</div>
+                        <div class="confidence-slider">
+                            <span>Very Unsure</span>
+                            <input type="range" id="confidence_${question.id}" min="1" max="5" value="3" 
+                                   oninput="updateConfidenceLabel(${question.id}, this.value)">
+                            <span>Very Sure</span>
+                        </div>
+                        <div class="confidence-value" id="confidence_label_${question.id}">
+                            Confidence: 3 (Somewhat Sure)
+                        </div>
+                    </div>
+                `;
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function updateConfidenceLabel(questionId, value) {
+            const label = document.getElementById(`confidence_label_${questionId}`);
+            label.textContent = `Confidence: ${value} (${confidenceLabels[value]})`;
+        }
+
+        async function submitQuiz() {
+            const answers = {};
+            const confidences = {};
+            let allAnswered = true;
+            
+            currentQuestions.forEach(question => {
+                const selectedAnswer = document.querySelector(`input[name="question_${question.id}"]:checked`);
+                if (selectedAnswer) {
+                    answers[question.id] = parseInt(selectedAnswer.value);
+                    confidences[question.id] = parseInt(document.getElementById(`confidence_${question.id}`).value);
+                } else {
+                    allAnswered = false;
+                }
+            });
+            
+            if (!allAnswered) {
+                alert('Please answer all questions before submitting.');
+                return;
+            }
+            
+            showElement('loading');
+            
+            try {
+                const response = await fetch('/api/quiz/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ answers, confidences })
+                });
+                
+                const results = await response.json();
+                displayResults(results);
+                
+                hideElement('loading');
+                hideElement('quizInterface');
+                showElement('resultsContainer');
+            } catch (error) {
+                console.error('Error submitting quiz:', error);
+                alert('Error submitting quiz. Please try again.');
+                hideElement('loading');
+            }
+        }
+
+        function displayResults(results) {
+            const summaryEl = document.getElementById('resultsSummary');
+            const detailedEl = document.getElementById('detailedResults');
+            
+            // Summary
+            summaryEl.innerHTML = `
+                <div class="result-summary">
+                    <div class="score-display">Final Score: ${results.totalScore}/${results.totalQuestions * 2}</div>
+                    <div>Percentage: ${results.percentage.toFixed(1)}%</div>
+                    <div>Questions Answered: ${results.totalQuestions}</div>
+                    <p><strong>Confidence-Based Scoring:</strong><br>
+                    ✅ Correct + High Confidence = +2 points<br>
+                    ✅ Correct + Low Confidence = +1 point<br>
+                    ❌ Wrong + High Confidence = -1 point<br>
+                    ❌ Wrong + Low Confidence = 0 points</p>
+                </div>
+            `;
+            
+            // Detailed results
+            detailedEl.innerHTML = results.results.map(result => `
+                <div class="result-item ${result.isCorrect ? 'correct' : 'incorrect'}">
+                    <strong>Q${result.questionId}:</strong> ${result.question}<br>
+                    <strong>Your Answer:</strong> ${currentQuestions.find(q => q.id === result.questionId).options[result.userAnswer]}<br>
+                    <strong>Correct Answer:</strong> ${currentQuestions.find(q => q.id === result.questionId).options[result.correctAnswer]}<br>
+                    <strong>Your Confidence:</strong> ${result.confidence} (${confidenceLabels[result.confidence]})<br>
+                    <strong>Points Earned:</strong> ${result.score}/2<br>
+                    <div class="explanation"><strong>Explanation:</strong> ${result.explanation}</div>
+                </div>
+            `).join('');
+        }
+
+        function formatSubjectName(subject) {
+            return subject.split('_').map(word => 
+                word.charAt(0).toUpperCase() + word.slice(1)
+            ).join(' ');
+        }
+
+        function resetQuiz() {
+            hideElement('quizInterface');
+            hideElement('resultsContainer');
+            hideElement('loading');
+            showElement('subjectSelection');
+            currentQuestions = [];
+            currentSubject = '';
+        }
+
+        function showElement(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function hideElement(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

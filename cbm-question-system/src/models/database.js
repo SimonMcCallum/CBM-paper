@@ -130,11 +130,9 @@ function createTables() {
 function insertDefaultCBMRules() {
   return new Promise((resolve, reject) => {
     const defaultRules = [
-      { confidence_level: 1, correct_score: 0.2, incorrect_score: -0.1, description: "Very Low Confidence" },
-      { confidence_level: 2, correct_score: 0.4, incorrect_score: -0.2, description: "Low Confidence" },
-      { confidence_level: 3, correct_score: 0.6, incorrect_score: -0.4, description: "Medium Confidence" },
-      { confidence_level: 4, correct_score: 0.8, incorrect_score: -0.6, description: "High Confidence" },
-      { confidence_level: 5, correct_score: 1.0, incorrect_score: -1.0, description: "Very High Confidence" }
+      { confidence_level: 1, correct_score: 1.0, incorrect_score: 0.0, description: "Guessing" },
+      { confidence_level: 2, correct_score: 1.5, incorrect_score: -0.5, description: "Somewhat" },
+      { confidence_level: 3, correct_score: 2.0, incorrect_score: -2.0, description: "Confidence" },
     ];
 
     db.get("SELECT COUNT(*) as count FROM cbm_scoring_rules", (err, row) => {
