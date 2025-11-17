@@ -79,14 +79,22 @@ export function createApp(): Express {
   // =========================================================================
   // API Routes
   // =========================================================================
-  // TODO: Import and mount routes when implemented
+
+  // Import routes
+  import courseRoutes from './routes/courseRoutes';
+  import mockSubmissionRoutes from './routes/mockSubmissionRoutes';
+
+  // Mount routes
+  app.use('/api/courses', courseRoutes);
+  app.use('/api/mock', mockSubmissionRoutes);
+
+  // TODO: Additional routes when implemented
   // app.use('/lti', ltiRoutes);
-  // app.use('/api/submissions', submissionRoutes);
   // app.use('/api/questions', questionRoutes);
   // app.use('/api/assessments', assessmentRoutes);
   // app.use('/api/exports', exportRoutes);
 
-  // Placeholder for now
+  // API info endpoint
   app.get('/api', (req: Request, res: Response) => {
     const response: APIResponse = {
       success: true,
@@ -94,6 +102,10 @@ export function createApp(): Express {
         message: 'CBM Submission Assessment System API',
         version: '1.0.0',
         documentation: '/api/docs',
+        endpoints: {
+          courses: '/api/courses',
+          mockSubmissions: '/api/mock',
+        },
       },
       meta: {
         timestamp: new Date().toISOString(),

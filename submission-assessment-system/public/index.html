@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBM Submission Assessment System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid #e9ecef;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .card p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .features {
+            margin-top: 40px;
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        .features h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .features ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .features li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        footer {
+            background: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #48bb78;
+            margin-right: 8px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CBM Submission Assessment System</h1>
+            <p class="tagline">Intelligent Assessment with Novelty Detection & Confidence-Based Marking</p>
+        </header>
+
+        <div class="content">
+            <div class="card-grid">
+                <div class="card">
+                    <h2>📚 Admin Panel</h2>
+                    <p>Manage courses, upload context materials, configure novelty detection parameters, and create question banks.</p>
+                    <a href="/admin.html" class="btn">Open Admin Panel</a>
+                </div>
+
+                <div class="card">
+                    <h2>📝 Submit Work</h2>
+                    <p>Submit your PDF document for assessment. The system will analyze novelty and generate tailored questions.</p>
+                    <a href="/submit.html" class="btn btn-secondary">Submit Assignment</a>
+                </div>
+
+                <div class="card">
+                    <h2>📊 API Documentation</h2>
+                    <p>Explore the REST API endpoints for integration with external systems.</p>
+                    <a href="/api" class="btn">View API Docs</a>
+                </div>
+            </div>
+
+            <div class="features">
+                <h3>System Features</h3>
+                <ul>
+                    <li><strong>Novelty Detection:</strong> Identifies novel vs. standard content using LLM-powered semantic analysis</li>
+                    <li><strong>Context-Aware:</strong> Compares submissions against course materials (lecture notes, textbooks, etc.)</li>
+                    <li><strong>Intelligent Question Generation:</strong> RAG-based retrieval for standard content, LLM-generated for novel content</li>
+                    <li><strong>Confidence-Based Marking:</strong> Students provide confidence levels (1-5) for calibrated assessment</li>
+                    <li><strong>Oral Assessment Questions:</strong> Auto-generated questions to verify deep understanding</li>
+                    <li><strong>Multiple LLM Providers:</strong> Support for Claude, Gemini, GPT, and local LLM servers</li>
+                    <li><strong>Comprehensive Reporting:</strong> Novelty reports, oral question sheets, and detailed analytics</li>
+                    <li><strong>Canvas LTI Integration:</strong> Seamless integration with Canvas LMS (coming soon)</li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 30px; padding: 20px; background: #e6fffa; border-left: 4px solid #319795; border-radius: 8px;">
+                <p><span class="status-indicator"></span><strong>System Status:</strong> Testing Mode (Mock Courses)</p>
+                <p style="margin-top: 10px; color: #666;">Currently running with 3 mock courses for development and testing. LTI integration coming in Phase 2.</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2024 CBM Submission Assessment System | Version 1.0.0</p>
+            <p style="margin-top: 10px; opacity: 0.8;">Built with novelty detection, RAG question retrieval, and confidence-based marking</p>
+        </footer>
+    </div>
+
+    <script>
+        // Check API health on load
+        fetch('/health')
+            .then(res => res.json())
+            .then(data => {
+                console.log('System health:', data);
+            })
+            .catch(err => {
+                console.error('Health check failed:', err);
+                document.querySelector('.status-indicator').style.background = '#f56565';
+            });
+    </script>
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Assignment - CBM Assessment</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        h1 { font-size: 2rem; margin-bottom: 10px; }
+
+        .content {
+            padding: 40px;
+        }
+
+        .info-box {
+            background: #e6fffa;
+            border-left: 4px solid #319795;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .info-box h3 {
+            color: #234e52;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #2c7a7b;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .upload-zone {
+            border: 3px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 50px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f7fafc;
+        }
+
+        .upload-zone:hover {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+
+        .upload-zone.dragover {
+            border-color: #667eea;
+            background: #e6fffa;
+        }
+
+        .file-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .upload-subtext {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .file-info {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .file-info.active {
+            display: block;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .file-size {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .processing {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .processing.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .success.active {
+            display: block;
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📝 Submit Assignment</h1>
+            <p>Upload your PDF for intelligent assessment</p>
+        </header>
+
+        <div class="content">
+            <div id="uploadForm">
+                <div class="info-box">
+                    <h3>How it works:</h3>
+                    <ul>
+                        <li>Upload your PDF document</li>
+                        <li>System analyzes novelty against course materials</li>
+                        <li>Questions generated based on content</li>
+                        <li>Complete assessment with confidence levels</li>
+                    </ul>
+                </div>
+
+                <form id="submissionForm" onsubmit="submitAssignment(event)">
+                    <div class="form-group">
+                        <label for="courseSelect">Select Course *</label>
+                        <select id="courseSelect" required>
+                            <option value="">Loading courses...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="studentId">Student ID *</label>
+                        <input type="text" id="studentId" required placeholder="e.g., student123">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="studentName">Your Name *</label>
+                        <input type="text" id="studentName" required placeholder="e.g., Jane Doe">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Upload PDF Document *</label>
+                        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('pdfInput').click()">
+                            <input type="file" id="pdfInput" style="display:none" accept=".pdf" required onchange="handleFileSelect(event)">
+                            <div class="file-icon">📄</div>
+                            <div class="upload-text">Click to upload or drag and drop</div>
+                            <div class="upload-subtext">PDF only (max 50MB)</div>
+                        </div>
+                        <div class="file-info" id="fileInfo">
+                            <div class="file-name" id="fileName"></div>
+                            <div class="file-size" id="fileSize"></div>
+                            <button type="button" class="btn btn-secondary" style="margin-top: 10px;" onclick="clearFile()">Choose Different File</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn" id="submitBtn">Submit for Assessment</button>
+                </form>
+
+                <div class="back-link">
+                    <a href="/">← Back to Home</a>
+                </div>
+            </div>
+
+            <div id="processingView" class="processing">
+                <div class="spinner"></div>
+                <h2>Uploading your submission...</h2>
+                <p style="color: #718096; margin-top: 10px;">Please wait while we process your document</p>
+            </div>
+
+            <div id="successView" class="success">
+                <div class="success-icon">✅</div>
+                <h2>Submission Successful!</h2>
+                <p style="color: #718096; margin: 20px 0;">Your document has been uploaded and is being processed.</p>
+                <p style="color: #718096;"><strong>Submission ID:</strong> <span id="submissionId"></span></p>
+                <div style="margin-top: 30px; display: flex; gap: 10px;">
+                    <button class="btn" onclick="location.href='/'">Return to Home</button>
+                    <button class="btn btn-secondary" onclick="location.reload()">Submit Another</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFile = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadCourses();
+            setupDragAndDrop();
+        });
+
+        async function loadCourses() {
+            try {
+                const response = await fetch('/api/courses');
+                const result = await response.json();
+
+                if (!result.success) throw new Error(result.error.message);
+
+                const select = document.getElementById('courseSelect');
+                select.innerHTML = '<option value="">-- Select a course --</option>';
+
+                result.data.forEach(course => {
+                    if (course.active) {
+                        const option = document.createElement('option');
+                        option.value = course.id;
+                        option.textContent = `${course.code} - ${course.name}`;
+                        select.appendChild(option);
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading courses:', error);
+                document.getElementById('courseSelect').innerHTML = '<option value="">Error loading courses</option>';
+            }
+        }
+
+        function setupDragAndDrop() {
+            const zone = document.getElementById('uploadZone');
+
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('dragover');
+            });
+
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('dragover');
+            });
+
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type === 'application/pdf') {
+                    document.getElementById('pdfInput').files = files;
+                    handleFileSelect({ target: { files } });
+                } else {
+                    alert('Please drop a PDF file');
+                }
+            });
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.type !== 'application/pdf') {
+                alert('Please select a PDF file');
+                event.target.value = '';
+                return;
+            }
+
+            if (file.size > 50 * 1024 * 1024) {
+                alert('File size must be less than 50MB');
+                event.target.value = '';
+                return;
+            }
+
+            selectedFile = file;
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
+            document.getElementById('fileInfo').classList.add('active');
+            document.getElementById('uploadZone').style.display = 'none';
+        }
+
+        function clearFile() {
+            selectedFile = null;
+            document.getElementById('pdfInput').value = '';
+            document.getElementById('fileInfo').classList.remove('active');
+            document.getElementById('uploadZone').style.display = 'block';
+        }
+
+        async function submitAssignment(event) {
+            event.preventDefault();
+
+            const courseId = document.getElementById('courseSelect').value;
+            const studentId = document.getElementById('studentId').value;
+            const studentName = document.getElementById('studentName').value;
+
+            if (!selectedFile) {
+                alert('Please select a PDF file');
+                return;
+            }
+
+            // Show processing view
+            document.getElementById('uploadForm').style.display = 'none';
+            document.getElementById('processingView').classList.add('active');
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('courseId', courseId);
+            formData.append('studentId', studentId);
+            formData.append('studentName', studentName);
+
+            try {
+                const response = await fetch('/api/mock/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error.message);
+                }
+
+                // Show success view
+                document.getElementById('processingView').classList.remove('active');
+                document.getElementById('successView').classList.add('active');
+                document.getElementById('submissionId').textContent = result.data.submissionId;
+
+                // Store submission ID for later retrieval
+                localStorage.setItem('lastSubmissionId', result.data.submissionId);
+
+            } catch (error) {
+                console.error('Error submitting:', error);
+                alert('Submission failed: ' + error.message);
+
+                // Return to form
+                document.getElementById('uploadForm').style.display = 'block';
+                document.getElementById('processingView').classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>

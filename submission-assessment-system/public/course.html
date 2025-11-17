@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Management - CBM Assessment</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .breadcrumb {
+            color: #718096;
+            margin-bottom: 20px;
+        }
+
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .course-header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        h1 { color: #2d3748; margin-bottom: 10px; }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #718096;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .tab-content.active { display: block; }
+
+        .upload-zone {
+            border: 2px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-zone:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+        }
+
+        .materials-list {
+            margin-top: 30px;
+        }
+
+        .material-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .material-info {
+            flex: 1;
+        }
+
+        .material-title {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .material-meta {
+            font-size: 0.9rem;
+            color: #718096;
+            margin-top: 5px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .badge-success { background: #c6f6d5; color: #22543d; }
+        .badge-warning { background: #feebc8; color: #7c2d12; }
+        .badge-error { background: #fed7d7; color: #742a2a; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover { transform: translateY(-2px); }
+        .btn-small { padding: 6px 12px; font-size: 0.9rem; }
+        .btn-danger { background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%); }
+
+        .config-section {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .config-section:last-child {
+            border-bottom: none;
+        }
+
+        .config-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 id="courseTitle">Loading...</h1>
+        <nav>
+            <a href="/">← Home</a>
+            <a href="/admin.html">Admin Panel</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/admin.html">Courses</a> / <span id="courseCode">...</span>
+        </div>
+
+        <div class="course-header">
+            <h1 id="courseName">Loading...</h1>
+            <p id="courseDescription"></p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('materials')">📚 Course Materials</button>
+            <button class="tab" onclick="switchTab('novelty')">🔍 Novelty Detection</button>
+            <button class="tab" onclick="switchTab('questions')">❓ Question Generation</button>
+            <button class="tab" onclick="switchTab('bank')">💾 Question Bank</button>
+        </div>
+
+        <!-- Materials Tab -->
+        <div id="materials-tab" class="tab-content active">
+            <h2>Upload Course Materials</h2>
+            <p style="color: #718096; margin-bottom: 20px;">Upload lecture notes, textbook chapters, and other materials that define the "standard" content for this course.</p>
+
+            <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                <input type="file" id="fileInput" style="display:none" onchange="uploadMaterial(event)" accept=".pdf,.txt,.docx">
+                <p style="font-size: 3rem; margin-bottom: 10px;">📄</p>
+                <p style="font-size: 1.1rem; color: #2d3748;">Click to upload or drag and drop</p>
+                <p style="color: #718096; margin-top: 10px;">PDF, TXT, or DOCX (max 50MB)</p>
+            </div>
+
+            <div class="materials-list" id="materialsList">
+                <p style="text-align: center; color: #718096; padding: 40px;">No materials uploaded yet</p>
+            </div>
+        </div>
+
+        <!-- Novelty Detection Tab -->
+        <div id="novelty-tab" class="tab-content">
+            <h2>Novelty Detection Configuration</h2>
+            <p style="color: #718096; margin-bottom: 30px;">Configure how submissions are analyzed for novelty against course materials.</p>
+
+            <form id="noveltyConfigForm" onsubmit="saveNoveltyConfig(event)">
+                <div class="config-section">
+                    <h3>Text Chunking</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Chunk Size (words)</label>
+                            <input type="number" id="chunk_size" value="150" min="50" max="500">
+                        </div>
+                        <div class="form-group">
+                            <label>Chunk Overlap (words)</label>
+                            <input type="number" id="chunk_overlap" value="50" min="0" max="200">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3>Novelty Thresholds</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>High Novelty Threshold (≥ this = novel)</label>
+                            <input type="number" id="novelty_threshold_high" value="0.7" min="0" max="1" step="0.05">
+                        </div>
+                        <div class="form-group">
+                            <label>Low Novelty Threshold (≤ this = standard)</label>
+                            <input type="number" id="novelty_threshold_low" value="0.4" min="0" max="1" step="0.05">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3>LLM Configuration</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>LLM Provider</label>
+                            <select id="llm_provider">
+                                <option value="claude">Claude (Anthropic)</option>
+                                <option value="gemini">Gemini (Google)</option>
+                                <option value="gpt">GPT (OpenAI)</option>
+                                <option value="local">Local LLM Server</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Temperature</label>
+                            <input type="number" id="llm_temperature" value="0.7" min="0" max="2" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3>Similarity Calculation</h3>
+                    <div class="form-group">
+                        <label>K-Nearest Neighbors</label>
+                        <input type="number" id="k_neighbors" value="5" min="1" max="20">
+                        <p style="color: #718096; font-size: 0.9rem; margin-top: 5px;">Number of similar chunks to compare against</p>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Save Configuration</button>
+            </form>
+        </div>
+
+        <!-- Question Generation Tab -->
+        <div id="questions-tab" class="tab-content">
+            <h2>Question Generation Configuration</h2>
+            <p style="color: #718096; margin-bottom: 30px;">Configure how questions are selected and generated for assessments.</p>
+
+            <form id="questionConfigForm" onsubmit="saveQuestionConfig(event)">
+                <div class="config-section">
+                    <h3>Question Counts</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Standard Questions (from bank)</label>
+                            <input type="number" id="standard_questions_count" value="15" min="0" max="50">
+                        </div>
+                        <div class="form-group">
+                            <label>Novel Content Questions (LLM-generated)</label>
+                            <input type="number" id="novel_questions_count" value="10" min="0" max="30">
+                        </div>
+                        <div class="form-group">
+                            <label>Oral Assessment Questions</label>
+                            <input type="number" id="oral_questions_count" value="8" min="0" max="20">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3>Question Selection (from Bank)</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Minimum Similarity Threshold</label>
+                            <input type="number" id="min_similarity_threshold" value="0.6" min="0" max="1" step="0.05">
+                        </div>
+                        <div class="form-group">
+                            <label>Diversity Weight</label>
+                            <input type="number" id="diversity_weight" value="0.3" min="0" max="1" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3>LLM Configuration for Question Generation</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>LLM Provider</label>
+                            <select id="qg_llm_provider">
+                                <option value="claude">Claude (Anthropic)</option>
+                                <option value="gemini">Gemini (Google)</option>
+                                <option value="gpt">GPT (OpenAI)</option>
+                                <option value="local">Local LLM Server</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Temperature</label>
+                            <input type="number" id="qg_llm_temperature" value="0.7" min="0" max="2" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Save Configuration</button>
+            </form>
+        </div>
+
+        <!-- Question Bank Tab -->
+        <div id="bank-tab" class="tab-content">
+            <h2>Question Bank</h2>
+            <p style="color: #718096; margin-bottom: 20px;">Manage MCQ questions for this course. Questions will be selected using RAG for standard content.</p>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button class="btn">+ Add Question</button>
+                <button class="btn btn-secondary">Import from QTI</button>
+            </div>
+
+            <div id="questionBankList">
+                <p style="text-align: center; color: #718096; padding: 40px;">No questions in bank yet. Add questions manually or import from QTI files.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentCourseId = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            currentCourseId = params.get('id');
+
+            if (!currentCourseId) {
+                alert('No course ID provided');
+                window.location.href = '/admin.html';
+                return;
+            }
+
+            await loadCourseInfo();
+            await loadMaterials();
+            await loadNoveltyConfig();
+            await loadQuestionConfig();
+        });
+
+        async function loadCourseInfo() {
+            try {
+                const response = await fetch(`/api/courses/${currentCourseId}/overview`);
+                const result = await response.json();
+
+                if (!result.success) throw new Error(result.error.message);
+
+                const course = result.data;
+                document.getElementById('courseCode').textContent = course.code;
+                document.getElementById('courseTitle').textContent = course.code;
+                document.getElementById('courseName').textContent = course.name;
+                document.getElementById('courseDescription').textContent = course.description || 'No description';
+                document.title = `${course.code} - Course Management`;
+            } catch (error) {
+                console.error('Error loading course:', error);
+                alert('Failed to load course: ' + error.message);
+            }
+        }
+
+        async function loadMaterials() {
+            try {
+                const response = await fetch(`/api/courses/${currentCourseId}/materials`);
+                const result = await response.json();
+
+                if (!result.success) throw new Error(result.error.message);
+
+                const materials = result.data;
+                const container = document.getElementById('materialsList');
+
+                if (materials.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #718096; padding: 40px;">No materials uploaded yet</p>';
+                    return;
+                }
+
+                container.innerHTML = materials.map(m => `
+                    <div class="material-item">
+                        <div class="material-info">
+                            <div class="material-title">${m.title}</div>
+                            <div class="material-meta">
+                                <span class="badge ${getStatusBadgeClass(m.processing_status)}">${m.processing_status}</span>
+                                ${m.material_type} • ${(m.file_size / 1024).toFixed(1)} KB
+                            </div>
+                        </div>
+                        <button class="btn btn-small btn-danger" onclick="deleteMaterial('${m.id}')">Delete</button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading materials:', error);
+            }
+        }
+
+        function getStatusBadgeClass(status) {
+            switch(status) {
+                case 'ready': return 'badge-success';
+                case 'error': return 'badge-error';
+                default: return 'badge-warning';
+            }
+        }
+
+        async function uploadMaterial(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('title', file.name);
+            formData.append('material_type', 'lecture_notes');
+
+            try {
+                const response = await fetch(`/api/courses/${currentCourseId}/materials`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error.message);
+
+                alert('Material uploaded successfully! Processing will begin shortly.');
+                await loadMaterials();
+            } catch (error) {
+                console.error('Error uploading material:', error);
+                alert('Failed to upload material: ' + error.message);
+            }
+
+            event.target.value = '';
+        }
+
+        async function deleteMaterial(materialId) {
+            if (!confirm('Are you sure you want to delete this material?')) return;
+
+            try {
+                const response = await fetch(`/api/courses/${currentCourseId}/materials/${materialId}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error.message);
+
+                await loadMaterials();
+            } catch (error) {
+                console.error('Error deleting material:', error);
+                alert('Failed to delete material: ' + error.message);
+            }
+        }
+
+        async function loadNoveltyConfig() {
+            try {
+                const response = await fetch(`/api/courses/${currentCourseId}/config/novelty`);
+                const result = await response.json();
+
+                if (!result.success) return;
+
+                const config = result.data;
+                document.getElementById('chunk_size').value = config.chunk_size;
+                document.getElementById('chunk_overlap').value = config.chunk_overlap;
+                document.getElementById('novelty_threshold_high').value = config.novelty_threshold_high;
+                document.getElementById('novelty_threshold_low').value = config.novelty_threshold_low;
+                document.getElementById('llm_provider').value = config.llm_provider;
+                document.getElementById('llm_temperature').value = config.llm_temperature;
+                document.getElementById('k_neighbors').value = config.k_neighbors;
+            } catch (error) {
+                console.error('Error loading novelty config:', error);
+            }
+        }
+
+        async function saveNoveltyConfig(event) {
+            event.preventDefault();
+
+            const data = {
+                chunk_size: parseInt(document.getElementById('chunk_size').value),
+                chunk_overlap: parseInt(document.getElementById('chunk_overlap').value),
+                novelty_threshold_high: parseFloat(document.getElementById('novelty_threshold_high').value),
+                novelty_threshold_low: parseFloat(document.getElementById('novelty_threshold_low').value),
+                llm_provider: document.getElementById('llm_provider').value,
+                llm_temperature: parseFloat(document.getElementById('llm_temperature').value),
+                k_neighbors: parseInt(document.getElementById('k_neighbors').value),
+            };
+
+            try {
+                const response = await fetch(`/api/courses/${currentCourseId}/config/novelty`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error.message);
+
+                alert('Novelty detection configuration saved!');
+            } catch (error) {
+                console.error('Error saving config:', error);
+                alert('Failed to save configuration: ' + error.message);
+            }
+        }
+
+        async function loadQuestionConfig() {
+            try {
+                const response = await fetch(`/api/courses/${currentCourseId}/config/questions`);
+                const result = await response.json();
+
+                if (!result.success) return;
+
+                const config = result.data;
+                document.getElementById('standard_questions_count').value = config.standard_questions_count;
+                document.getElementById('novel_questions_count').value = config.novel_questions_count;
+                document.getElementById('oral_questions_count').value = config.oral_questions_count;
+                document.getElementById('min_similarity_threshold').value = config.min_similarity_threshold;
+                document.getElementById('diversity_weight').value = config.diversity_weight;
+                document.getElementById('qg_llm_provider').value = config.llm_provider;
+                document.getElementById('qg_llm_temperature').value = config.llm_temperature;
+            } catch (error) {
+                console.error('Error loading question config:', error);
+            }
+        }
+
+        async function saveQuestionConfig(event) {
+            event.preventDefault();
+
+            const data = {
+                standard_questions_count: parseInt(document.getElementById('standard_questions_count').value),
+                novel_questions_count: parseInt(document.getElementById('novel_questions_count').value),
+                oral_questions_count: parseInt(document.getElementById('oral_questions_count').value),
+                min_similarity_threshold: parseFloat(document.getElementById('min_similarity_threshold').value),
+                diversity_weight: parseFloat(document.getElementById('diversity_weight').value),
+                llm_provider: document.getElementById('qg_llm_provider').value,
+                llm_temperature: parseFloat(document.getElementById('qg_llm_temperature').value),
+            };
+
+            try {
+                const response = await fetch(`/api/courses/${currentCourseId}/config/questions`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error.message);
+
+                alert('Question generation configuration saved!');
+            } catch (error) {
+                console.error('Error saving config:', error);
+                alert('Failed to save configuration: ' + error.message);
+            }
+        }
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+    </script>
+</body>
+</html>
