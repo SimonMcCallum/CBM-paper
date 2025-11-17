@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # Main application
+  app:
+    build: .
+    container_name: cbm-assessment
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DB_TYPE=sqlite
+      - DB_PATH=/app/data/cbm_assessment.db
+      - NOVELTY_DETECTOR_URL=http://novelty-detector:5000
+      - LTI_TOOL_URL=http://localhost:3000/lti
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+      - ./exports:/app/exports
+      - ./logs:/app/logs
+      - ./secrets:/app/secrets
+    depends_on:
+      - novelty-detector
+    restart: unless-stopped
+    networks:
+      - cbm-network
+
+  # Novelty detector service (existing Python service)
+  novelty-detector:
+    build:
+      context: ../novelty_detector
+      dockerfile: Dockerfile
+    container_name: cbm-novelty-detector
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+    env_file:
+      - ../novelty_detector/.env
+    volumes:
+      - ../novelty_detector/uploads:/app/uploads
+    restart: unless-stopped
+    networks:
+      - cbm-network
+
+  # PostgreSQL (optional, for production)
+  # Uncomment if using PostgreSQL instead of SQLite
+  # postgres:
+  #   image: postgres:16-alpine
+  #   container_name: cbm-postgres
+  #   environment:
+  #     POSTGRES_DB: cbm_assessment
+  #     POSTGRES_USER: cbm_user
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   restart: unless-stopped
+  #   networks:
+  #     - cbm-network
+
+  # Nginx reverse proxy (optional)
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: cbm-nginx
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  #     - ./ssl:/etc/nginx/ssl:ro
+  #   depends_on:
+  #     - app
+  #   restart: unless-stopped
+  #   networks:
+  #     - cbm-network
+
+networks:
+  cbm-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
