@@ -11,6 +11,7 @@ This repository contains the research code and documentation for a study on Conf
 - **`cbm-question-system/`** - Web-based CBM question system with database backend
 - **`server/`** - Node.js server for QTI processing and quiz management
 - **`web/`** - Static web interface for quiz interaction
+- **`novelty_detector/`** - PDF novelty detection system using LLM and FAISS embeddings
 
 ## Core Research Code (`Code/` Directory)
 
@@ -127,3 +128,37 @@ The code implements a comprehensive evaluation comparing AI model performance wi
 6. **Repetition Testing**: Multiple runs per configuration ensure statistical significance
 
 The research examines whether AI models can effectively utilize confidence-based marking and how their confidence calibration compares to human participants.
+
+## PDF Novelty Detection
+
+The repository now includes a sophisticated novelty detection system for analyzing PDF documents:
+
+### Features
+- **LLM-Based Analysis**: Uses Claude, GPT, or Gemini to generate semantic prompts for text chunks
+- **FAISS Similarity**: Fast similarity search using Facebook's FAISS library for novelty scoring
+- **Smart Chunking**: Intelligently splits documents into overlapping segments with context
+- **Visual Annotations**: Color-coded PDF annotations showing novelty levels
+- **REST API**: Flask server with endpoints for upload, analysis, and download
+
+### Quick Start
+
+```bash
+cd novelty_detector
+pip install -r requirements.txt
+cp .env.example .env
+# Add your API keys to .env
+python server.py
+```
+
+Then upload a PDF:
+```bash
+curl -X POST -F "file=@document.pdf" http://localhost:5000/upload
+```
+
+See `novelty_detector/README.md` for complete documentation.
+
+### Use Cases
+- Identify novel contributions in research papers
+- Highlight unique content in documents
+- Find repetitive sections for editing
+- Analyze document structure and content distribution

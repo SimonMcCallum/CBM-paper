@@ -71,6 +71,12 @@ Desktop.ini
 *.tar.gz
 *.rar
 
+# Executables and installers
+*.exe
+*.msi
+*.dmg
+*.app
+
 # Large files and downloads
 *.download
 *_files/
@@ -115,3 +121,5 @@ tmp/
 uploads/
 cbm-question-system/uploads/
 cbm-question-system/database/
+novelty_detector/uploads/
+novelty_detector/*.json
