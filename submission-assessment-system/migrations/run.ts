@@ -81,23 +81,35 @@ async function applyMigration(migration: Migration) {
 
   migrationLogger.info(`Applying migration ${migration.id}: ${migration.filename}`);
 
-  // Split SQL into individual statements (simple approach)
-  // Note: This won't handle complex cases with semicolons in strings
-  const statements = migration.sql
-    .split(';')
-    .map(s => s.trim())
-    .filter(s => s.length > 0 && !s.startsWith('--'));
-
-  // Execute each statement
-  for (const statement of statements) {
+  // Use exec() if available (SQLite), otherwise fall back to statement-by-statement
+  if (db.exec) {
     try {
-      await db.run(statement);
+      await db.exec(migration.sql);
     } catch (error) {
-      migrationLogger.error(`Failed to execute statement in migration ${migration.id}`, {
+      migrationLogger.error(`Failed to execute migration ${migration.id}`, {
         error,
-        statement: statement.substring(0, 200),
       });
       throw error;
+    }
+  } else {
+    // Split SQL into individual statements (simple approach)
+    // Note: This won't handle complex cases with semicolons in strings
+    const statements = migration.sql
+      .split(';')
+      .map(s => s.trim())
+      .filter(s => s.length > 0 && !s.startsWith('--'));
+
+    // Execute each statement
+    for (const statement of statements) {
+      try {
+        await db.run(statement);
+      } catch (error) {
+        migrationLogger.error(`Failed to execute statement in migration ${migration.id}`, {
+          error,
+          statement: statement.substring(0, 200),
+        });
+        throw error;
+      }
     }
   }
 

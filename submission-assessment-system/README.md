@@ -115,6 +115,23 @@ Results & Reporting System
 - Node.js 18+
 - PostgreSQL 14+ (or SQLite for development)
 - Python 3.9+ (for novelty detector)
+- OpenSSL (for generating LTI keys)
+
+### Verify Prerequisites
+
+```bash
+# Verify Node.js version (should be >= 18.0.0)
+node --version
+
+# Verify Python version (should be >= 3.9)
+python --version
+
+# Verify OpenSSL
+openssl version
+
+# For PostgreSQL (optional, only if not using SQLite)
+psql --version
+```
 
 ### Setup
 
@@ -124,46 +141,107 @@ Results & Reporting System
    cd submission-assessment-system
    ```
 
-2. **Install dependencies**
+2. **Install Node.js dependencies**
    ```bash
    npm install
    ```
 
-3. **Configure environment**
+3. **Generate LTI authentication keys**
+   ```bash
+   mkdir -p secrets
+   openssl genrsa -out secrets/lti_private_key.pem 2048
+   openssl rsa -in secrets/lti_private_key.pem -pubout -out secrets/lti_public_key.pem
+   ```
+
+4. **Create necessary directories**
+   ```bash
+   mkdir -p data uploads exports logs
+   ```
+
+5. **Configure environment**
    ```bash
    cp .env.example .env
-   # Edit .env with your configuration
+   # Edit .env with your configuration:
+   # - Set LLM_PROVIDER (claude, gemini, gpt, or local)
+   # - Add corresponding API key (ANTHROPIC_API_KEY, GOOGLE_API_KEY, or OPENAI_API_KEY)
+   # - Configure database settings if using PostgreSQL
    ```
 
-4. **Set up database**
+6. **Build TypeScript application**
    ```bash
-   # For PostgreSQL
-   createdb cbm_assessment
+   npm run build
+   ```
+
+7. **Set up database**
+   ```bash
+   # For SQLite (development) - database will be created automatically
    npm run migrate
 
-   # For SQLite (development)
-   # Database will be created automatically
+   # For PostgreSQL (production)
+   # First create the database and user:
+   # sudo -u postgres psql
+   # CREATE DATABASE cbm_assessment;
+   # CREATE USER cbm_user WITH PASSWORD 'your_password';
+   # GRANT ALL PRIVILEGES ON DATABASE cbm_assessment TO cbm_user;
+   # \q
+   # Then update .env with DB_TYPE=postgresql and run:
    npm run migrate
    ```
 
-5. **Start novelty detector service**
+8. **Set up novelty detector service**
    ```bash
    cd ../novelty_detector
+
+   # Install Python dependencies
    pip install -r requirements.txt
+
+   # Download spaCy language model
+   python -m spacy download en_core_web_sm
+
+   # Configure environment
    cp .env.example .env
-   # Add API keys to .env
-   python server.py
+   # Edit .env and add at least one LLM API key:
+   # - ANTHROPIC_API_KEY for Claude
+   # - GOOGLE_API_KEY for Gemini
+   # - OPENAI_API_KEY for GPT
+
+   # Return to main directory
+   cd ../submission-assessment-system
    ```
 
-6. **Start application**
+9. **Start services**
+
+   **Option A: Development (two terminals)**
    ```bash
-   # Development mode
-   npm run dev
+   # Terminal 1 - Start novelty detector service
+   cd ../novelty_detector
+   python server.py
 
-   # Production mode
-   npm run build
-   npm start
+   # Terminal 2 - Start main application
+   cd ../submission-assessment-system
+   npm run dev
    ```
+
+   **Option B: Production (using Docker)**
+   ```bash
+   # Build and start all services
+   docker-compose up -d
+
+   # View logs
+   docker-compose logs -f
+
+   # Stop services
+   docker-compose down
+   ```
+
+10. **Verify installation**
+    ```bash
+    # Check main application health
+    curl http://localhost:3000/health
+
+    # Check novelty detector health
+    curl http://localhost:5000/health
+    ```
 
 ## Canvas LTI Setup
 
@@ -365,6 +443,72 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details.
+
+## Troubleshooting
+
+### Common Issues
+
+#### "Cannot find module" errors
+```bash
+# Clear node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
+
+#### "Port already in use" errors
+```bash
+# Find and kill process using port 3000
+# Linux/Mac:
+lsof -ti:3000 | xargs kill -9
+
+# Windows:
+netstat -ano | findstr :3000
+taskkill /PID <PID> /F
+```
+
+#### Database migration fails
+```bash
+# Remove existing database and retry
+rm data/cbm_assessment.db
+npm run build
+npm run migrate
+```
+
+#### Novelty detector connection errors
+```bash
+# Verify novelty detector is running
+curl http://localhost:5000/health
+
+# Check logs
+cd ../novelty_detector
+python server.py
+```
+
+#### Missing LTI keys error
+```bash
+# Regenerate keys
+mkdir -p secrets
+openssl genrsa -out secrets/lti_private_key.pem 2048
+openssl rsa -in secrets/lti_private_key.pem -pubout -out secrets/lti_public_key.pem
+```
+
+#### TypeScript compilation errors
+```bash
+# Clean build directory and rebuild
+rm -rf dist
+npm run build
+```
+
+#### Python dependencies fail to install
+```bash
+# Try upgrading pip first
+pip install --upgrade pip
+
+# Install with verbose output to see errors
+pip install -r requirements.txt -v
+
+# For Windows, some packages may need Visual C++ Build Tools
+```
 
 ## Support
 

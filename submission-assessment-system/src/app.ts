@@ -8,9 +8,11 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import path from 'path';
 import config from './config';
-import logger, { createModuleLogger } from './utils/logger';
+import { createModuleLogger } from './utils/logger';
 import { AppError } from './utils/errors';
 import { APIResponse } from './types';
+import authRoutes from './routes/auth';
+import submissionRoutes from './routes/submissions';
 
 const appLogger = createModuleLogger('app');
 
@@ -67,7 +69,7 @@ export function createApp(): Express {
   // =========================================================================
   // Health Check
   // =========================================================================
-  app.get('/health', (req: Request, res: Response) => {
+  app.get('/health', (_req: Request, res: Response) => {
     res.json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
@@ -79,15 +81,21 @@ export function createApp(): Express {
   // =========================================================================
   // API Routes
   // =========================================================================
-  // TODO: Import and mount routes when implemented
+
+  // Mount authentication routes
+  app.use('/api/auth', authRoutes);
+
+  // Mount submission routes
+  app.use('/api/submissions', submissionRoutes);
+
+  // TODO: Import and mount remaining routes when implemented
   // app.use('/lti', ltiRoutes);
-  // app.use('/api/submissions', submissionRoutes);
   // app.use('/api/questions', questionRoutes);
   // app.use('/api/assessments', assessmentRoutes);
   // app.use('/api/exports', exportRoutes);
 
-  // Placeholder for now
-  app.get('/api', (req: Request, res: Response) => {
+  // API info endpoint
+  app.get('/api', (_req: Request, res: Response) => {
     const response: APIResponse = {
       success: true,
       data: {
@@ -124,7 +132,7 @@ export function createApp(): Express {
   });
 
   // Global Error Handler
-  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
     // Log error
     appLogger.error('Error handling request', {
       error: err.message,

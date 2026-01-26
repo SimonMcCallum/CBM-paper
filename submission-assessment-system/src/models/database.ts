@@ -19,6 +19,7 @@ export interface Database {
   query<T = any>(sql: string, params?: any[]): Promise<T[]>;
   get<T = any>(sql: string, params?: any[]): Promise<T | undefined>;
   run(sql: string, params?: any[]): Promise<{ lastID?: number; changes?: number }>;
+  exec?(sql: string): Promise<void>;
   close(): Promise<void>;
 }
 
@@ -77,6 +78,15 @@ class SQLiteDatabase implements Database {
     } catch (error) {
       dbLogger.error('Run error', { sql, error });
       throw new DatabaseError(`Run failed: ${error instanceof Error ? error.message : error}`);
+    }
+  }
+
+  async exec(sql: string): Promise<void> {
+    try {
+      this.db.exec(sql);
+    } catch (error) {
+      dbLogger.error('Exec error', { error });
+      throw new DatabaseError(`Exec failed: ${error instanceof Error ? error.message : error}`);
     }
   }
 
