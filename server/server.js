@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const { spawn } = require('child_process');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3030;
 
 // Enable CORS and JSON parsing
 app.use(cors());
@@ -198,52 +198,87 @@ app.get('/api/quiz/:subject', (req, res) => {
 
 app.post('/api/quiz/submit', (req, res) => {
   const { answers, confidences } = req.body;
-  
-  // Calculate scores with confidence-based marking
+
+  // Calculate scores using HLCC (Hybrid Linear-Convex Confidence) scoring model
+  // Reference: "Confidence-Based Marking Scheme Analysis.pdf"
+  //
+  // Confidence levels map to c values:
+  //   Level 1 (Low)    -> c = 0
+  //   Level 2 (Medium) -> c = 0.5
+  //   Level 3 (High)   -> c = 1
+  //
+  // Scoring formulas:
+  //   Correct: S = 1 + c  (linear reward)
+  //   Incorrect: S = -2c² (quadratic penalty - "being wrong is cheap, being wrong and loud is expensive")
+  //
+  // Score table:
+  //   Level 1: Correct = 1.0,  Incorrect = 0.0
+  //   Level 2: Correct = 1.5,  Incorrect = -0.5
+  //   Level 3: Correct = 2.0,  Incorrect = -2.0
+
   const results = [];
   let totalScore = 0;
   let totalQuestions = 0;
-  
+
+  // Map confidence level (1, 2, 3) to c value (0, 0.5, 1)
+  const confidenceToC = (level) => {
+    switch(level) {
+      case 1: return 0;
+      case 2: return 0.5;
+      case 3: return 1;
+      default: return 0; // Default to low confidence
+    }
+  };
+
+  // HLCC scoring function
+  const calculateHLCCScore = (isCorrect, c) => {
+    if (isCorrect) {
+      return 1 + c;  // Linear reward: 1.0, 1.5, or 2.0
+    } else {
+      return -2 * c * c;  // Quadratic penalty: 0, -0.5, or -2.0
+    }
+  };
+
   // Get all questions for scoring
   const allQuestions = [...quizQuestions.mechanical_engineering, ...quizQuestions.chemistry];
-  
+
   for (const [questionId, answer] of Object.entries(answers)) {
     const question = allQuestions.find(q => q.id === parseInt(questionId));
     if (question) {
       const isCorrect = parseInt(answer) === question.correct_answer;
-      const confidence = confidences[questionId] || 1; // Default confidence of 1 if not provided
-      
-      // Confidence-based marking: 
-      // Correct + High confidence = +2, Correct + Low confidence = +1
-      // Wrong + High confidence = -1, Wrong + Low confidence = 0
-      let questionScore = 0;
-      if (isCorrect) {
-        questionScore = confidence >= 4 ? 2 : 1; // High confidence (4-5) gets 2 points, low (1-3) gets 1
-      } else {
-        questionScore = confidence >= 4 ? -1 : 0; // High confidence wrong = -1, low confidence wrong = 0
-      }
-      
+      const confidenceLevel = confidences[questionId] || 1; // Default to level 1 (low confidence)
+      const c = confidenceToC(confidenceLevel);
+
+      const questionScore = calculateHLCCScore(isCorrect, c);
+
       results.push({
         questionId: parseInt(questionId),
         question: question.question,
         userAnswer: parseInt(answer),
         correctAnswer: question.correct_answer,
         isCorrect,
-        confidence,
+        confidence: confidenceLevel,
+        confidenceC: c,
         score: questionScore,
         explanation: question.explanation
       });
-      
+
       totalScore += questionScore;
       totalQuestions++;
     }
   }
-  
+
+  // Max score is 2.0 per question (level 3 correct)
+  // Min score is -2.0 per question (level 3 incorrect)
+  const maxPossibleScore = totalQuestions * 2;
+
   res.json({
     results,
-    totalScore,
+    totalScore: Math.round(totalScore * 100) / 100, // Round to 2 decimal places
     totalQuestions,
-    percentage: totalQuestions > 0 ? (totalScore / (totalQuestions * 2)) * 100 : 0 // Max possible score is 2 per question
+    maxPossibleScore,
+    percentage: totalQuestions > 0 ? Math.round((totalScore / maxPossibleScore) * 10000) / 100 : 0,
+    scoringModel: 'HLCC' // Hybrid Linear-Convex Confidence
   });
 });
 
