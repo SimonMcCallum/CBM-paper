@@ -123,3 +123,14 @@ cbm-question-system/uploads/
 cbm-question-system/database/
 novelty_detector/uploads/
 novelty_detector/*.json
+
+# Benchmark system
+benchmark/datasets/cache/
+benchmark/datasets/unified/
+benchmark/results/raw/
+deploy/deploy_config.json
+
+# Website build
+website/dist/
+website/node_modules/
+nul

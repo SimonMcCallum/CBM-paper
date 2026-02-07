@@ -1,0 +1,7 @@
+# Core dependencies for CBM Benchmark
+aiohttp>=3.9.0
+datasets>=2.14.0
+tqdm>=4.65.0
+
+# For SFTP deployment (optional)
+paramiko>=3.3.0

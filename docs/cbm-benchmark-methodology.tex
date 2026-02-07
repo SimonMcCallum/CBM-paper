@@ -1,0 +1,154 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{enumitem}
+
+\title{CBM AI Benchmark: Confidence-Based Marking\\for Large Language Model Evaluation}
+\author{Simon McCallum}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We present a benchmarking system that evaluates Large Language Models (LLMs) using Confidence-Based Marking (CBM), where models must report their confidence alongside answers. The system tests four variants of confidence elicitation: discrete and continuous scoring methods crossed with single-turn (combined) and two-turn (linear) prompting strategies. We evaluate models on established benchmarks (MMLU, TruthfulQA, ARC) and a novel ``Calibration Under Uncertainty'' section with deliberately ambiguous questions. The system produces a public-facing dashboard displaying leaderboards, reliability diagrams, and calibration metrics.
+\end{abstract}
+
+\section{Introduction}
+
+Standard LLM benchmarks measure only accuracy---the percentage of correct answers. This ignores the critical dimension of \emph{calibration}: does the model know what it knows? A well-calibrated model should be confident when correct and uncertain when guessing. Confidence-Based Marking (CBM), widely used in educational assessment, provides a principled framework for rewarding calibrated confidence and penalizing overconfidence.
+
+Current LLM evaluation has a notable gap: there is no standardized confidence-based benchmark. Most calibration work is performed as secondary analysis on existing benchmarks. This system fills that gap by integrating confidence elicitation into the benchmark protocol itself.
+
+\section{Scoring Systems}
+
+\subsection{Discrete CBM (3-Level)}
+
+The discrete scoring system uses three confidence levels, matching the traditional educational CBM format:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llcc}
+\toprule
+\textbf{Level} & \textbf{Confidence Range} & \textbf{Correct} & \textbf{Incorrect} \\
+\midrule
+1 (Low)    & $< 50\%$     & $+1.0$ & $0.0$  \\
+2 (Medium) & $50\%$--$75\%$ & $+1.5$ & $-0.5$ \\
+3 (High)   & $> 75\%$     & $+2.0$ & $-2.0$ \\
+\bottomrule
+\end{tabular}
+\caption{Discrete CBM scoring matrix.}
+\label{tab:discrete}
+\end{table}
+
+\subsection{Continuous HLCC}
+
+The continuous Human-calibrated Log-loss with Confidence (HLCC) scoring uses a smooth function over confidence $x \in [0, 1]$:
+
+\begin{align}
+\text{score}(x, \text{correct}) &= x + 1 \label{eq:hlcc_correct} \\
+\text{score}(x, \text{incorrect}) &= -2x^2 \label{eq:hlcc_incorrect}
+\end{align}
+
+This scoring function is \emph{incentive-compatible}: the expected score $\mathbb{E}[\text{score}]$ is maximized when the reported confidence $x$ equals the true probability of being correct $p$:
+
+\begin{equation}
+\mathbb{E}[\text{score}(x)] = p(x + 1) + (1-p)(-2x^2)
+\end{equation}
+
+Taking the derivative with respect to $x$ and setting to zero:
+\begin{equation}
+\frac{d}{dx}\mathbb{E}[\text{score}] = p - 4(1-p)x = 0 \implies x^* = \frac{p}{4(1-p)}
+\end{equation}
+
+At the boundary properties: when $x = 0$, the score is $+1$ for correct and $0$ for incorrect (safe default). When $x = 1$, the score is $+2$ for correct and $-2$ for incorrect (maximum stakes), matching the discrete CBM High level.
+
+\section{Prompting Strategies}
+
+\subsection{Combined (Single-Turn)}
+
+The model receives a single prompt containing the question and instructions to provide both the answer and confidence level in JSON format. This tests simultaneous reasoning and self-assessment.
+
+\subsection{Linear (Two-Turn)}
+
+Turn~1: The model answers the question (letter only). Turn~2: With the conversation context maintained, the model is asked for its confidence level along with the scoring explanation. This tests whether separating the cognitive tasks of answering and self-assessing affects calibration quality.
+
+\subsection{The 2$\times$2 Design}
+
+The four variants form a $2 \times 2$ factorial design:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lcc}
+\toprule
+& \textbf{Combined (1-turn)} & \textbf{Linear (2-turn)} \\
+\midrule
+\textbf{Discrete CBM} & Answer + $\{1,2,3\}$ & T1: answer, T2: $\{1,2,3\}$ \\
+\textbf{Continuous HLCC} & Answer + $[0,1]$ & T1: answer, T2: $[0,1]$ \\
+\bottomrule
+\end{tabular}
+\caption{The four confidence elicitation variants.}
+\label{tab:variants}
+\end{table}
+
+\section{Datasets}
+
+\subsection{Standard Benchmarks}
+
+\begin{description}[leftmargin=1cm]
+\item[MMLU] Massive Multitask Language Understanding. 14,042 four-choice questions across 57 subjects spanning STEM, humanities, social sciences, and professional domains.
+\item[TruthfulQA] 817 questions designed to elicit false answers from LLMs due to common misconceptions. Tests truthfulness calibration.
+\item[ARC] AI2 Reasoning Challenge. Grade-school science questions in Easy and Challenge splits.
+\end{description}
+
+\subsection{Calibration Under Uncertainty}
+
+A novel dataset of 25 hand-crafted questions with no single correct answer, organized into four categories:
+
+\begin{enumerate}
+\item \textbf{Insufficient information} (8 questions): The answer depends on unspecified context.
+\item \textbf{Genuinely disputed} (7 questions): Subject-matter experts actively disagree.
+\item \textbf{Statistical/probabilistic} (7 questions): The correct answer varies by probability.
+\item \textbf{Temporal ambiguity} (3 questions): The answer depends on when the question is asked.
+\end{enumerate}
+
+A well-calibrated model should report \emph{low confidence} on these questions. The primary metric is the \emph{calibration gap}: the difference between reported confidence and ideal confidence level.
+
+\section{Calibration Metrics}
+
+\begin{description}[leftmargin=1cm]
+\item[ECE] Expected Calibration Error. Predictions are binned by confidence; ECE is the weighted average of $|\text{accuracy} - \text{confidence}|$ across bins. Ideal: 0.
+\item[Brier Score] Mean squared error of confidence as a probability estimate: $\frac{1}{n}\sum_i (c_i - y_i)^2$ where $c_i$ is confidence and $y_i \in \{0, 1\}$ is correctness. Ideal: 0.
+\item[Overconfidence Rate] Fraction of bins where mean confidence exceeds accuracy. Ideal: 0.
+\item[Calibration Gap] (Ambiguous questions only) Mean difference between reported confidence and ideal confidence. Ideal: 0.
+\end{description}
+
+\section{System Architecture}
+
+The benchmark system follows a pipeline architecture:
+
+\begin{enumerate}
+\item \textbf{Download}: Datasets from HuggingFace (\texttt{datasets} library)
+\item \textbf{Convert}: To unified question format (JSON)
+\item \textbf{Evaluate}: Run all 4 variants across models via async API calls
+\item \textbf{Score}: Apply discrete CBM or continuous HLCC scoring
+\item \textbf{Aggregate}: Compute per-model, per-dataset, per-variant statistics
+\item \textbf{Export}: JSON for website dashboard and \texttt{.dat} for \LaTeX{} pgfplots
+\item \textbf{Deploy}: SFTP static website to server
+\end{enumerate}
+
+The dashboard is a Vue~3 single-page application displaying sortable leaderboards, reliability diagrams, variant comparison charts, and a dedicated Calibration Under Uncertainty section.
+
+\section{Conclusion}
+
+This benchmark system provides the first standardized framework for evaluating LLM confidence calibration using Confidence-Based Marking. By testing four variants of confidence elicitation across established benchmarks and novel ambiguous questions, it enables systematic comparison of how different prompting and scoring approaches affect the quality of model self-assessment.
+
+\bibliographystyle{plain}
+\bibliography{../acm-reference}
+
+\end{document}

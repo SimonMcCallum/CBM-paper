@@ -7,9 +7,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a research repository for a Confidence Based Marking (CBM) paper that analyzes AI and human performance on quiz questions. The repository contains four main components:
 
 1. **Research Code** (`Code/` directory) - Python scripts for data analysis and AI model evaluation
-2. **Canvas Integration Tools** (`Canvas_update/` directory) - Tools for inserting confidence questions into Canvas quizzes
-3. **Chrome Extension** (`ChromeQuizDownloader/` directory) - Browser extension to download Canvas quizzes as QTI packages
-4. **PDF Novelty Detector** (`novelty_detector/` directory) - LLM-based system for analyzing novelty in PDF documents
+2. **CBM Benchmark System** (`benchmark/` directory) - Comprehensive benchmarking framework for evaluating LLM confidence calibration across MMLU, TruthfulQA, ARC, and ambiguous questions
+3. **Benchmark Dashboard** (`website/` directory) - Vue 3 SPA for displaying benchmark results
+4. **Canvas Integration Tools** (`Canvas_update/` directory) - Tools for inserting confidence questions into Canvas quizzes
+5. **Chrome Extension** (`ChromeQuizDownloader/` directory) - Browser extension to download Canvas quizzes as QTI packages
+6. **PDF Novelty Detector** (`novelty_detector/` directory) - LLM-based system for analyzing novelty in PDF documents
 
 ## Key Commands
 
@@ -54,6 +56,36 @@ python server.py
 python test_novelty_detector.py
 ```
 
+### CBM Benchmark System
+```bash
+# Install Python dependencies
+pip install -r benchmark/requirements.txt
+
+# Download and convert datasets
+python -m benchmark.run_benchmark --download-only --sample-size 10
+
+# Run benchmark (small test)
+python -m benchmark.run_benchmark --dataset mmlu --variant all --sample-size 10 --repetitions 1
+
+# Run full benchmark
+python -m benchmark.run_benchmark --dataset all --variant all
+
+# Export results for website
+python -m benchmark.run_export
+
+# Build and serve website locally
+cd website && npm install && npm run dev
+```
+
+### Deploy Benchmark Website
+```bash
+# Build and deploy via SFTP
+python deploy/sftp_deploy.py --config deploy/deploy_config.json
+
+# Dry run (show what would be deployed)
+python deploy/sftp_deploy.py --dry-run
+```
+
 ### Repository Setup
 ```bash
 # Clone with submodules (includes Overleaf project)
@@ -90,11 +122,26 @@ git submodule update --init --recursive
 - **REST API**: Flask server at port 5000 with endpoints for upload/analyze/download
 - **Color Coding**: Annotates PDFs with green (high novelty), yellow (medium), orange (low), red (very low)
 
+### CBM Benchmark Architecture
+- **4 Confidence Variants**: {Discrete CBM, Continuous HLCC} x {Combined single-turn, Linear two-turn}
+- **Scoring**: Discrete (3 levels: 1.0/0, 1.5/-0.5, 2/-2) and HLCC (correct=x+1, incorrect=-2x^2)
+- **Datasets**: MMLU (14K questions), TruthfulQA (817), ARC (3.5K), Ambiguous (25 hand-crafted)
+- **Metrics**: ECE, Brier Score, overconfidence rate, calibration gap
+- **Pipeline**: Download → Convert → Evaluate → Score → Aggregate → Export JSON → SPA website → SFTP deploy
+- **API Keys**: Set OPENAI_API_KEY_CBM, ANTHROPIC_API_KEY_CBM, GEMINI_API_KEY_CBM, DEEPSEEK_API_KEY_CBM, XAI_API_KEY_CBM
+
 ## File Structure Notes
 
 - `answers/` - Contains quiz answer data
 - `logs/` - Interaction logs for AI model conversations (gitignored)
 - `Documentation/overleaf/` - Overleaf project submodule for collaborative writing
+- `benchmark/` - CBM benchmark system with datasets/, scoring/, prompting/, engine/, results/ subpackages
+- `benchmark/datasets/cache/` - Downloaded raw datasets (gitignored)
+- `benchmark/datasets/unified/` - Converted unified-format questions (gitignored)
+- `benchmark/results/raw/` - Per-run raw results (gitignored)
+- `benchmark/results/published/` - Aggregated JSON for website (committed)
+- `website/` - Vue 3 SPA dashboard for benchmark results
+- `deploy/` - SFTP deployment scripts
 - Canvas quiz files are in QTI ZIP format with XML manifests and question definitions
 - `novelty_detector/` - Self-contained novelty detection system with its own dependencies and server
 - `novelty_detector/uploads/` - Temporary directory for PDF uploads (gitignored)

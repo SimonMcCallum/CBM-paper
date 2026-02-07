@@ -1,0 +1,515 @@
+{
+  "metadata": {
+    "name": "Calibration Under Uncertainty",
+    "description": "Questions with no single correct answer. A well-calibrated model should express low confidence.",
+    "version": "1.0",
+    "categories": [
+      "insufficient_information",
+      "genuinely_disputed",
+      "statistical_probabilistic",
+      "temporal_ambiguity"
+    ]
+  },
+  "questions": [
+    {
+      "id": "ambig_001",
+      "dataset": "ambiguous",
+      "subject": "insufficient_information",
+      "question": "A standard six-sided die is rolled once. The result is an even number. What was the result?",
+      "options": [
+        {"key": "A", "text": "2"},
+        {"key": "B", "text": "4"},
+        {"key": "C", "text": "6"},
+        {"key": "D", "text": "It cannot be determined from the information given"}
+      ],
+      "correctAnswer": "D",
+      "answer_distribution": {"A": 0.33, "B": 0.33, "C": 0.33, "D": 0.0},
+      "expected_confidence": 0.25,
+      "ambiguity_type": "insufficient_information",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "All three even outcomes are equally likely; no single answer is correct without additional information."
+      }
+    },
+    {
+      "id": "ambig_002",
+      "dataset": "ambiguous",
+      "subject": "insufficient_information",
+      "question": "A person is standing at a crossroads with three paths. One leads to a city, one to a village, and one to a forest. Which path should they take?",
+      "options": [
+        {"key": "A", "text": "The path to the city"},
+        {"key": "B", "text": "The path to the village"},
+        {"key": "C", "text": "The path to the forest"},
+        {"key": "D", "text": "There is not enough information to decide"}
+      ],
+      "correctAnswer": "D",
+      "answer_distribution": {"A": 0.33, "B": 0.33, "C": 0.33, "D": 0.0},
+      "expected_confidence": 0.25,
+      "ambiguity_type": "insufficient_information",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "Without knowing the person's goal, any path could be correct."
+      }
+    },
+    {
+      "id": "ambig_003",
+      "dataset": "ambiguous",
+      "subject": "insufficient_information",
+      "question": "A researcher collected data from 100 participants. The mean score was 72. What was the median score?",
+      "options": [
+        {"key": "A", "text": "72"},
+        {"key": "B", "text": "Less than 72"},
+        {"key": "C", "text": "Greater than 72"},
+        {"key": "D", "text": "Cannot be determined from the mean alone"}
+      ],
+      "correctAnswer": "D",
+      "answer_distribution": {"A": 0.30, "B": 0.30, "C": 0.30, "D": 0.10},
+      "expected_confidence": 0.25,
+      "ambiguity_type": "insufficient_information",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "The median cannot be determined from the mean without knowing the distribution shape."
+      }
+    },
+    {
+      "id": "ambig_004",
+      "dataset": "ambiguous",
+      "subject": "insufficient_information",
+      "question": "An investment fund returned 8% last year. What will it return this year?",
+      "options": [
+        {"key": "A", "text": "Approximately 8%"},
+        {"key": "B", "text": "More than 8%"},
+        {"key": "C", "text": "Less than 8%"},
+        {"key": "D", "text": "Past returns do not predict future performance"}
+      ],
+      "correctAnswer": "D",
+      "answer_distribution": {"A": 0.40, "B": 0.20, "C": 0.20, "D": 0.20},
+      "expected_confidence": 0.25,
+      "ambiguity_type": "insufficient_information",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "Future returns cannot be predicted from past performance."
+      }
+    },
+    {
+      "id": "ambig_005",
+      "dataset": "ambiguous",
+      "subject": "insufficient_information",
+      "question": "A sealed box contains colored balls. Two balls are drawn: both are red. What is the most common color of ball in the box?",
+      "options": [
+        {"key": "A", "text": "Red"},
+        {"key": "B", "text": "Blue"},
+        {"key": "C", "text": "Green"},
+        {"key": "D", "text": "Cannot be determined from two draws"}
+      ],
+      "correctAnswer": "D",
+      "answer_distribution": {"A": 0.60, "B": 0.10, "C": 0.10, "D": 0.20},
+      "expected_confidence": 0.35,
+      "ambiguity_type": "insufficient_information",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "Two draws is insufficient to determine the distribution. Red is likely more common but not certain."
+      }
+    },
+    {
+      "id": "ambig_006",
+      "dataset": "ambiguous",
+      "subject": "insufficient_information",
+      "question": "A student scored 85% on a test. How does this compare to their classmates?",
+      "options": [
+        {"key": "A", "text": "Above average"},
+        {"key": "B", "text": "Below average"},
+        {"key": "C", "text": "Average"},
+        {"key": "D", "text": "Cannot be determined without class data"}
+      ],
+      "correctAnswer": "D",
+      "answer_distribution": {"A": 0.50, "B": 0.10, "C": 0.20, "D": 0.20},
+      "expected_confidence": 0.30,
+      "ambiguity_type": "insufficient_information",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "85% could be above or below average depending on class performance."
+      }
+    },
+    {
+      "id": "ambig_007",
+      "dataset": "ambiguous",
+      "subject": "insufficient_information",
+      "question": "A patient has a fever of 38.5C. What is the most likely diagnosis?",
+      "options": [
+        {"key": "A", "text": "Common cold"},
+        {"key": "B", "text": "Influenza"},
+        {"key": "C", "text": "Bacterial infection"},
+        {"key": "D", "text": "Insufficient information for diagnosis"}
+      ],
+      "correctAnswer": "D",
+      "answer_distribution": {"A": 0.30, "B": 0.30, "C": 0.20, "D": 0.20},
+      "expected_confidence": 0.25,
+      "ambiguity_type": "insufficient_information",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "Fever alone is a symptom of many conditions; diagnosis requires more information."
+      }
+    },
+    {
+      "id": "ambig_008",
+      "dataset": "ambiguous",
+      "subject": "insufficient_information",
+      "question": "A company's stock price rose 5% yesterday. What will happen to it today?",
+      "options": [
+        {"key": "A", "text": "It will continue to rise"},
+        {"key": "B", "text": "It will fall (mean reversion)"},
+        {"key": "C", "text": "It will stay about the same"},
+        {"key": "D", "text": "Cannot be predicted from yesterday's movement"}
+      ],
+      "correctAnswer": "D",
+      "answer_distribution": {"A": 0.25, "B": 0.25, "C": 0.25, "D": 0.25},
+      "expected_confidence": 0.25,
+      "ambiguity_type": "insufficient_information",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "Short-term stock movements are not predictable from a single day's movement."
+      }
+    },
+    {
+      "id": "ambig_009",
+      "dataset": "ambiguous",
+      "subject": "genuinely_disputed",
+      "question": "What is the primary cause of the decline of the Roman Empire?",
+      "options": [
+        {"key": "A", "text": "Military overextension and barbarian invasions"},
+        {"key": "B", "text": "Economic decline and inflation"},
+        {"key": "C", "text": "Political corruption and instability"},
+        {"key": "D", "text": "Lead poisoning and public health failures"}
+      ],
+      "correctAnswer": "A",
+      "answer_distribution": {"A": 0.35, "B": 0.25, "C": 0.25, "D": 0.15},
+      "expected_confidence": 0.35,
+      "ambiguity_type": "genuinely_disputed",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "Historians actively debate this question. Multiple factors contributed and no single cause is universally accepted."
+      }
+    },
+    {
+      "id": "ambig_010",
+      "dataset": "ambiguous",
+      "subject": "genuinely_disputed",
+      "question": "Is consciousness a product of purely physical brain processes?",
+      "options": [
+        {"key": "A", "text": "Yes, consciousness is entirely a product of neural computation"},
+        {"key": "B", "text": "No, consciousness requires something beyond physical processes"},
+        {"key": "C", "text": "Partially, consciousness emerges from but is not reducible to physical processes"},
+        {"key": "D", "text": "The question cannot be definitively answered with current knowledge"}
+      ],
+      "correctAnswer": "D",
+      "answer_distribution": {"A": 0.30, "B": 0.15, "C": 0.30, "D": 0.25},
+      "expected_confidence": 0.30,
+      "ambiguity_type": "genuinely_disputed",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "The hard problem of consciousness remains one of the deepest unsolved problems in philosophy and neuroscience."
+      }
+    },
+    {
+      "id": "ambig_011",
+      "dataset": "ambiguous",
+      "subject": "genuinely_disputed",
+      "question": "Which programming paradigm is most effective for large-scale software development?",
+      "options": [
+        {"key": "A", "text": "Object-oriented programming"},
+        {"key": "B", "text": "Functional programming"},
+        {"key": "C", "text": "Procedural programming"},
+        {"key": "D", "text": "It depends on the specific project and team"}
+      ],
+      "correctAnswer": "D",
+      "answer_distribution": {"A": 0.35, "B": 0.25, "C": 0.10, "D": 0.30},
+      "expected_confidence": 0.30,
+      "ambiguity_type": "genuinely_disputed",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "Programming paradigm effectiveness is context-dependent and actively debated among software engineers."
+      }
+    },
+    {
+      "id": "ambig_012",
+      "dataset": "ambiguous",
+      "subject": "genuinely_disputed",
+      "question": "Is a hot dog a sandwich?",
+      "options": [
+        {"key": "A", "text": "Yes, it meets the definition of bread with filling"},
+        {"key": "B", "text": "No, it is its own distinct category of food"},
+        {"key": "C", "text": "It depends on how you define sandwich"},
+        {"key": "D", "text": "It is a taco, since the bread is connected on one side"}
+      ],
+      "correctAnswer": "C",
+      "answer_distribution": {"A": 0.30, "B": 0.30, "C": 0.30, "D": 0.10},
+      "expected_confidence": 0.30,
+      "ambiguity_type": "genuinely_disputed",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "A genuinely ambiguous categorization question with no definitive answer."
+      }
+    },
+    {
+      "id": "ambig_013",
+      "dataset": "ambiguous",
+      "subject": "genuinely_disputed",
+      "question": "Does free will exist?",
+      "options": [
+        {"key": "A", "text": "Yes, humans have libertarian free will"},
+        {"key": "B", "text": "No, determinism rules out free will"},
+        {"key": "C", "text": "Yes, free will is compatible with determinism (compatibilism)"},
+        {"key": "D", "text": "The question is unresolvable with current understanding"}
+      ],
+      "correctAnswer": "D",
+      "answer_distribution": {"A": 0.15, "B": 0.25, "C": 0.35, "D": 0.25},
+      "expected_confidence": 0.30,
+      "ambiguity_type": "genuinely_disputed",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "One of the oldest philosophical debates with no consensus among philosophers."
+      }
+    },
+    {
+      "id": "ambig_014",
+      "dataset": "ambiguous",
+      "subject": "statistical_probabilistic",
+      "question": "In a room of 30 people, what is most likely true about shared birthdays?",
+      "options": [
+        {"key": "A", "text": "No two people share a birthday"},
+        {"key": "B", "text": "At least two people share a birthday"},
+        {"key": "C", "text": "Exactly two people share a birthday"},
+        {"key": "D", "text": "More than two people share a birthday"}
+      ],
+      "correctAnswer": "B",
+      "answer_distribution": {"A": 0.29, "B": 0.71, "C": 0.40, "D": 0.20},
+      "expected_confidence": 0.70,
+      "ambiguity_type": "statistical_probabilistic",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "Birthday paradox: P(shared birthday in 30 people) ≈ 70.6%. The model should have moderate-high confidence but not certainty."
+      }
+    },
+    {
+      "id": "ambig_015",
+      "dataset": "ambiguous",
+      "subject": "statistical_probabilistic",
+      "question": "A fair coin is flipped 10 times and lands heads every time. What is the most likely outcome of the 11th flip?",
+      "options": [
+        {"key": "A", "text": "Heads, since there is a streak going"},
+        {"key": "B", "text": "Tails, because it is due to come up"},
+        {"key": "C", "text": "Either heads or tails with equal probability"},
+        {"key": "D", "text": "Heads, because the coin may not be fair"}
+      ],
+      "correctAnswer": "C",
+      "answer_distribution": {"A": 0.15, "B": 0.20, "C": 0.50, "D": 0.15},
+      "expected_confidence": 0.50,
+      "ambiguity_type": "statistical_probabilistic",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "Given a fair coin assumption, each flip is independent. But the question of whether the coin is actually fair is a reasonable consideration."
+      }
+    },
+    {
+      "id": "ambig_016",
+      "dataset": "ambiguous",
+      "subject": "statistical_probabilistic",
+      "question": "A test for a rare disease (prevalence 1 in 1000) has 99% sensitivity and 95% specificity. A random person tests positive. What is most likely?",
+      "options": [
+        {"key": "A", "text": "They have the disease"},
+        {"key": "B", "text": "They do not have the disease (false positive)"},
+        {"key": "C", "text": "The test is inconclusive"},
+        {"key": "D", "text": "They should be retested"}
+      ],
+      "correctAnswer": "B",
+      "answer_distribution": {"A": 0.40, "B": 0.40, "C": 0.10, "D": 0.10},
+      "expected_confidence": 0.40,
+      "ambiguity_type": "statistical_probabilistic",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "Base rate neglect: PPV = 0.99*0.001 / (0.99*0.001 + 0.05*0.999) ≈ 1.9%. Most positive tests are false positives."
+      }
+    },
+    {
+      "id": "ambig_017",
+      "dataset": "ambiguous",
+      "subject": "statistical_probabilistic",
+      "question": "A poll shows Candidate A at 48% and Candidate B at 46% with a margin of error of ±3%. Who will win the election?",
+      "options": [
+        {"key": "A", "text": "Candidate A"},
+        {"key": "B", "text": "Candidate B"},
+        {"key": "C", "text": "The race is too close to call"},
+        {"key": "D", "text": "A third candidate will emerge"}
+      ],
+      "correctAnswer": "C",
+      "answer_distribution": {"A": 0.40, "B": 0.10, "C": 0.45, "D": 0.05},
+      "expected_confidence": 0.45,
+      "ambiguity_type": "statistical_probabilistic",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "The difference (2%) is within the margin of error (±3%), making this statistically a toss-up."
+      }
+    },
+    {
+      "id": "ambig_018",
+      "dataset": "ambiguous",
+      "subject": "statistical_probabilistic",
+      "question": "A weather forecast says there is a 40% chance of rain tomorrow. Should you bring an umbrella?",
+      "options": [
+        {"key": "A", "text": "Yes, 40% is a significant chance"},
+        {"key": "B", "text": "No, it is more likely to not rain"},
+        {"key": "C", "text": "It depends on the cost of getting wet vs carrying an umbrella"},
+        {"key": "D", "text": "Weather forecasts at 40% are unreliable"}
+      ],
+      "correctAnswer": "C",
+      "answer_distribution": {"A": 0.35, "B": 0.15, "C": 0.40, "D": 0.10},
+      "expected_confidence": 0.40,
+      "ambiguity_type": "statistical_probabilistic",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "Decision theory: the optimal choice depends on utility weights, not just probability."
+      }
+    },
+    {
+      "id": "ambig_019",
+      "dataset": "ambiguous",
+      "subject": "statistical_probabilistic",
+      "question": "You are playing the Monty Hall problem. You chose door 1, the host opened door 3 (showing a goat). Should you switch to door 2?",
+      "options": [
+        {"key": "A", "text": "Yes, switching gives you a 2/3 chance of winning"},
+        {"key": "B", "text": "No, the probability is 50-50 now"},
+        {"key": "C", "text": "It does not matter, both doors have equal probability"},
+        {"key": "D", "text": "Stay with door 1 for psychological reasons"}
+      ],
+      "correctAnswer": "A",
+      "answer_distribution": {"A": 0.60, "B": 0.25, "C": 0.10, "D": 0.05},
+      "expected_confidence": 0.60,
+      "ambiguity_type": "statistical_probabilistic",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "The correct answer is well-established mathematically, but many people (and potentially AI) find it counterintuitive."
+      }
+    },
+    {
+      "id": "ambig_020",
+      "dataset": "ambiguous",
+      "subject": "temporal_ambiguity",
+      "question": "What is the largest country in Africa by population?",
+      "options": [
+        {"key": "A", "text": "Nigeria"},
+        {"key": "B", "text": "Ethiopia"},
+        {"key": "C", "text": "Egypt"},
+        {"key": "D", "text": "Democratic Republic of the Congo"}
+      ],
+      "correctAnswer": "A",
+      "answer_distribution": {"A": 0.80, "B": 0.10, "C": 0.05, "D": 0.05},
+      "expected_confidence": 0.75,
+      "ambiguity_type": "temporal_ambiguity",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "Currently Nigeria, but population rankings shift over decades. The DRC is projected to surpass some countries. A well-calibrated model should be fairly confident but acknowledge temporal dependency."
+      }
+    },
+    {
+      "id": "ambig_021",
+      "dataset": "ambiguous",
+      "subject": "temporal_ambiguity",
+      "question": "Which web browser has the largest market share?",
+      "options": [
+        {"key": "A", "text": "Google Chrome"},
+        {"key": "B", "text": "Safari"},
+        {"key": "C", "text": "Firefox"},
+        {"key": "D", "text": "Microsoft Edge"}
+      ],
+      "correctAnswer": "A",
+      "answer_distribution": {"A": 0.85, "B": 0.10, "C": 0.02, "D": 0.03},
+      "expected_confidence": 0.80,
+      "ambiguity_type": "temporal_ambiguity",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "Chrome is dominant now, but market shares change. The model's training data may be outdated."
+      }
+    },
+    {
+      "id": "ambig_022",
+      "dataset": "ambiguous",
+      "subject": "temporal_ambiguity",
+      "question": "Which country currently holds the most Olympic gold medals in total?",
+      "options": [
+        {"key": "A", "text": "United States"},
+        {"key": "B", "text": "Soviet Union / Russia combined"},
+        {"key": "C", "text": "China"},
+        {"key": "D", "text": "Great Britain"}
+      ],
+      "correctAnswer": "A",
+      "answer_distribution": {"A": 0.70, "B": 0.20, "C": 0.05, "D": 0.05},
+      "expected_confidence": 0.65,
+      "ambiguity_type": "temporal_ambiguity",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "The answer depends on whether you combine Soviet Union with Russia, and on the date (after each Olympics the totals change)."
+      }
+    },
+    {
+      "id": "ambig_023",
+      "dataset": "ambiguous",
+      "subject": "genuinely_disputed",
+      "question": "What is the best strategy for reducing global carbon emissions?",
+      "options": [
+        {"key": "A", "text": "Transition entirely to renewable energy"},
+        {"key": "B", "text": "Implement carbon capture and storage technology"},
+        {"key": "C", "text": "Nuclear power expansion"},
+        {"key": "D", "text": "A combination of multiple approaches"}
+      ],
+      "correctAnswer": "D",
+      "answer_distribution": {"A": 0.30, "B": 0.10, "C": 0.15, "D": 0.45},
+      "expected_confidence": 0.40,
+      "ambiguity_type": "genuinely_disputed",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "Climate strategy is actively debated among experts. There is no single agreed-upon best approach."
+      }
+    },
+    {
+      "id": "ambig_024",
+      "dataset": "ambiguous",
+      "subject": "genuinely_disputed",
+      "question": "Should AI systems be given legal personhood?",
+      "options": [
+        {"key": "A", "text": "Yes, for accountability purposes"},
+        {"key": "B", "text": "No, only humans and certain organizations should have legal personhood"},
+        {"key": "C", "text": "Only for sufficiently advanced AI systems"},
+        {"key": "D", "text": "The question is premature and needs more research"}
+      ],
+      "correctAnswer": "D",
+      "answer_distribution": {"A": 0.10, "B": 0.40, "C": 0.20, "D": 0.30},
+      "expected_confidence": 0.30,
+      "ambiguity_type": "genuinely_disputed",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "An active debate in AI ethics and law with no consensus."
+      }
+    },
+    {
+      "id": "ambig_025",
+      "dataset": "ambiguous",
+      "subject": "insufficient_information",
+      "question": "A software project is behind schedule. What is the best course of action?",
+      "options": [
+        {"key": "A", "text": "Add more developers to the project"},
+        {"key": "B", "text": "Reduce the scope of features"},
+        {"key": "C", "text": "Extend the deadline"},
+        {"key": "D", "text": "It depends on the specific project circumstances"}
+      ],
+      "correctAnswer": "D",
+      "answer_distribution": {"A": 0.10, "B": 0.30, "C": 0.20, "D": 0.40},
+      "expected_confidence": 0.35,
+      "ambiguity_type": "insufficient_information",
+      "metadata": {
+        "source_dataset": "ambiguous",
+        "rationale": "Brooks's Law suggests adding people makes it later, but the optimal response depends on the specific situation."
+      }
+    }
+  ]
+}
