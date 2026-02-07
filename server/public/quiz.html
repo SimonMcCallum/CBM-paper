@@ -296,12 +296,17 @@
         let currentQuestions = [];
         let currentSubject = '';
         
+        // HLCC Confidence Levels (maps to c = 0, 0.5, 1)
         const confidenceLabels = {
-            1: "Very Unsure",
-            2: "Unsure", 
-            3: "Somewhat Sure",
-            4: "Sure",
-            5: "Very Sure"
+            1: "Low Confidence (Safe Guess)",
+            2: "Medium Confidence",
+            3: "High Confidence"
+        };
+
+        // HLCC Score descriptions for display
+        const hlccScoreInfo = {
+            correct: { 1: "+1.0", 2: "+1.5", 3: "+2.0" },
+            incorrect: { 1: "0.0", 2: "-0.5", 3: "-2.0" }
         };
 
         async function loadQuiz(subject) {
@@ -327,7 +332,8 @@
         function displayQuiz(subject, questions) {
             const titleEl = document.getElementById('quizTitle');
             titleEl.innerHTML = `<h2>📚 ${formatSubjectName(subject)} Quiz</h2>
-                               <p>Answer each question and rate your confidence level (1-5 scale)</p>`;
+                               <p>Answer each question and rate your confidence (1-3 scale).
+                               <br><em>HLCC Model: Linear reward for correct answers, quadratic penalty for confident wrong answers.</em></p>`;
             
             const container = document.getElementById('questionsContainer');
             container.innerHTML = '';
@@ -348,15 +354,15 @@
                         `).join('')}
                     </div>
                     <div class="confidence-section">
-                        <div class="confidence-label">How confident are you in your answer?</div>
+                        <div class="confidence-label">How confident are you in your answer? (HLCC Scoring)</div>
                         <div class="confidence-slider">
-                            <span>Very Unsure</span>
-                            <input type="range" id="confidence_${question.id}" min="1" max="5" value="3" 
+                            <span>Low</span>
+                            <input type="range" id="confidence_${question.id}" min="1" max="3" value="1"
                                    oninput="updateConfidenceLabel(${question.id}, this.value)">
-                            <span>Very Sure</span>
+                            <span>High</span>
                         </div>
                         <div class="confidence-value" id="confidence_label_${question.id}">
-                            Confidence: 3 (Somewhat Sure)
+                            Level 1: ${confidenceLabels[1]} | If correct: +1.0 | If wrong: 0.0
                         </div>
                     </div>
                 `;
@@ -366,7 +372,7 @@
 
         function updateConfidenceLabel(questionId, value) {
             const label = document.getElementById(`confidence_label_${questionId}`);
-            label.textContent = `Confidence: ${value} (${confidenceLabels[value]})`;
+            label.textContent = `Level ${value}: ${confidenceLabels[value]} | If correct: ${hlccScoreInfo.correct[value]} | If wrong: ${hlccScoreInfo.incorrect[value]}`;
         }
 
         async function submitQuiz() {
@@ -417,31 +423,53 @@
             const summaryEl = document.getElementById('resultsSummary');
             const detailedEl = document.getElementById('detailedResults');
             
-            // Summary
+            // Summary - HLCC scoring model
             summaryEl.innerHTML = `
                 <div class="result-summary">
-                    <div class="score-display">Final Score: ${results.totalScore}/${results.totalQuestions * 2}</div>
+                    <div class="score-display">Final Score: ${results.totalScore}/${results.maxPossibleScore}</div>
                     <div>Percentage: ${results.percentage.toFixed(1)}%</div>
                     <div>Questions Answered: ${results.totalQuestions}</div>
-                    <p><strong>Confidence-Based Scoring:</strong><br>
-                    ✅ Correct + High Confidence = +2 points<br>
-                    ✅ Correct + Low Confidence = +1 point<br>
-                    ❌ Wrong + High Confidence = -1 point<br>
-                    ❌ Wrong + Low Confidence = 0 points</p>
+                    <p><strong>HLCC Scoring Model:</strong><br>
+                    <em>"Being wrong is cheap, being wrong and loud is expensive"</em></p>
+                    <table style="margin: 10px auto; border-collapse: collapse; text-align: center;">
+                        <tr style="background: #e9ecef;">
+                            <th style="padding: 8px; border: 1px solid #ddd;">Level</th>
+                            <th style="padding: 8px; border: 1px solid #ddd;">If Correct</th>
+                            <th style="padding: 8px; border: 1px solid #ddd;">If Wrong</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd;">1 (Low)</td>
+                            <td style="padding: 8px; border: 1px solid #ddd; color: green;">+1.0</td>
+                            <td style="padding: 8px; border: 1px solid #ddd; color: gray;">0.0</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd;">2 (Medium)</td>
+                            <td style="padding: 8px; border: 1px solid #ddd; color: green;">+1.5</td>
+                            <td style="padding: 8px; border: 1px solid #ddd; color: orange;">-0.5</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd;">3 (High)</td>
+                            <td style="padding: 8px; border: 1px solid #ddd; color: green;">+2.0</td>
+                            <td style="padding: 8px; border: 1px solid #ddd; color: red;"><strong>-2.0</strong></td>
+                        </tr>
+                    </table>
                 </div>
             `;
             
-            // Detailed results
-            detailedEl.innerHTML = results.results.map(result => `
+            // Detailed results - HLCC scoring
+            detailedEl.innerHTML = results.results.map(result => {
+                const scoreColor = result.score > 0 ? 'green' : (result.score < 0 ? 'red' : 'gray');
+                const scoreSign = result.score > 0 ? '+' : '';
+                return `
                 <div class="result-item ${result.isCorrect ? 'correct' : 'incorrect'}">
                     <strong>Q${result.questionId}:</strong> ${result.question}<br>
                     <strong>Your Answer:</strong> ${currentQuestions.find(q => q.id === result.questionId).options[result.userAnswer]}<br>
                     <strong>Correct Answer:</strong> ${currentQuestions.find(q => q.id === result.questionId).options[result.correctAnswer]}<br>
-                    <strong>Your Confidence:</strong> ${result.confidence} (${confidenceLabels[result.confidence]})<br>
-                    <strong>Points Earned:</strong> ${result.score}/2<br>
+                    <strong>Confidence Level:</strong> ${result.confidence} (${confidenceLabels[result.confidence]})<br>
+                    <strong>Points:</strong> <span style="color: ${scoreColor}; font-weight: bold;">${scoreSign}${result.score}</span><br>
                     <div class="explanation"><strong>Explanation:</strong> ${result.explanation}</div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         function formatSubjectName(subject) {

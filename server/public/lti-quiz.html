@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBM Quiz - HLCC Scoring (LTI)</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 { color: #333; text-align: center; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 30px; }
+        .lti-badge {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .subject-selection { text-align: center; margin-bottom: 30px; }
+        .subject-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            margin: 5px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .subject-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        .question-container {
+            background: #f8f9fa;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
+        }
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 12px 15px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        .option:hover { background: #e9ecef; border-color: #667eea; }
+        .option input[type="radio"] { margin-right: 12px; transform: scale(1.3); }
+        .confidence-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+            border-radius: 10px;
+            border: 1px solid #ffd54f;
+        }
+        .confidence-label { font-weight: 600; color: #f57f17; margin-bottom: 15px; }
+        .confidence-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .conf-btn {
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 140px;
+        }
+        .conf-btn:hover { border-color: #667eea; }
+        .conf-btn.selected { background: #667eea; color: white; border-color: #667eea; }
+        .conf-btn .score-preview {
+            font-size: 11px;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4); }
+        .btn-reset {
+            background: #f5f5f5;
+            color: #333;
+            margin-left: 10px;
+        }
+        .control-buttons { text-align: center; margin: 30px 0; }
+        .results { margin-top: 20px; }
+        .result-summary {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .score-display { font-size: 32px; font-weight: bold; color: #1565c0; }
+        .result-item {
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border-left: 5px solid;
+        }
+        .result-item.correct { background: #e8f5e9; border-left-color: #4CAF50; }
+        .result-item.incorrect { background: #ffebee; border-left-color: #f44336; }
+        .explanation {
+            margin-top: 10px;
+            padding: 12px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 6px;
+            font-style: italic;
+            color: #555;
+        }
+        .hidden { display: none; }
+        .hlcc-table { margin: 15px auto; border-collapse: collapse; }
+        .hlcc-table th, .hlcc-table td { padding: 10px 15px; border: 1px solid #ddd; text-align: center; }
+        .hlcc-table th { background: #f5f5f5; }
+        .grade-badge {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CBM Quiz <span class="lti-badge">LTI Connected</span></h1>
+        <p class="subtitle">Hybrid Linear-Convex Confidence (HLCC) Scoring Model</p>
+
+        <!-- Subject Selection -->
+        <div id="subjectSelection" class="subject-selection">
+            <h2>Select Your Subject:</h2>
+            <div id="subjectButtons"></div>
+        </div>
+
+        <!-- Quiz Interface -->
+        <div id="quizInterface" class="hidden">
+            <div id="quizTitle"></div>
+            <div id="questionsContainer"></div>
+            <div class="control-buttons">
+                <button class="btn btn-submit" onclick="submitQuiz()">Submit Quiz</button>
+                <button class="btn btn-reset" onclick="resetQuiz()">Choose Different Subject</button>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="resultsContainer" class="hidden">
+            <div class="results">
+                <h2>Your Results</h2>
+                <div id="resultsSummary"></div>
+                <div id="detailedResults"></div>
+                <div class="control-buttons">
+                    <button class="btn btn-submit" onclick="resetQuiz()">Take Another Quiz</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestions = [];
+        let currentSubject = '';
+        const confidenceLabels = {
+            1: "Low (Safe Guess)",
+            2: "Medium",
+            3: "High"
+        };
+        const hlccScores = {
+            correct: { 1: "+1.0", 2: "+1.5", 3: "+2.0" },
+            incorrect: { 1: "0.0", 2: "-0.5", 3: "-2.0" }
+        };
+
+        // Load subjects on page load
+        async function init() {
+            try {
+                const response = await fetch('/api/lti/subjects');
+                const subjects = await response.json();
+                const container = document.getElementById('subjectButtons');
+                container.innerHTML = subjects.map(s =>
+                    `<button class="subject-btn" onclick="loadQuiz('${s}')">${formatName(s)}</button>`
+                ).join('');
+            } catch (err) {
+                console.error('Failed to load subjects:', err);
+            }
+        }
+
+        function formatName(s) {
+            return s.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }
+
+        async function loadQuiz(subject) {
+            currentSubject = subject;
+            try {
+                const response = await fetch(`/api/lti/quiz/${subject}`);
+                currentQuestions = await response.json();
+                displayQuiz();
+            } catch (err) {
+                alert('Failed to load quiz');
+            }
+        }
+
+        function displayQuiz() {
+            document.getElementById('subjectSelection').classList.add('hidden');
+            document.getElementById('quizInterface').classList.remove('hidden');
+
+            document.getElementById('quizTitle').innerHTML =
+                `<h2>${formatName(currentSubject)} Quiz</h2>
+                 <p>Answer each question and select your confidence level.</p>`;
+
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = currentQuestions.map((q, i) => `
+                <div class="question-container">
+                    <div class="question-text">Q${i+1}: ${q.question}</div>
+                    <div class="options">
+                        ${q.options.map((opt, j) => `
+                            <label class="option">
+                                <input type="radio" name="q_${q.id}" value="${j}">
+                                ${opt}
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div class="confidence-section">
+                        <div class="confidence-label">How confident are you?</div>
+                        <div class="confidence-buttons">
+                            ${[1,2,3].map(level => `
+                                <button type="button" class="conf-btn ${level===1?'selected':''}"
+                                        onclick="selectConfidence(${q.id}, ${level}, this)">
+                                    <strong>Level ${level}</strong><br>
+                                    <span class="score-preview">
+                                        ✓ ${hlccScores.correct[level]} | ✗ ${hlccScores.incorrect[level]}
+                                    </span>
+                                </button>
+                            `).join('')}
+                        </div>
+                        <input type="hidden" id="conf_${q.id}" value="1">
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectConfidence(qId, level, btn) {
+            document.getElementById(`conf_${qId}`).value = level;
+            btn.parentElement.querySelectorAll('.conf-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        }
+
+        async function submitQuiz() {
+            const answers = {};
+            const confidences = {};
+            let allAnswered = true;
+
+            currentQuestions.forEach(q => {
+                const selected = document.querySelector(`input[name="q_${q.id}"]:checked`);
+                if (selected) {
+                    answers[q.id] = parseInt(selected.value);
+                    confidences[q.id] = parseInt(document.getElementById(`conf_${q.id}`).value);
+                } else {
+                    allAnswered = false;
+                }
+            });
+
+            if (!allAnswered) {
+                alert('Please answer all questions.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/lti/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ answers, confidences, subject: currentSubject })
+                });
+                const results = await response.json();
+                displayResults(results);
+            } catch (err) {
+                alert('Failed to submit quiz');
+            }
+        }
+
+        function displayResults(results) {
+            document.getElementById('quizInterface').classList.add('hidden');
+            document.getElementById('resultsContainer').classList.remove('hidden');
+
+            const gradeMsg = results.gradeSubmitted
+                ? `<div class="grade-badge">Grade sent to LMS: ${results.normalizedScore.toFixed(1)}%</div>`
+                : '';
+
+            document.getElementById('resultsSummary').innerHTML = `
+                <div class="result-summary">
+                    <div class="score-display">${results.totalScore} / ${results.maxPossibleScore}</div>
+                    <div>HLCC Score: ${results.percentage.toFixed(1)}%</div>
+                    ${gradeMsg}
+                    <table class="hlcc-table">
+                        <tr><th>Level</th><th>If Correct</th><th>If Wrong</th></tr>
+                        <tr><td>1 (Low)</td><td style="color:green">+1.0</td><td style="color:gray">0.0</td></tr>
+                        <tr><td>2 (Medium)</td><td style="color:green">+1.5</td><td style="color:orange">-0.5</td></tr>
+                        <tr><td>3 (High)</td><td style="color:green">+2.0</td><td style="color:red"><b>-2.0</b></td></tr>
+                    </table>
+                </div>
+            `;
+
+            document.getElementById('detailedResults').innerHTML = results.results.map(r => {
+                const q = currentQuestions.find(x => x.id === r.questionId);
+                const scoreColor = r.score > 0 ? 'green' : (r.score < 0 ? 'red' : 'gray');
+                return `
+                    <div class="result-item ${r.isCorrect ? 'correct' : 'incorrect'}">
+                        <strong>Q${r.questionId}:</strong> ${r.question}<br>
+                        <strong>Your Answer:</strong> ${q.options[r.userAnswer]}<br>
+                        <strong>Confidence:</strong> Level ${r.confidence} (${confidenceLabels[r.confidence]})<br>
+                        <strong>Points:</strong> <span style="color:${scoreColor};font-weight:bold">${r.score > 0 ? '+' : ''}${r.score}</span><br>
+                        <div class="explanation"><strong>Explanation:</strong> ${r.explanation}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function resetQuiz() {
+            document.getElementById('resultsContainer').classList.add('hidden');
+            document.getElementById('quizInterface').classList.add('hidden');
+            document.getElementById('subjectSelection').classList.remove('hidden');
+            currentQuestions = [];
+            currentSubject = '';
+        }
+
+        init();
+    </script>
+</body>
+</html>
