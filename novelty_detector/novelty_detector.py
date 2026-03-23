@@ -1,56 +1,124 @@
 """
 Novelty detection module using LLM-based prompt generation and FAISS similarity search.
+Supports Ollama (local), Anthropic, OpenAI, and Google providers with per-request API keys.
 """
 
 import os
 import numpy as np
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Optional
 from sentence_transformers import SentenceTransformer
 import faiss
-from anthropic import Anthropic
-import openai
 from tqdm import tqdm
+
+from ollama_client import OllamaClient
+from cost_config import PROVIDERS
 
 
 class NoveltyDetector:
     """Detects novelty in text chunks using LLM-generated prompts and FAISS embeddings."""
 
     def __init__(self, embedding_model: str = "all-MiniLM-L6-v2",
-                 llm_provider: str = "anthropic"):
+                 llm_provider: str = "ollama",
+                 llm_model: str = None,
+                 embedding_provider: str = "local",
+                 embedding_model_name: str = None,
+                 api_keys: Optional[Dict[str, str]] = None):
         """
         Initialize novelty detector.
 
         Args:
-            embedding_model: Name of sentence transformer model
-            llm_provider: LLM provider to use ('anthropic', 'openai', or 'google')
+            embedding_model: Name of sentence transformer model (for local provider)
+            llm_provider: LLM provider ('ollama', 'anthropic', 'openai', 'google')
+            llm_model: Specific model override (uses provider default if None)
+            embedding_provider: Embedding provider ('local', 'ollama', 'openai')
+            embedding_model_name: Override embedding model name
+            api_keys: Dict of provider API keys (e.g. {'anthropic': 'sk-...'})
         """
-        self.embedding_model = SentenceTransformer(embedding_model)
         self.llm_provider = llm_provider
+        self.api_keys = api_keys or {}
         self.embeddings = None
         self.index = None
         self.chunk_prompts = []
+        self.embedding_provider = embedding_provider
+
+        # Resolve LLM model
+        provider_config = PROVIDERS.get(llm_provider, PROVIDERS["ollama"])
+        self.llm_model = llm_model or provider_config["default_model"]
+
+        # Initialize embedding model
+        if embedding_provider == "local":
+            model_name = embedding_model_name or embedding_model
+            self.embedding_model = SentenceTransformer(model_name)
+        elif embedding_provider == "ollama":
+            self.ollama_embed_model = embedding_model_name or os.getenv(
+                "OLLAMA_EMBED_MODEL", "nomic-embed-text")
+            self.ollama_client_embed = OllamaClient()
+        elif embedding_provider == "openai":
+            import openai as openai_mod
+            key = self._get_api_key("openai")
+            self.openai_embed_client = openai_mod.OpenAI(api_key=key)
+            self.openai_embed_model = embedding_model_name or "text-embedding-3-small"
 
         # Initialize LLM client
-        if llm_provider == "anthropic":
-            api_key = os.getenv("ANTHROPIC_API_KEY")
-            if not api_key:
-                raise ValueError("ANTHROPIC_API_KEY not found in environment")
-            self.llm_client = Anthropic(api_key=api_key)
-        elif llm_provider == "openai":
-            api_key = os.getenv("OPENAI_API_KEY")
-            if not api_key:
-                raise ValueError("OPENAI_API_KEY not found in environment")
-            openai.api_key = api_key
-            self.llm_client = openai
-        elif llm_provider == "google":
+        self._init_llm_client()
+
+    def _get_api_key(self, provider: str) -> str:
+        """Get API key from per-request keys or environment."""
+        if provider in self.api_keys and self.api_keys[provider]:
+            return self.api_keys[provider]
+        env_map = {
+            "anthropic": "ANTHROPIC_API_KEY",
+            "openai": "OPENAI_API_KEY",
+            "google": "GOOGLE_API_KEY",
+        }
+        key = os.getenv(env_map.get(provider, ""), "")
+        if not key:
+            raise ValueError(
+                f"No API key available for {provider}. "
+                f"Provide via request header or set {env_map.get(provider)} env var."
+            )
+        return key
+
+    def _init_llm_client(self):
+        """Initialize the LLM client based on provider."""
+        if self.llm_provider == "ollama":
+            self.llm_client = OllamaClient()
+        elif self.llm_provider == "anthropic":
+            from anthropic import Anthropic
+            self.llm_client = Anthropic(api_key=self._get_api_key("anthropic"))
+        elif self.llm_provider == "openai":
+            import openai as openai_mod
+            self.llm_client = openai_mod.OpenAI(api_key=self._get_api_key("openai"))
+        elif self.llm_provider == "google":
             import google.generativeai as genai
-            api_key = os.getenv("GOOGLE_API_KEY")
-            if not api_key:
-                raise ValueError("GOOGLE_API_KEY not found in environment")
-            genai.configure(api_key=api_key)
+            genai.configure(api_key=self._get_api_key("google"))
             self.llm_client = genai
         else:
-            raise ValueError(f"Unsupported LLM provider: {llm_provider}")
+            raise ValueError(f"Unsupported LLM provider: {self.llm_provider}")
+
+    def _encode_texts(self, texts: List[str]) -> np.ndarray:
+        """Encode texts to embeddings using the configured provider."""
+        if self.embedding_provider == "local":
+            return self.embedding_model.encode(texts, show_progress_bar=True)
+        elif self.embedding_provider == "ollama":
+            embeddings = []
+            for text in tqdm(texts, desc="Ollama embeddings"):
+                vec = self.ollama_client_embed.embeddings(text, model=self.ollama_embed_model)
+                embeddings.append(vec)
+            return np.array(embeddings, dtype="float32")
+        elif self.embedding_provider == "openai":
+            # Batch in groups of 100
+            all_embeddings = []
+            for i in range(0, len(texts), 100):
+                batch = texts[i:i+100]
+                resp = self.openai_embed_client.embeddings.create(
+                    input=batch, model=self.openai_embed_model
+                )
+                for item in resp.data:
+                    all_embeddings.append(item.embedding)
+            return np.array(all_embeddings, dtype="float32")
+        else:
+            raise ValueError(f"Unsupported embedding provider: {self.embedding_provider}")
 
     def generate_prompt_for_chunk(self, chunk_text: str, before_context: str = "",
                                   after_context: str = "") -> str:
@@ -65,7 +133,6 @@ class NoveltyDetector:
         Returns:
             Generated prompt that could regenerate this text
         """
-        # Construct the analysis prompt for the LLM
         analysis_prompt = f"""Analyze the following text passage and create a concise prompt that captures its core meaning and could be used to regenerate similar content.
 
 Context before: {before_context if before_context else "[Beginning of document]"}
@@ -79,9 +146,12 @@ Generate a prompt (2-3 sentences max) that captures the essential meaning, topic
 Respond with ONLY the prompt, no additional explanation."""
 
         try:
-            if self.llm_provider == "anthropic":
+            if self.llm_provider == "ollama":
+                return self.llm_client.generate(analysis_prompt, model=self.llm_model)
+
+            elif self.llm_provider == "anthropic":
                 response = self.llm_client.messages.create(
-                    model="claude-sonnet-4-20250514",
+                    model=self.llm_model,
                     max_tokens=200,
                     messages=[{"role": "user", "content": analysis_prompt}]
                 )
@@ -89,20 +159,19 @@ Respond with ONLY the prompt, no additional explanation."""
 
             elif self.llm_provider == "openai":
                 response = self.llm_client.chat.completions.create(
-                    model="gpt-4o-mini",
+                    model=self.llm_model,
                     max_tokens=200,
                     messages=[{"role": "user", "content": analysis_prompt}]
                 )
                 return response.choices[0].message.content.strip()
 
             elif self.llm_provider == "google":
-                model = self.llm_client.GenerativeModel('gemini-1.5-flash')
+                model = self.llm_client.GenerativeModel(self.llm_model)
                 response = model.generate_content(analysis_prompt)
                 return response.text.strip()
 
         except Exception as e:
             print(f"Error generating prompt: {e}")
-            # Fallback: use the chunk text itself
             return chunk_text
 
     def analyze_chunks(self, chunks: List[Dict], pdf_processor) -> List[str]:
@@ -140,12 +209,12 @@ Respond with ONLY the prompt, no additional explanation."""
             prompts: List of generated prompts
         """
         print("Generating embeddings...")
-        self.embeddings = self.embedding_model.encode(prompts, show_progress_bar=True)
+        self.embeddings = self._encode_texts(prompts)
 
         # Normalize embeddings for cosine similarity
-        self.embeddings = self.embeddings / np.linalg.norm(
-            self.embeddings, axis=1, keepdims=True
-        )
+        norms = np.linalg.norm(self.embeddings, axis=1, keepdims=True)
+        norms[norms == 0] = 1  # avoid division by zero
+        self.embeddings = self.embeddings / norms
 
         # Build FAISS index
         dimension = self.embeddings.shape[1]
@@ -182,9 +251,8 @@ Respond with ONLY the prompt, no additional explanation."""
             similar_distances = distances[0][mask][:k]
 
             # Calculate novelty score
-            # Higher similarity to others = lower novelty
             avg_similarity = np.mean(similar_distances)
-            novelty_score = 1.0 - avg_similarity  # Convert to novelty
+            novelty_score = 1.0 - avg_similarity
 
             novelty_scores.append({
                 'chunk_index': i,
@@ -216,15 +284,9 @@ Respond with ONLY the prompt, no additional explanation."""
         Returns:
             List of novelty scores for each chunk
         """
-        # Generate prompts for all chunks
         prompts = self.analyze_chunks(chunks, pdf_processor)
-
-        # Build FAISS index
         self.build_faiss_index(prompts)
-
-        # Calculate novelty scores
         novelty_scores = self.calculate_novelty_scores(k)
-
         return novelty_scores
 
     def get_summary_statistics(self, novelty_scores: List[Dict]) -> Dict:

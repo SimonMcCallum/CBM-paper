@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block title %}Admin - Novelty Detector{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-bold mb-6">Admin Panel</h2>
+
+<div class="grid md:grid-cols-2 gap-6">
+    <!-- Server Status -->
+    <div class="bg-white rounded-lg shadow p-5">
+        <h3 class="font-semibold text-lg mb-4">Server Status</h3>
+        <div id="server-status" class="space-y-3">
+            <div class="flex justify-between items-center py-2 border-b">
+                <span class="text-sm font-medium">Server Health</span>
+                <span id="health-badge" class="px-2 py-1 rounded text-xs font-medium bg-gray-200">Checking...</span>
+            </div>
+            <div class="flex justify-between items-center py-2 border-b">
+                <span class="text-sm font-medium">Ollama</span>
+                <span id="ollama-badge" class="px-2 py-1 rounded text-xs font-medium bg-gray-200">Checking...</span>
+            </div>
+            <div class="flex justify-between items-center py-2">
+                <span class="text-sm font-medium">Version</span>
+                <span id="version-badge" class="text-sm text-gray-600">—</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ollama Models -->
+    <div class="bg-white rounded-lg shadow p-5">
+        <h3 class="font-semibold text-lg mb-4">Ollama Models</h3>
+        <div id="ollama-models" class="space-y-2">
+            <p class="text-sm text-gray-500">Loading...</p>
+        </div>
+    </div>
+
+    <!-- API Key Status -->
+    <div class="bg-white rounded-lg shadow p-5">
+        <h3 class="font-semibold text-lg mb-4">API Key Status (Server)</h3>
+        <div id="api-key-status" class="space-y-3">
+            <p class="text-sm text-gray-500">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Browser API Keys -->
+    <div class="bg-white rounded-lg shadow p-5">
+        <h3 class="font-semibold text-lg mb-4">Your API Keys (Browser)</h3>
+        <p class="text-xs text-gray-500 mb-4">Keys are stored in your browser's localStorage only. They are never sent to the server for storage.</p>
+        <div class="space-y-3">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Anthropic API Key</label>
+                <div class="flex gap-2">
+                    <input type="password" id="key-anthropic" class="flex-1 rounded border-gray-300 shadow-sm text-sm p-2 border" placeholder="sk-ant-...">
+                    <button onclick="saveApiKey('anthropic')" class="px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">Save</button>
+                    <button onclick="clearApiKey('anthropic')" class="px-3 py-2 bg-red-100 text-red-700 text-sm rounded hover:bg-red-200">Clear</button>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">OpenAI API Key</label>
+                <div class="flex gap-2">
+                    <input type="password" id="key-openai" class="flex-1 rounded border-gray-300 shadow-sm text-sm p-2 border" placeholder="sk-...">
+                    <button onclick="saveApiKey('openai')" class="px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">Save</button>
+                    <button onclick="clearApiKey('openai')" class="px-3 py-2 bg-red-100 text-red-700 text-sm rounded hover:bg-red-200">Clear</button>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Google API Key</label>
+                <div class="flex gap-2">
+                    <input type="password" id="key-google" class="flex-1 rounded border-gray-300 shadow-sm text-sm p-2 border" placeholder="AIza...">
+                    <button onclick="saveApiKey('google')" class="px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">Save</button>
+                    <button onclick="clearApiKey('google')" class="px-3 py-2 bg-red-100 text-red-700 text-sm rounded hover:bg-red-200">Clear</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configuration -->
+    <div class="md:col-span-2 bg-white rounded-lg shadow p-5">
+        <h3 class="font-semibold text-lg mb-4">Server Configuration</h3>
+        <div id="server-config" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <p class="text-sm text-gray-500">Loading...</p>
+        </div>
+    </div>
+
+    <!-- LLM Providers -->
+    <div class="md:col-span-2 bg-white rounded-lg shadow p-5">
+        <h3 class="font-semibold text-lg mb-4">Available Providers</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b">
+                        <th class="text-left py-2 pr-4">Provider</th>
+                        <th class="text-left py-2 pr-4">Tier</th>
+                        <th class="text-left py-2 pr-4">Models</th>
+                        <th class="text-left py-2 pr-4">Key Required</th>
+                        <th class="text-left py-2">Server Key</th>
+                    </tr>
+                </thead>
+                <tbody id="providers-table">
+                    <tr><td class="py-2 text-gray-500" colspan="5">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load stored keys into inputs
+    ['anthropic', 'openai', 'google'].forEach(p => {
+        const key = localStorage.getItem('novelty_key_' + p);
+        if (key) {
+            document.getElementById('key-' + p).value = key;
+        }
+    });
+
+    // Check server health
+    fetch('/novelty/api/health')
+        .then(r => r.json())
+        .then(d => {
+            const badge = document.getElementById('health-badge');
+            badge.textContent = d.status === 'healthy' ? 'Healthy' : 'Error';
+            badge.className = 'px-2 py-1 rounded text-xs font-medium ' +
+                (d.status === 'healthy' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800');
+            document.getElementById('version-badge').textContent = d.version || '—';
+        })
+        .catch(() => {
+            document.getElementById('health-badge').textContent = 'Offline';
+            document.getElementById('health-badge').className = 'px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800';
+        });
+
+    // Check Ollama
+    fetch('/novelty/api/ollama/status')
+        .then(r => r.json())
+        .then(d => {
+            const badge = document.getElementById('ollama-badge');
+            badge.textContent = d.available ? 'Connected' : 'Unavailable';
+            badge.className = 'px-2 py-1 rounded text-xs font-medium ' +
+                (d.available ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800');
+        })
+        .catch(() => {
+            document.getElementById('ollama-badge').textContent = 'Error';
+            document.getElementById('ollama-badge').className = 'px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800';
+        });
+
+    // List Ollama models
+    fetch('/novelty/api/ollama/models')
+        .then(r => r.json())
+        .then(d => {
+            const el = document.getElementById('ollama-models');
+            if (d.models && d.models.length > 0) {
+                el.innerHTML = d.models.map(m =>
+                    '<div class="flex items-center py-1"><span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span><span class="text-sm">' + m + '</span></div>'
+                ).join('');
+            } else {
+                el.innerHTML = '<p class="text-sm text-gray-500">No models pulled. Run: <code class="bg-gray-100 px-1 rounded">docker exec ollama ollama pull llama3.2</code></p>';
+            }
+        })
+        .catch(() => {
+            document.getElementById('ollama-models').innerHTML = '<p class="text-sm text-red-500">Failed to connect to Ollama</p>';
+        });
+
+    // Get config
+    fetch('/novelty/api/config')
+        .then(r => r.json())
+        .then(d => {
+            const el = document.getElementById('server-config');
+            el.innerHTML = Object.entries(d).map(([k, v]) => {
+                const val = typeof v === 'object' ? JSON.stringify(v) : v;
+                return '<div class="bg-gray-50 rounded p-3"><div class="text-xs text-gray-500">' + k.replace(/_/g, ' ') + '</div><div class="font-mono text-sm">' + val + '</div></div>';
+            }).join('');
+        });
+
+    // Get providers
+    fetch('/novelty/api/providers')
+        .then(r => r.json())
+        .then(d => {
+            const tbody = document.getElementById('providers-table');
+            const apiStatus = document.getElementById('api-key-status');
+
+            tbody.innerHTML = d.llm_providers.map(p => {
+                const keyBadge = p.requires_key
+                    ? (p.server_key_configured
+                        ? '<span class="px-2 py-0.5 rounded text-xs bg-green-100 text-green-800">Configured</span>'
+                        : '<span class="px-2 py-0.5 rounded text-xs bg-red-100 text-red-800">Missing</span>')
+                    : '<span class="px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-600">N/A</span>';
+                return '<tr class="border-b"><td class="py-2 pr-4">' + p.name + '</td><td class="py-2 pr-4">' + p.tier + '</td><td class="py-2 pr-4 font-mono text-xs">' + p.models.join(', ') + '</td><td class="py-2 pr-4">' + (p.requires_key ? 'Yes' : 'No') + '</td><td class="py-2">' + keyBadge + '</td></tr>';
+            }).join('');
+
+            apiStatus.innerHTML = d.llm_providers.filter(p => p.requires_key).map(p => {
+                const icon = p.server_key_configured ? 'bg-green-500' : 'bg-red-500';
+                const text = p.server_key_configured ? 'Configured' : 'Not configured';
+                return '<div class="flex justify-between items-center py-2 border-b"><span class="text-sm">' + p.name + '</span><span class="flex items-center"><span class="w-2 h-2 rounded-full ' + icon + ' mr-2"></span><span class="text-sm text-gray-600">' + text + '</span></span></div>';
+            }).join('');
+        });
+});
+
+function saveApiKey(provider) {
+    const input = document.getElementById('key-' + provider);
+    if (input.value.trim()) {
+        localStorage.setItem('novelty_key_' + provider, input.value.trim());
+        alert(provider.charAt(0).toUpperCase() + provider.slice(1) + ' key saved to browser.');
+    }
+}
+
+function clearApiKey(provider) {
+    localStorage.removeItem('novelty_key_' + provider);
+    document.getElementById('key-' + provider).value = '';
+    alert(provider.charAt(0).toUpperCase() + provider.slice(1) + ' key cleared.');
+}
+</script>
+{% endblock %}

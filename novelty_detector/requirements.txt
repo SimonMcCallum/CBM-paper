@@ -2,10 +2,10 @@
 Flask>=3.0.0
 Flask-CORS>=4.0.0
 Werkzeug>=3.0.0
+gunicorn>=21.2.0
 
 # PDF processing
-PyPDF2>=3.0.0
-pymupdf>=1.23.0  # fitz for better PDF handling
+pymupdf>=1.23.0
 reportlab>=4.0.0
 
 # LLM APIs
@@ -18,9 +18,8 @@ sentence-transformers>=2.2.0
 faiss-cpu>=1.7.4
 numpy>=1.24.0
 
-# Text processing
-nltk>=3.8.0
-spacy>=3.7.0
+# HTTP client (for Ollama)
+requests>=2.31.0
 
 # Utilities
 python-dotenv>=1.0.0

@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block title %}About - Novelty Detector{% endblock %}
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad: true, theme: 'neutral'});</script>
+{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-bold mb-6">How It Works</h2>
+
+<div class="space-y-8">
+    <!-- Overview -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold mb-3">Overview</h3>
+        <p class="text-gray-700 leading-relaxed">
+            The PDF Novelty Detector identifies which parts of a document contain novel or unique content
+            versus parts that are repetitive or common. It uses LLM-based semantic compression combined
+            with FAISS vector similarity search to score each chunk of text on a novelty scale from 0 to 1.
+        </p>
+    </div>
+
+    <!-- Processing Pipeline -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold mb-4">Processing Pipeline</h3>
+        <div class="mermaid">
+graph LR
+    A[PDF Upload] --> B[Text Extraction<br/>PyMuPDF]
+    B --> C[Chunking<br/>~150 words]
+    C --> D[LLM Compression<br/>Generate Prompts]
+    D --> E[Embedding<br/>Sentence-BERT]
+    E --> F[FAISS Index<br/>Cosine Similarity]
+    F --> G[Novelty Scores<br/>1 - avg similarity]
+    G --> H[Annotated PDF<br/>+ JSON Results]
+
+    style A fill:#e0f2fe
+    style D fill:#fef3c7
+    style F fill:#f3e8ff
+    style H fill:#dcfce7
+        </div>
+    </div>
+
+    <!-- Algorithm Steps -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold mb-4">Algorithm Details</h3>
+        <div class="space-y-4">
+            <div class="border-l-4 border-blue-500 pl-4">
+                <h4 class="font-medium">1. Text Extraction & Chunking</h4>
+                <p class="text-sm text-gray-600 mt-1">
+                    PDF text is extracted using PyMuPDF and split into overlapping chunks of ~150 words
+                    with 20-word overlap. This ensures context is preserved at chunk boundaries.
+                </p>
+            </div>
+            <div class="border-l-4 border-yellow-500 pl-4">
+                <h4 class="font-medium">2. LLM Semantic Compression</h4>
+                <p class="text-sm text-gray-600 mt-1">
+                    Each chunk is sent to an LLM with surrounding context. The LLM generates a concise
+                    "prompt" (2-3 sentences) that captures the chunk's essential meaning. This acts as
+                    a semantic compression — novel content produces distinctive prompts, while common
+                    content produces similar ones.
+                </p>
+            </div>
+            <div class="border-l-4 border-purple-500 pl-4">
+                <h4 class="font-medium">3. Embedding & FAISS Indexing</h4>
+                <p class="text-sm text-gray-600 mt-1">
+                    Generated prompts are encoded into high-dimensional vectors using Sentence-BERT.
+                    Vectors are L2-normalized so that inner product equals cosine similarity.
+                    A FAISS IndexFlatIP index enables fast similarity search.
+                </p>
+            </div>
+            <div class="border-l-4 border-green-500 pl-4">
+                <h4 class="font-medium">4. Novelty Scoring</h4>
+                <p class="text-sm text-gray-600 mt-1">
+                    For each chunk, we find the k nearest neighbors and compute:
+                    <code class="bg-gray-100 px-1 rounded">novelty(i) = 1 - (1/k) * sum(cos(e_i, e_j))</code>.
+                    Chunks with high similarity to others score low novelty; unique chunks score high.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Architecture -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold mb-4">System Architecture</h3>
+        <div class="mermaid">
+graph TB
+    Browser[Browser UI] --> NPM[Nginx Proxy Manager<br/>:443]
+    NPM -->|/novelty/*| Flask[Flask Server<br/>:5000]
+    Flask --> Ollama[Ollama<br/>Local LLM :11434]
+    Flask --> Cloud[Cloud LLM APIs<br/>Anthropic / OpenAI / Google]
+    Flask --> ST[Sentence Transformers<br/>Local Embeddings]
+    Flask --> FAISS[FAISS<br/>Vector Index]
+
+    subgraph Docker Network
+        Flask
+        Ollama
+    end
+
+    style Browser fill:#e0f2fe
+    style NPM fill:#fef3c7
+    style Flask fill:#dcfce7
+    style Ollama fill:#f3e8ff
+        </div>
+    </div>
+
+    <!-- User API Key Flow -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold mb-4">API Key Flow</h3>
+        <div class="mermaid">
+sequenceDiagram
+    participant B as Browser
+    participant L as localStorage
+    participant S as Flask Server
+    participant P as Cloud Provider
+
+    B->>L: Store API key
+    B->>S: Upload PDF + X-Api-Key-* header
+    S->>S: Extract key from header
+    alt User key provided
+        S->>P: Use user's key
+    else No user key
+        S->>S: Check server .env key
+        alt Server key exists
+            S->>P: Use server key
+        else No key available
+            S-->>B: 400 Error
+        end
+    end
+    P-->>S: LLM response
+    S-->>B: Novelty results
+        </div>
+    </div>
+
+    <!-- Cost Decision -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold mb-4">Cost Comparison</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b bg-gray-50">
+                        <th class="text-left py-2 px-3">Provider</th>
+                        <th class="text-left py-2 px-3">Tier</th>
+                        <th class="text-left py-2 px-3">API Key</th>
+                        <th class="text-left py-2 px-3">Est. Cost (10K-word paper)</th>
+                        <th class="text-left py-2 px-3">Quality</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b"><td class="py-2 px-3">Ollama (local)</td><td class="py-2 px-3">Free</td><td class="py-2 px-3">No</td><td class="py-2 px-3 font-mono">$0.00</td><td class="py-2 px-3">Good</td></tr>
+                    <tr class="border-b"><td class="py-2 px-3">Google Gemini Flash</td><td class="py-2 px-3">Budget</td><td class="py-2 px-3">Yes</td><td class="py-2 px-3 font-mono">~$0.003</td><td class="py-2 px-3">Good</td></tr>
+                    <tr class="border-b"><td class="py-2 px-3">OpenAI GPT-4o-mini</td><td class="py-2 px-3">Mid</td><td class="py-2 px-3">Yes</td><td class="py-2 px-3 font-mono">~$0.008</td><td class="py-2 px-3">Very Good</td></tr>
+                    <tr><td class="py-2 px-3">Anthropic Claude Sonnet</td><td class="py-2 px-3">Premium</td><td class="py-2 px-3">Yes</td><td class="py-2 px-3 font-mono">~$0.12</td><td class="py-2 px-3">Excellent</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Novelty Score Interpretation -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold mb-4">Score Interpretation</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="p-4 rounded-lg novelty-high text-center">
+                <div class="text-2xl font-bold">&gt; 0.7</div>
+                <div class="font-medium mt-1">High Novelty</div>
+                <p class="text-xs mt-1 opacity-75">Unique content — new ideas, original analysis</p>
+            </div>
+            <div class="p-4 rounded-lg novelty-medium text-center">
+                <div class="text-2xl font-bold">0.4 - 0.7</div>
+                <div class="font-medium mt-1">Medium</div>
+                <p class="text-xs mt-1 opacity-75">Somewhat unique — builds on existing themes</p>
+            </div>
+            <div class="p-4 rounded-lg novelty-low text-center">
+                <div class="text-2xl font-bold">0.2 - 0.4</div>
+                <div class="font-medium mt-1">Low</div>
+                <p class="text-xs mt-1 opacity-75">Common content — standard methodology, etc.</p>
+            </div>
+            <div class="p-4 rounded-lg novelty-very-low text-center">
+                <div class="text-2xl font-bold">&lt; 0.2</div>
+                <div class="font-medium mt-1">Very Low</div>
+                <p class="text-xs mt-1 opacity-75">Repetitive — boilerplate, repeated phrases</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theoretical Basis -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-xl font-semibold mb-4">Theoretical Foundation</h3>
+        <div class="prose prose-sm text-gray-700 space-y-3">
+            <p>
+                This approach is grounded in <strong>information theory</strong> and <strong>Kolmogorov complexity</strong>.
+                The key insight is that an LLM acts as a semantic compressor: when asked to summarize a text chunk,
+                it produces output whose information content reflects the novelty of the input.
+            </p>
+            <p>
+                Novel content — ideas not well-represented in the LLM's training data — produces distinctive,
+                specific prompts. Common or boilerplate content produces generic prompts that are similar to
+                prompts from other chunks.
+            </p>
+            <p>
+                By embedding these prompts in a shared vector space (Sentence-BERT) and measuring distances
+                (cosine similarity via FAISS), we can quantify how semantically unique each chunk is relative
+                to the rest of the document.
+            </p>
+            <p>
+                For a full mathematical treatment, see the LaTeX paper in
+                <code class="bg-gray-100 px-1 rounded">docs/novelty_detection_theory.tex</code>.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

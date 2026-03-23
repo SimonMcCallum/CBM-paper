@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PDF Novelty Detector{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('novelty.static', filename='css/custom.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body class="h-full bg-gray-50 text-gray-900">
+    <div class="flex h-full">
+        <!-- Sidebar -->
+        <nav class="hidden md:flex md:w-56 flex-col bg-gray-900 text-gray-100">
+            <div class="p-4 border-b border-gray-700">
+                <h1 class="text-lg font-bold tracking-tight">Novelty Detector</h1>
+                <p class="text-xs text-gray-400 mt-1">PDF Analysis Tool</p>
+            </div>
+            <ul class="flex-1 py-4 space-y-1 px-2">
+                <li>
+                    <a href="{{ url_for('novelty.index') }}" class="nav-link {% if request.path in ['/novelty/', '/novelty'] %}active{% endif %}">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                        Analyze
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('novelty.admin') }}" class="nav-link {% if '/admin' in request.path %}active{% endif %}">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        Admin
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('novelty.about') }}" class="nav-link {% if '/about' in request.path %}active{% endif %}">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        About
+                    </a>
+                </li>
+            </ul>
+            <div class="p-4 border-t border-gray-700 text-xs text-gray-500">
+                v2.0.0
+            </div>
+        </nav>
+
+        <!-- Mobile header -->
+        <div class="md:hidden fixed top-0 left-0 right-0 z-50 bg-gray-900 text-white px-4 py-3 flex items-center justify-between">
+            <h1 class="font-bold">Novelty Detector</h1>
+            <div class="flex gap-4">
+                <a href="{{ url_for('novelty.index') }}" class="text-sm hover:text-gray-300">Analyze</a>
+                <a href="{{ url_for('novelty.admin') }}" class="text-sm hover:text-gray-300">Admin</a>
+                <a href="{{ url_for('novelty.about') }}" class="text-sm hover:text-gray-300">About</a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto md:pt-0 pt-14">
+            <div class="max-w-5xl mx-auto p-6">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('novelty.static', filename='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

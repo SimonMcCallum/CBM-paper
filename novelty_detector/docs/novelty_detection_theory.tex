@@ -1,0 +1,285 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{natbib}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+
+\title{LLM-Based Novelty Detection in Academic Text:\\An Information-Theoretic Approach}
+\author{Simon McCallum}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We present a method for detecting novel content within academic documents using
+Large Language Models (LLMs) as semantic compressors combined with FAISS-based
+similarity search. Each text chunk is processed by an LLM to generate a concise
+semantic prompt, which is then embedded in a vector space. Novelty is quantified
+as the inverse of average cosine similarity to nearest neighbors, capturing
+semantic uniqueness rather than lexical distinctiveness. We provide an
+information-theoretic justification grounded in Kolmogorov complexity and discuss
+the method's advantages over traditional approaches.
+\end{abstract}
+
+\section{Introduction}
+
+Detecting which parts of a document contain genuinely novel contributions versus
+standard or repetitive content is a fundamental challenge in academic writing,
+peer review, and content analysis. Traditional approaches based on $n$-gram
+overlap, TF-IDF, or lexical matching fail to capture semantic novelty---they
+cannot distinguish between a paraphrased common idea and a truly original
+contribution expressed in familiar terms.
+
+We propose a system that leverages the semantic understanding of LLMs to detect
+intra-document novelty. The key insight is that an LLM, when asked to summarize
+or ``compress'' a text passage, produces output whose information content
+reflects the novelty of the input relative to the model's training
+distribution.
+
+\section{Information-Theoretic Foundation}
+
+\subsection{Kolmogorov Complexity}
+
+The Kolmogorov complexity $K(x)$ of a string $x$ is the length of the shortest
+program that produces $x$ on a universal Turing machine
+\citep{li2008introduction}:
+
+\begin{definition}
+$K(x) = \min\{|p| : U(p) = x\}$
+\end{definition}
+
+While $K(x)$ is uncomputable in general, practical compression algorithms
+provide upper bounds. We extend this notion to semantic content, using LLMs as
+approximate semantic compressors.
+
+\subsection{Conditional Complexity and Document Context}
+
+For a chunk $c_i$ within document $D$, the conditional Kolmogorov complexity
+$K(c_i | D \setminus c_i)$ captures the information content of $c_i$ given the
+rest of the document. High conditional complexity implies the chunk contains
+information not derivable from the remaining text---i.e., novel content.
+
+\begin{proposition}
+If $c_i$ is semantically redundant with other parts of $D$, then
+$K(c_i | D \setminus c_i) \ll K(c_i)$.
+\end{proposition}
+
+\section{LLM as Semantic Compressor}
+
+\subsection{Prompt Generation as Lossy Compression}
+
+Given a text chunk $c_i$ with context $(c_{i-1}, c_{i+1})$, we query an LLM
+$\mathcal{L}$ to produce a semantic prompt $p_i$:
+
+\begin{equation}
+p_i = \mathcal{L}(c_i, c_{i-1}, c_{i+1})
+\end{equation}
+
+This prompt is a lossy compression of $c_i$ that preserves its essential
+semantic content while discarding surface-level details. The LLM acts as an
+approximate semantic compressor, where:
+
+\begin{itemize}
+\item \textbf{Common content} (literature review boilerplate, standard
+methodology descriptions) produces generic prompts that are similar across
+chunks, reflecting low conditional complexity.
+\item \textbf{Novel content} (original analysis, unique findings) produces
+specific, distinctive prompts, reflecting high conditional complexity.
+\end{itemize}
+
+\subsection{Information Preservation}
+
+The prompt $p_i$ preserves the semantic information of $c_i$ in the sense that:
+
+\begin{equation}
+I(c_i; p_i) \approx H_{sem}(c_i)
+\end{equation}
+
+where $I(c_i; p_i)$ is the mutual information between chunk and prompt, and
+$H_{sem}(c_i)$ is the semantic entropy of the chunk. The LLM's training on
+large corpora provides an implicit model of ``common'' vs.\ ``uncommon''
+content, making its compression behaviour sensitive to novelty.
+
+\section{Embedding Space Semantics}
+
+\subsection{Sentence-BERT Embeddings}
+
+We encode each prompt $p_i$ into a dense vector $\mathbf{e}_i \in
+\mathbb{R}^d$ using a pre-trained Sentence-BERT model
+\citep{reimers2019sentence}:
+
+\begin{equation}
+\mathbf{e}_i = \text{SBERT}(p_i) \in \mathbb{R}^d
+\end{equation}
+
+The embedding space is structured such that semantically similar texts have
+high cosine similarity:
+
+\begin{equation}
+\text{sim}(p_i, p_j) = \cos(\mathbf{e}_i, \mathbf{e}_j) = \frac{\mathbf{e}_i \cdot \mathbf{e}_j}{\|\mathbf{e}_i\| \|\mathbf{e}_j\|}
+\end{equation}
+
+After L2 normalization ($\hat{\mathbf{e}}_i = \mathbf{e}_i / \|\mathbf{e}_i\|$),
+cosine similarity reduces to inner product:
+
+\begin{equation}
+\cos(\hat{\mathbf{e}}_i, \hat{\mathbf{e}}_j) = \hat{\mathbf{e}}_i \cdot \hat{\mathbf{e}}_j
+\end{equation}
+
+This property enables efficient similarity search using inner product indices.
+
+\section{FAISS Similarity Search}
+
+We use Facebook AI Similarity Search (FAISS) \citep{johnson2019billion} with an
+\texttt{IndexFlatIP} (flat inner product) index for exact nearest neighbor
+search on L2-normalized vectors. For each embedding $\hat{\mathbf{e}}_i$, we
+retrieve the $k$ nearest neighbors:
+
+\begin{equation}
+\mathcal{N}_k(i) = \underset{j \neq i, |\mathcal{S}|=k}{\arg\max} \sum_{j \in \mathcal{S}} \hat{\mathbf{e}}_i \cdot \hat{\mathbf{e}}_j
+\end{equation}
+
+The computational complexity is $O(nd)$ per query for exact search with $n$
+vectors of dimension $d$, which is practical for document-length texts (typically
+$n < 500$ chunks).
+
+\section{Novelty Score Formulation}
+
+\subsection{Definition}
+
+The novelty score for chunk $c_i$ is defined as:
+
+\begin{equation}
+\text{novelty}(c_i) = 1 - \frac{1}{k} \sum_{j \in \mathcal{N}_k(i)} \cos(\hat{\mathbf{e}}_i, \hat{\mathbf{e}}_j)
+\end{equation}
+
+\subsection{Properties}
+
+\begin{itemize}
+\item $\text{novelty}(c_i) \in [0, 1]$ (since cosine similarity of normalized
+vectors is in $[-1, 1]$, though in practice prompts from the same document have
+positive similarity)
+\item $\text{novelty}(c_i) \to 0$ when the chunk's prompt is nearly identical to
+its neighbors (highly repetitive)
+\item $\text{novelty}(c_i) \to 1$ when the chunk's prompt is orthogonal to all
+neighbors (completely unique)
+\end{itemize}
+
+\subsection{Score Categories}
+
+We define four novelty categories with empirically determined thresholds:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lll}
+\toprule
+Category & Score Range & Interpretation \\
+\midrule
+High Novelty & $> 0.7$ & Unique content, original analysis \\
+Medium Novelty & $0.4$--$0.7$ & Somewhat unique, builds on themes \\
+Low Novelty & $0.2$--$0.4$ & Common content, standard methodology \\
+Very Low Novelty & $< 0.2$ & Repetitive, boilerplate \\
+\bottomrule
+\end{tabular}
+\caption{Novelty score categories and interpretations.}
+\label{tab:categories}
+\end{table}
+
+\section{Algorithm}
+
+\begin{algorithm}
+\caption{LLM-Based Novelty Detection}
+\begin{algorithmic}[1]
+\Require PDF document $D$, chunk size $w$, overlap $o$, neighbors $k$
+\Ensure Novelty scores for each chunk
+\State $T \gets \text{ExtractText}(D)$
+\State $C \gets \text{Chunk}(T, w, o)$ \Comment{List of text chunks}
+\For{each chunk $c_i \in C$}
+    \State $p_i \gets \mathcal{L}(c_i, c_{i-1}, c_{i+1})$ \Comment{LLM semantic compression}
+\EndFor
+\State $E \gets \text{SBERT}(p_1, \ldots, p_n)$ \Comment{Embed all prompts}
+\State $\hat{E} \gets \text{L2Normalize}(E)$
+\State $\text{Index} \gets \text{FAISS.IndexFlatIP}(\hat{E})$
+\For{each embedding $\hat{\mathbf{e}}_i$}
+    \State $\mathcal{N}_k(i) \gets \text{Index.search}(\hat{\mathbf{e}}_i, k+1) \setminus \{i\}$
+    \State $s_i \gets 1 - \frac{1}{k}\sum_{j \in \mathcal{N}_k(i)} \hat{\mathbf{e}}_i \cdot \hat{\mathbf{e}}_j$
+\EndFor
+\State \Return $\{(c_i, s_i)\}_{i=1}^n$
+\end{algorithmic}
+\end{algorithm}
+
+\section{Advantages}
+
+\begin{enumerate}
+\item \textbf{Semantic over lexical}: Captures paraphrased redundancy that
+lexical methods miss. Two chunks expressing the same idea in different words
+will produce similar prompts and thus low novelty scores.
+
+\item \textbf{Context-aware}: The LLM receives surrounding context, enabling it
+to distinguish between a concept's first introduction and its later repetition.
+
+\item \textbf{Multi-provider flexibility}: The architecture supports multiple
+LLM providers (local Ollama, cloud APIs) with different cost-quality
+trade-offs, making it accessible for various budgets.
+
+\item \textbf{Efficient search}: FAISS provides sub-linear search time for
+larger documents, though exact search is sufficient for typical academic papers
+($< 500$ chunks).
+\end{enumerate}
+
+\section{Limitations and Future Work}
+
+\begin{itemize}
+\item \textbf{Intra-document only}: The current system measures novelty relative
+to the document itself, not against external corpora or the broader literature.
+
+\item \textbf{Threshold sensitivity}: The novelty category boundaries ($0.2$,
+$0.4$, $0.7$) are empirically set and may need calibration for different
+document types.
+
+\item \textbf{LLM quality dependence}: The quality of novelty detection depends
+on the LLM's ability to generate semantically meaningful prompts. Smaller models
+(e.g., local Ollama) may produce less discriminative prompts than larger cloud
+models.
+
+\item \textbf{Computational cost}: Each chunk requires an LLM API call,
+making analysis of large documents potentially expensive with cloud providers.
+Local Ollama mitigates cost but may sacrifice quality.
+
+\item \textbf{Future directions}: Integration with external knowledge bases for
+cross-document novelty, fine-tuning embedding models for academic text,
+and development of domain-specific novelty thresholds.
+\end{itemize}
+
+\bibliographystyle{plainnat}
+\begin{thebibliography}{9}
+
+\bibitem[Johnson et~al., 2019]{johnson2019billion}
+Johnson, J., Douze, M., and J{\'e}gou, H. (2019).
+\newblock Billion-scale similarity search with GPUs.
+\newblock {\em IEEE Transactions on Big Data}, 7(3):535--547.
+
+\bibitem[Li and Vit{\'a}nyi, 2008]{li2008introduction}
+Li, M. and Vit{\'a}nyi, P. (2008).
+\newblock {\em An Introduction to Kolmogorov Complexity and Its Applications}.
+\newblock Springer, 3rd edition.
+
+\bibitem[Reimers and Gurevych, 2019]{reimers2019sentence}
+Reimers, N. and Gurevych, I. (2019).
+\newblock Sentence-BERT: Sentence embeddings using Siamese BERT-Networks.
+\newblock In {\em Proceedings of EMNLP-IJCNLP 2019}, pages 3982--3992.
+
+\end{thebibliography}
+
+\end{document}

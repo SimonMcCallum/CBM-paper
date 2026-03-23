@@ -1,14 +1,18 @@
-"""Deploy benchmark website via SFTP.
+"""Deploy benchmark website via SFTP or to a local directory.
 
 Usage:
-  python deploy/sftp_deploy.py
+  # Deploy to local nginx directory (default: ~/public/)
+  python deploy/sftp_deploy.py --local
+  python deploy/sftp_deploy.py --local --local-path /var/www/cbm
+
+  # Deploy to remote server via SFTP
   python deploy/sftp_deploy.py --config deploy/deploy_config.json
   python deploy/sftp_deploy.py --dry-run
 
 Workflow:
   1. Build Vue SPA (npm run build in website/)
   2. Copy published results to website/dist/data/
-  3. SFTP upload website/dist/ to remote server
+  3. Deploy: copy to local directory OR SFTP upload to remote server
 """
 import argparse
 import json
@@ -24,15 +28,28 @@ WEBSITE_DIR = PROJECT_ROOT / "website"
 DIST_DIR = WEBSITE_DIR / "dist"
 PUBLISHED_DIR = PROJECT_ROOT / "benchmark" / "results" / "published"
 DEFAULT_CONFIG = Path(__file__).parent / "deploy_config.json"
+DEFAULT_LOCAL_PATH = Path.home() / "public"
 
 
 def build_website():
     """Build the Vue SPA."""
+    # Install dependencies if node_modules is missing
+    if not (WEBSITE_DIR / "node_modules").exists():
+        print("Installing npm dependencies...")
+        result = subprocess.run(
+            ["npm", "install"],
+            cwd=str(WEBSITE_DIR),
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            print(f"npm install failed:\n{result.stderr}")
+            sys.exit(1)
+
     print("Building website...")
     result = subprocess.run(
         ["npm", "run", "build"],
         cwd=str(WEBSITE_DIR),
-        shell=True,
         capture_output=True,
         text=True,
     )
@@ -54,6 +71,23 @@ def copy_data():
     else:
         data_dir.mkdir(parents=True, exist_ok=True)
         print(f"Warning: No published results found at {PUBLISHED_DIR}")
+
+
+def local_deploy(local_path: Path, dry_run: bool = False):
+    """Copy dist/ to a local directory for nginx hosting."""
+    if dry_run:
+        print(f"DRY RUN: Would deploy to {local_path}")
+        for f in DIST_DIR.rglob("*"):
+            if f.is_file():
+                rel = f.relative_to(DIST_DIR)
+                print(f"  {rel}")
+        return
+
+    if local_path.exists():
+        shutil.rmtree(local_path)
+
+    shutil.copytree(DIST_DIR, local_path)
+    print(f"Deployed {sum(1 for _ in local_path.rglob('*') if _.is_file())} files to {local_path}")
 
 
 def sftp_upload(config: dict, dry_run: bool = False):
@@ -126,7 +160,7 @@ def _mkdir_p(sftp, remote_dir: str):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Deploy benchmark website via SFTP")
+    parser = argparse.ArgumentParser(description="Deploy benchmark website via SFTP or locally")
     parser.add_argument(
         "--config",
         default=str(DEFAULT_CONFIG),
@@ -135,29 +169,45 @@ def main():
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Show what would be uploaded without actually deploying",
+        help="Show what would be deployed without actually deploying",
     )
     parser.add_argument(
         "--skip-build",
         action="store_true",
         help="Skip the npm build step",
     )
+    parser.add_argument(
+        "--local",
+        action="store_true",
+        help="Deploy to a local directory instead of SFTP (default: ~/public/)",
+    )
+    parser.add_argument(
+        "--local-path",
+        type=str,
+        default=None,
+        help=f"Local directory to deploy to (default: {DEFAULT_LOCAL_PATH})",
+    )
     args = parser.parse_args()
-
-    config_path = Path(args.config)
-    if not config_path.exists():
-        print(f"Deploy config not found: {config_path}")
-        print(f"Copy deploy_config.example.json to deploy_config.json and fill in your server details.")
-        sys.exit(1)
-
-    with open(config_path, "r") as f:
-        config = json.load(f)
 
     if not args.skip_build:
         build_website()
 
     copy_data()
-    sftp_upload(config, dry_run=args.dry_run)
+
+    if args.local or args.local_path:
+        deploy_path = Path(args.local_path) if args.local_path else DEFAULT_LOCAL_PATH
+        local_deploy(deploy_path, dry_run=args.dry_run)
+    else:
+        config_path = Path(args.config)
+        if not config_path.exists():
+            print(f"Deploy config not found: {config_path}")
+            print("Copy deploy_config.example.json to deploy_config.json and fill in your server details.")
+            print("Or use --local to deploy to a local directory.")
+            sys.exit(1)
+
+        with open(config_path, "r") as f:
+            config = json.load(f)
+        sftp_upload(config, dry_run=args.dry_run)
 
 
 if __name__ == "__main__":

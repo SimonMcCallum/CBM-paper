@@ -79,11 +79,24 @@ cd website && npm install && npm run dev
 
 ### Deploy Benchmark Website
 ```bash
+# Deploy locally to ~/public/ for nginx (Ubuntu)
+./deploy/deploy_local.sh
+# Or via Python:
+python deploy/sftp_deploy.py --local
+
+# Deploy to custom local path
+python deploy/sftp_deploy.py --local --local-path /var/www/cbm
+
 # Build and deploy via SFTP
 python deploy/sftp_deploy.py --config deploy/deploy_config.json
 
 # Dry run (show what would be deployed)
 python deploy/sftp_deploy.py --dry-run
+
+# Set up nginx (Ubuntu)
+sudo cp deploy/nginx-cbm.conf /etc/nginx/sites-available/cbm-benchmark
+sudo ln -s /etc/nginx/sites-available/cbm-benchmark /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
 ### Repository Setup
