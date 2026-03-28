@@ -9,12 +9,13 @@ PROVIDERS = {
         "tier": "Free",
         "requires_key": False,
         "models": {
+            "qwen2.5:7b": {"input": 0.0, "output": 0.0},
+            "mistral:7b": {"input": 0.0, "output": 0.0},
             "llama3.2": {"input": 0.0, "output": 0.0},
             "llama3.1": {"input": 0.0, "output": 0.0},
-            "mistral": {"input": 0.0, "output": 0.0},
             "gemma2": {"input": 0.0, "output": 0.0},
         },
-        "default_model": "llama3.2",
+        "default_model": "qwen2.5:7b",
     },
     "google": {
         "name": "Google Gemini",
@@ -55,8 +56,8 @@ EMBEDDING_PROVIDERS = {
     "local": {
         "name": "Sentence Transformers (Local)",
         "cost_per_1k_tokens": 0.0,
-        "models": ["all-MiniLM-L6-v2", "all-mpnet-base-v2"],
-        "default_model": "all-MiniLM-L6-v2",
+        "models": ["BAAI/bge-large-en-v1.5", "all-MiniLM-L6-v2", "all-mpnet-base-v2"],
+        "default_model": "BAAI/bge-large-en-v1.5",
     },
     "ollama": {
         "name": "Ollama Embeddings (Local)",

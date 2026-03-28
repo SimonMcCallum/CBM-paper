@@ -17,10 +17,10 @@ from cost_config import PROVIDERS
 class NoveltyDetector:
     """Detects novelty in text chunks using LLM-generated prompts and FAISS embeddings."""
 
-    def __init__(self, embedding_model: str = "all-MiniLM-L6-v2",
+    def __init__(self, embedding_model: str = None,
                  llm_provider: str = "ollama",
                  llm_model: str = None,
-                 embedding_provider: str = "local",
+                 embedding_provider: str = None,
                  embedding_model_name: str = None,
                  api_keys: Optional[Dict[str, str]] = None):
         """
@@ -39,7 +39,8 @@ class NoveltyDetector:
         self.embeddings = None
         self.index = None
         self.chunk_prompts = []
-        self.embedding_provider = embedding_provider
+        self.embedding_provider = embedding_provider or os.getenv("EMBEDDING_PROVIDER", "local")
+        embedding_model = embedding_model or os.getenv("EMBEDDING_MODEL", "BAAI/bge-large-en-v1.5")
 
         # Resolve LLM model
         provider_config = PROVIDERS.get(llm_provider, PROVIDERS["ollama"])
