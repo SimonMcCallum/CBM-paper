@@ -212,6 +212,7 @@ function doAnalyze() {
     formData.append('llm_model', document.getElementById('llm-model').value);
     formData.append('k_neighbors', document.getElementById('k-neighbors').value);
     formData.append('embedding_provider', document.getElementById('embed-provider').value);
+    formData.append('chunking_mode', document.getElementById('chunking-mode').value);
 
     // Build headers with API keys
     const headers = {};

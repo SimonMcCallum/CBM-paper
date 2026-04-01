@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% block title %}Compare Providers - Novelty Detector{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-bold mb-6">Compare Providers</h2>
+<p class="text-sm text-gray-600 mb-6">Run the same text through multiple LLM providers and compare novelty scores side-by-side.</p>
+
+<div class="space-y-6">
+    <!-- Text Input -->
+    <div class="bg-white rounded-lg shadow p-5">
+        <h3 class="font-semibold text-lg mb-3">Input Text</h3>
+        <textarea id="compare-text" rows="10" class="w-full rounded border-gray-300 shadow-sm text-sm p-3 border font-mono"
+            placeholder="Paste text here to compare novelty analysis across providers..."></textarea>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Chunk Size</label>
+                <input type="number" id="cmp-chunk-size" value="150" min="50" max="500" class="w-full rounded border-gray-300 shadow-sm text-sm p-2 border">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Overlap</label>
+                <input type="number" id="cmp-overlap" value="20" min="0" max="100" class="w-full rounded border-gray-300 shadow-sm text-sm p-2 border">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Chunking Mode</label>
+                <select id="cmp-chunking-mode" class="w-full rounded border-gray-300 shadow-sm text-sm p-2 border">
+                    <option value="overlap">Word Overlap</option>
+                    <option value="paragraph">Paragraph-Aware</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Provider Selection -->
+    <div class="bg-white rounded-lg shadow p-5">
+        <h3 class="font-semibold text-lg mb-3">Select Providers</h3>
+        <div id="provider-checkboxes" class="flex flex-wrap gap-4">
+            <p class="text-sm text-gray-500">Loading providers...</p>
+        </div>
+    </div>
+
+    <!-- Run Button -->
+    <button id="compare-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors" disabled>
+        Run Comparison
+    </button>
+
+    <!-- Progress -->
+    <div id="cmp-progress" class="hidden">
+        <div class="bg-white rounded-lg shadow p-5">
+            <div class="flex items-center gap-3">
+                <svg class="animate-spin h-5 w-5 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                <span id="cmp-status" class="text-sm text-gray-600">Running comparison...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error -->
+    <div id="cmp-error" class="hidden bg-red-50 border border-red-200 text-red-700 rounded-lg p-4">
+        <p class="font-medium">Error</p>
+        <p id="cmp-error-msg" class="text-sm mt-1"></p>
+    </div>
+
+    <!-- Results -->
+    <div id="cmp-results" class="hidden space-y-6">
+        <!-- Summary Table -->
+        <div class="bg-white rounded-lg shadow p-5">
+            <h3 class="font-semibold text-lg mb-3">Provider Summary</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b text-left">
+                            <th class="py-2 pr-4">Provider</th>
+                            <th class="py-2 pr-4">Mean Novelty</th>
+                            <th class="py-2 pr-4">High (&gt;0.7)</th>
+                            <th class="py-2 pr-4">Very Low (&lt;0.2)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cmp-summary-table"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Per-Chunk Comparison -->
+        <div class="bg-white rounded-lg shadow p-5">
+            <h3 class="font-semibold text-lg mb-3">Per-Chunk Scores</h3>
+            <div id="cmp-chunk-grid" class="overflow-x-auto"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const BASE = '/novelty';
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadProviders();
+    document.getElementById('compare-text').addEventListener('input', checkReady);
+    document.getElementById('compare-btn').addEventListener('click', runComparison);
+});
+
+function loadProviders() {
+    fetch(BASE + '/api/providers/status')
+        .then(r => r.json())
+        .then(d => {
+            const container = document.getElementById('provider-checkboxes');
+            container.innerHTML = '';
+            for (const [name, info] of Object.entries(d.providers)) {
+                if (name === 'fallback') continue;
+                const available = info.available;
+                const label = document.createElement('label');
+                label.className = `flex items-center gap-2 px-3 py-2 rounded border text-sm ${available ? 'border-gray-300 cursor-pointer hover:bg-gray-50' : 'border-gray-200 text-gray-400 cursor-not-allowed'}`;
+                label.innerHTML = `
+                    <input type="checkbox" name="provider" value="${name}"
+                        ${available ? 'checked' : 'disabled'}
+                        class="rounded text-purple-600" onchange="checkReady()">
+                    <span>${name}</span>
+                    ${info.model ? `<span class="text-xs text-gray-400">(${info.model})</span>` : ''}
+                    ${!available ? '<span class="text-xs text-red-400">unavailable</span>' : ''}
+                `;
+                container.appendChild(label);
+            }
+            // Add fallback option
+            const fb = document.createElement('label');
+            fb.className = 'flex items-center gap-2 px-3 py-2 rounded border border-gray-300 cursor-pointer hover:bg-gray-50 text-sm';
+            fb.innerHTML = `<input type="checkbox" name="provider" value="fallback" class="rounded text-purple-600" onchange="checkReady()"><span>fallback</span><span class="text-xs text-gray-400">(keyword-only, no LLM)</span>`;
+            container.appendChild(fb);
+            checkReady();
+        })
+        .catch(err => {
+            document.getElementById('provider-checkboxes').innerHTML = '<p class="text-sm text-red-500">Failed to load providers</p>';
+        });
+}
+
+function getSelectedProviders() {
+    return [...document.querySelectorAll('input[name="provider"]:checked')].map(cb => cb.value);
+}
+
+function checkReady() {
+    const text = document.getElementById('compare-text').value.trim();
+    const providers = getSelectedProviders();
+    document.getElementById('compare-btn').disabled = !text || providers.length === 0;
+}
+
+function runComparison() {
+    const text = document.getElementById('compare-text').value.trim();
+    const providers = getSelectedProviders();
+    if (!text || providers.length === 0) return;
+
+    show('cmp-progress');
+    hide('cmp-results');
+    hide('cmp-error');
+    document.getElementById('compare-btn').disabled = true;
+    document.getElementById('cmp-status').textContent = `Comparing ${providers.length} provider(s)...`;
+
+    // Build headers with API keys from localStorage
+    const headers = { 'Content-Type': 'application/json' };
+    const headerMap = { anthropic: 'X-Api-Key-Anthropic', openai: 'X-Api-Key-Openai', google: 'X-Api-Key-Google' };
+    for (const [p, h] of Object.entries(headerMap)) {
+        const key = localStorage.getItem('novelty_key_' + p);
+        if (key) headers[h] = key;
+    }
+
+    fetch(BASE + '/api/compare', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+            text,
+            providers,
+            chunk_size: parseInt(document.getElementById('cmp-chunk-size').value) || 150,
+            overlap: parseInt(document.getElementById('cmp-overlap').value) || 20,
+            chunking_mode: document.getElementById('cmp-chunking-mode').value,
+        }),
+    })
+    .then(r => {
+        if (!r.ok) return r.json().then(d => { throw new Error(d.error || 'Server error'); });
+        return r.json();
+    })
+    .then(data => {
+        hide('cmp-progress');
+        renderComparison(data);
+    })
+    .catch(err => {
+        hide('cmp-progress');
+        show('cmp-error');
+        document.getElementById('cmp-error-msg').textContent = err.message;
+    })
+    .finally(() => {
+        document.getElementById('compare-btn').disabled = false;
+    });
+}
+
+function renderComparison(data) {
+    show('cmp-results');
+
+    // Summary table
+    const tbody = document.getElementById('cmp-summary-table');
+    tbody.innerHTML = '';
+    for (const [name, info] of Object.entries(data.providers)) {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b';
+        tr.innerHTML = `
+            <td class="py-2 pr-4 font-medium">${name}</td>
+            <td class="py-2 pr-4 font-mono">${info.mean.toFixed(3)}</td>
+            <td class="py-2 pr-4"><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs">${info.high_count}</span></td>
+            <td class="py-2 pr-4"><span class="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs">${info.low_count}</span></td>
+        `;
+        tbody.appendChild(tr);
+    }
+
+    // Per-chunk comparison grid
+    const grid = document.getElementById('cmp-chunk-grid');
+    const providerNames = Object.keys(data.providers);
+    let html = '<table class="w-full text-sm"><thead><tr class="border-b"><th class="py-2 pr-3 text-left">Chunk</th>';
+    providerNames.forEach(n => { html += `<th class="py-2 px-3 text-center">${n}</th>`; });
+    html += '</tr></thead><tbody>';
+
+    const numChunks = data.chunks.length;
+    for (let i = 0; i < Math.min(numChunks, 20); i++) {
+        const preview = escapeHtml(data.chunks[i].text_preview);
+        html += `<tr class="border-b"><td class="py-2 pr-3 text-xs text-gray-600 max-w-xs truncate" title="${preview}">#${i}: ${preview}</td>`;
+        providerNames.forEach(name => {
+            const score = data.providers[name].scores[i];
+            const bg = score > 0.7 ? 'bg-green-100' : score > 0.4 ? 'bg-yellow-100' : score > 0.2 ? 'bg-orange-100' : 'bg-red-100';
+            html += `<td class="py-2 px-3 text-center font-mono ${bg}">${score.toFixed(2)}</td>`;
+        });
+        html += '</tr>';
+    }
+    if (numChunks > 20) {
+        html += `<tr><td colspan="${providerNames.length + 1}" class="py-2 text-center text-gray-500 text-xs">Showing first 20 of ${numChunks} chunks</td></tr>`;
+    }
+    html += '</tbody></table>';
+    grid.innerHTML = html;
+}
+
+function show(id) { document.getElementById(id).classList.remove('hidden'); }
+function hide(id) { document.getElementById(id).classList.add('hidden'); }
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+</script>
+{% endblock %}

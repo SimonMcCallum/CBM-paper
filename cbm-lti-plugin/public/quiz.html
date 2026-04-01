@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBM Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .confidence-btn { transition: all 0.2s; }
+        .confidence-btn.selected { ring: 2px; transform: scale(1.05); }
+        .confidence-1.selected { background-color: #22c55e; color: white; }
+        .confidence-2.selected { background-color: #eab308; color: white; }
+        .confidence-3.selected { background-color: #ef4444; color: white; }
+        .result-correct { border-left: 4px solid #22c55e; }
+        .result-incorrect { border-left: 4px solid #ef4444; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-3xl mx-auto p-6">
+
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow p-4 mb-6 flex items-center justify-between">
+            <div>
+                <h1 class="text-xl font-bold">Confidence Based Marking</h1>
+                <p class="text-sm text-gray-500" id="quiz-subtitle">Loading...</p>
+            </div>
+            <div id="score-preview" class="text-right hidden">
+                <div class="text-xs text-gray-500">Questions answered</div>
+                <div class="text-lg font-bold" id="answered-count">0/0</div>
+            </div>
+        </div>
+
+        <!-- Scoring Table -->
+        <div id="scoring-info" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <h3 class="font-semibold text-blue-800 mb-2">How Scoring Works</h3>
+            <p class="text-sm text-blue-700 mb-2">For each question, choose your answer AND your confidence level:</p>
+            <table class="w-full text-sm">
+                <thead><tr class="text-left text-blue-800">
+                    <th class="py-1">Confidence</th><th>If Correct</th><th>If Wrong</th>
+                </tr></thead>
+                <tbody id="scoring-table-body"></tbody>
+            </table>
+            <p class="text-xs text-blue-600 mt-2" id="multiplier-note"></p>
+        </div>
+
+        <!-- Questions Container -->
+        <div id="questions-container" class="space-y-6"></div>
+
+        <!-- Submit Button -->
+        <div id="submit-section" class="hidden mt-6">
+            <button id="submit-btn" onclick="submitQuiz()"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg disabled:opacity-50"
+                disabled>
+                Submit Quiz
+            </button>
+            <p class="text-center text-sm text-gray-500 mt-2" id="submit-warning">
+                Answer all questions and select confidence levels before submitting.
+            </p>
+        </div>
+
+        <!-- Results -->
+        <div id="results-section" class="hidden mt-6 space-y-4">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-bold mb-4">Results</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-gray-50 rounded p-3 text-center">
+                        <div id="res-score" class="text-2xl font-bold">—</div>
+                        <div class="text-xs text-gray-500">Raw Score</div>
+                    </div>
+                    <div class="bg-gray-50 rounded p-3 text-center">
+                        <div id="res-correct" class="text-2xl font-bold text-green-700">—</div>
+                        <div class="text-xs text-gray-500">Correct</div>
+                    </div>
+                    <div class="bg-gray-50 rounded p-3 text-center">
+                        <div id="res-normalized" class="text-2xl font-bold text-blue-700">—</div>
+                        <div class="text-xs text-gray-500">Grade %</div>
+                    </div>
+                    <div class="bg-gray-50 rounded p-3 text-center">
+                        <div id="res-confidence" class="text-2xl font-bold text-purple-700">—</div>
+                        <div class="text-xs text-gray-500">Avg Confidence</div>
+                    </div>
+                </div>
+                <div id="grade-status" class="text-sm text-center py-2 rounded"></div>
+            </div>
+            <div id="results-details" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <script>
+    // Parse launch params from URL
+    const params = new URLSearchParams(window.location.search);
+    const CONFIG_ID = params.get('config_id') || '';
+    const STUDENT_ID = params.get('user_id') || 'demo_student';
+    const STUDENT_NAME = params.get('name') || 'Student';
+    const TOKEN_DATA = params.get('token') || '';
+
+    let sessionId = null;
+    let questions = [];
+    let answers = {};  // question_id -> { selected_answer, confidence_level }
+
+    // ── Load Quiz ──
+
+    async function loadQuiz() {
+        try {
+            const resp = await fetch('/api/quiz/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    config_id: CONFIG_ID,
+                    student_id: STUDENT_ID,
+                    student_name: STUDENT_NAME,
+                    token_data: TOKEN_DATA ? JSON.parse(atob(TOKEN_DATA)) : null,
+                }),
+            });
+
+            const data = await resp.json();
+            if (!data.success) {
+                document.getElementById('quiz-subtitle').textContent = 'Error: ' + (data.error || 'Failed to load quiz');
+                return;
+            }
+
+            sessionId = data.session_id;
+            questions = data.questions;
+
+            // Update UI
+            document.getElementById('quiz-subtitle').textContent =
+                `${questions.length} questions | ${data.scoring_model.toUpperCase()} scoring | ${data.resumed ? 'Resumed' : 'New session'}`;
+
+            // Render scoring table
+            const tbody = document.getElementById('scoring-table-body');
+            tbody.innerHTML = data.scoring_table.map(r => `
+                <tr class="border-t border-blue-100">
+                    <td class="py-1 font-medium">${r.label} (${r.confidence_level})</td>
+                    <td class="text-green-700">+${r.correct_score.toFixed(1)}</td>
+                    <td class="text-red-700">${r.incorrect_score.toFixed(1)}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('multiplier-note').textContent =
+                `Max grade = ${data.max_grade_multiplier}x questions. You can recover from wrong answers by being confident on correct ones.`;
+
+            // Render questions
+            renderQuestions();
+            document.getElementById('submit-section').classList.remove('hidden');
+            document.getElementById('score-preview').classList.remove('hidden');
+            updateAnsweredCount();
+        } catch (err) {
+            document.getElementById('quiz-subtitle').textContent = 'Error loading quiz: ' + err.message;
+        }
+    }
+
+    function renderQuestions() {
+        const container = document.getElementById('questions-container');
+        container.innerHTML = questions.map((q, idx) => `
+            <div class="bg-white rounded-lg shadow p-5" id="q-${idx}">
+                <div class="flex items-start gap-3 mb-3">
+                    <span class="bg-gray-200 text-gray-700 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold flex-shrink-0">${idx + 1}</span>
+                    <p class="text-gray-800">${q.question_text}</p>
+                </div>
+
+                <div class="space-y-2 ml-11 mb-4">
+                    ${q.options.map(opt => `
+                        <label class="flex items-center gap-2 p-2 rounded hover:bg-gray-50 cursor-pointer border border-transparent hover:border-gray-200">
+                            <input type="radio" name="answer-${idx}" value="${opt.id}"
+                                onchange="selectAnswer(${idx}, '${opt.id}')"
+                                class="text-blue-600">
+                            <span class="text-sm">${opt.text}</span>
+                        </label>
+                    `).join('')}
+                </div>
+
+                <div class="ml-11">
+                    <p class="text-sm font-medium text-gray-600 mb-2">How confident are you?</p>
+                    <div class="flex gap-2">
+                        <button onclick="selectConfidence(${idx}, 1)" class="confidence-btn confidence-1 px-4 py-2 rounded border text-sm font-medium bg-green-50 border-green-200 hover:bg-green-100">
+                            Low (+1/0)
+                        </button>
+                        <button onclick="selectConfidence(${idx}, 2)" class="confidence-btn confidence-2 px-4 py-2 rounded border text-sm font-medium bg-yellow-50 border-yellow-200 hover:bg-yellow-100">
+                            Medium (+1.5/−0.5)
+                        </button>
+                        <button onclick="selectConfidence(${idx}, 3)" class="confidence-btn confidence-3 px-4 py-2 rounded border text-sm font-medium bg-red-50 border-red-200 hover:bg-red-100">
+                            High (+2/−2)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function selectAnswer(idx, optionId) {
+        if (!answers[idx]) answers[idx] = {};
+        answers[idx].selected_answer = optionId;
+        answers[idx].question_id = questions[idx].id;
+        answers[idx].question_order = idx + 1;
+        updateAnsweredCount();
+    }
+
+    function selectConfidence(idx, level) {
+        if (!answers[idx]) answers[idx] = {};
+        answers[idx].confidence_level = level;
+
+        // Update button styles
+        const qDiv = document.getElementById(`q-${idx}`);
+        qDiv.querySelectorAll('.confidence-btn').forEach(btn => btn.classList.remove('selected'));
+        qDiv.querySelector(`.confidence-${level}`).classList.add('selected');
+        updateAnsweredCount();
+    }
+
+    function updateAnsweredCount() {
+        const complete = Object.values(answers).filter(
+            a => a.selected_answer && a.confidence_level
+        ).length;
+        document.getElementById('answered-count').textContent = `${complete}/${questions.length}`;
+        document.getElementById('submit-btn').disabled = complete < questions.length;
+    }
+
+    // ── Submit ──
+
+    async function submitQuiz() {
+        const btn = document.getElementById('submit-btn');
+        btn.disabled = true;
+        btn.textContent = 'Submitting...';
+
+        try {
+            const resp = await fetch('/api/quiz/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    session_id: sessionId,
+                    answers: Object.values(answers),
+                }),
+            });
+
+            const data = await resp.json();
+            if (!data.success) {
+                alert('Error: ' + (data.error || 'Submission failed'));
+                btn.disabled = false;
+                btn.textContent = 'Submit Quiz';
+                return;
+            }
+
+            // Show results
+            document.getElementById('submit-section').classList.add('hidden');
+            document.getElementById('questions-container').classList.add('hidden');
+            document.getElementById('scoring-info').classList.add('hidden');
+
+            const r = data.result;
+            document.getElementById('res-score').textContent = r.raw_total.toFixed(1);
+            document.getElementById('res-correct').textContent = `${r.num_correct}/${r.num_questions}`;
+            document.getElementById('res-normalized').textContent = r.normalized.toFixed(1) + '%';
+            document.getElementById('res-confidence').textContent = r.avg_confidence.toFixed(1);
+
+            const gradeEl = document.getElementById('grade-status');
+            if (data.grade_submitted) {
+                gradeEl.textContent = 'Grade submitted to Canvas';
+                gradeEl.className = 'text-sm text-center py-2 rounded bg-green-100 text-green-800';
+            } else {
+                gradeEl.textContent = 'Grade not submitted (standalone mode)';
+                gradeEl.className = 'text-sm text-center py-2 rounded bg-yellow-100 text-yellow-800';
+            }
+
+            // Detailed results
+            const details = document.getElementById('results-details');
+            details.innerHTML = data.details.map((d, i) => `
+                <div class="bg-white rounded-lg shadow p-4 ${d.is_correct ? 'result-correct' : 'result-incorrect'}">
+                    <div class="flex justify-between items-start">
+                        <p class="text-sm font-medium">${i + 1}. ${d.question_text}</p>
+                        <span class="font-mono font-bold ${d.cbm_score >= 0 ? 'text-green-700' : 'text-red-700'}">
+                            ${d.cbm_score >= 0 ? '+' : ''}${d.cbm_score.toFixed(1)}
+                        </span>
+                    </div>
+                    <p class="text-xs mt-1 ${d.is_correct ? 'text-green-600' : 'text-red-600'}">
+                        ${d.is_correct ? 'Correct' : 'Incorrect'} | Confidence: ${d.confidence_level}
+                    </p>
+                    ${d.explanation ? `<p class="text-xs text-gray-500 mt-1">${d.explanation}</p>` : ''}
+                </div>
+            `).join('');
+
+            document.getElementById('results-section').classList.remove('hidden');
+        } catch (err) {
+            alert('Error submitting: ' + err.message);
+            btn.disabled = false;
+            btn.textContent = 'Submit Quiz';
+        }
+    }
+
+    // ── Init ──
+    if (CONFIG_ID) {
+        loadQuiz();
+    } else {
+        document.getElementById('quiz-subtitle').textContent = 'No quiz configured. Use the admin panel to set up a quiz.';
+    }
+    </script>
+</body>
+</html>

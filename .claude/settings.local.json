@@ -6,7 +6,11 @@
       "Bash(node --version:*)",
       "Bash(npm --version:*)",
       "Bash(nginx:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(python -c \"import ast; [ast.parse\\(open\\(f\\).read\\(\\)\\) for f in [''llm_providers.py'', ''novelty_detector.py'', ''server.py'', ''pdf_processor.py'']]; print\\(''All files parse OK''\\)\")",
+      "Bash(grep -E \"\\\\.\\(sql|ts\\)$\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\(''validator_api.py''\\).read\\(\\)\\); print\\(''validator_api.py OK''\\)\")",
+      "Bash(find . -type f \\\\\\(-name Dockerfile* -o -name docker-compose* -o -name .env* -o -name *.conf -o -name nginx* \\\\\\))"
     ],
     "deny": []
   }

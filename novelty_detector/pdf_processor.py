@@ -1,6 +1,7 @@
 """
 PDF text extraction, chunking, and annotation module.
 Handles PDF processing and annotation with novelty scores.
+Supports both word-overlap chunking and paragraph-aware chunking.
 """
 
 import re
@@ -16,16 +17,20 @@ import io
 class PDFProcessor:
     """Handles PDF text extraction, chunking, and annotation."""
 
-    def __init__(self, chunk_size: int = 150, overlap: int = 20):
+    def __init__(self, chunk_size: int = 150, overlap: int = 20,
+                 chunking_mode: str = "overlap"):
         """
         Initialize PDF processor.
 
         Args:
             chunk_size: Target number of words per chunk
-            overlap: Number of words to overlap between chunks
+            overlap: Number of words to overlap between chunks (overlap mode only)
+            chunking_mode: 'overlap' for word-level overlap chunking (default),
+                           'paragraph' for paragraph-boundary-aware chunking
         """
         self.chunk_size = chunk_size
         self.overlap = overlap
+        self.chunking_mode = chunking_mode
 
     def extract_text(self, pdf_path: str) -> str:
         """
@@ -48,13 +53,21 @@ class PDFProcessor:
 
     def chunk_text(self, text: str) -> List[Dict[str, any]]:
         """
-        Split text into overlapping chunks of approximately chunk_size words.
+        Split text into chunks using the configured chunking mode.
 
         Args:
             text: Input text to chunk
 
         Returns:
-            List of chunk dictionaries with text, start/end positions
+            List of chunk dictionaries with text and metadata
+        """
+        if self.chunking_mode == "paragraph":
+            return self._chunk_text_paragraph(text)
+        return self._chunk_text_overlap(text)
+
+    def _chunk_text_overlap(self, text: str) -> List[Dict[str, any]]:
+        """
+        Split text into overlapping chunks of approximately chunk_size words.
         """
         # Clean and normalize text
         text = re.sub(r'\s+', ' ', text).strip()
@@ -94,6 +107,71 @@ class PDFProcessor:
             # Break if we're at the end
             if end_idx >= len(words):
                 break
+
+        return chunks
+
+    def _chunk_text_paragraph(self, text: str) -> List[Dict[str, any]]:
+        """
+        Split text into chunks respecting paragraph boundaries.
+        Accumulates paragraphs until reaching chunk_size words,
+        producing more semantically coherent chunks.
+        """
+        min_words = max(self.chunk_size // 2, 50)
+        max_words = max(self.chunk_size * 2, 200)
+
+        paragraphs = re.split(r'\n\s*\n', text)
+
+        chunks = []
+        current_parts = []
+        current_word_count = 0
+        chunk_idx = 0
+
+        for para in paragraphs:
+            para = para.strip()
+            if not para:
+                continue
+
+            words = para.split()
+            word_count = len(words)
+
+            if current_word_count + word_count <= max_words:
+                current_parts.append(para)
+                current_word_count += word_count
+            else:
+                # Save current chunk if it has enough words
+                if current_word_count >= min_words:
+                    chunk_text = ' '.join(current_parts)
+                    chunks.append({
+                        'chunk_index': chunk_idx,
+                        'text': chunk_text,
+                        'word_count': current_word_count,
+                    })
+                    chunk_idx += 1
+                    current_parts = [para]
+                    current_word_count = word_count
+                else:
+                    # Current chunk is too small, keep accumulating
+                    current_parts.append(para)
+                    current_word_count += word_count
+                    if current_word_count >= min_words:
+                        chunk_text = ' '.join(current_parts)
+                        chunks.append({
+                            'chunk_index': chunk_idx,
+                            'text': chunk_text,
+                            'word_count': current_word_count,
+                        })
+                        chunk_idx += 1
+                        current_parts = []
+                        current_word_count = 0
+
+        # Final chunk
+        if current_parts:
+            chunk_text = ' '.join(current_parts)
+            chunks.append({
+                'chunk_index': chunk_idx,
+                'text': chunk_text,
+                'word_count': current_word_count,
+            })
 
         return chunks
 

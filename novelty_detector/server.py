@@ -6,6 +6,7 @@ and downloading annotated results. Uses Blueprint at /novelty prefix.
 
 import os
 import json
+import numpy as np
 from pathlib import Path
 from flask import Flask, Blueprint, request, jsonify, send_file, render_template
 from flask_cors import CORS
@@ -16,6 +17,7 @@ import traceback
 from pdf_processor import PDFProcessor
 from novelty_detector import NoveltyDetector
 from ollama_client import OllamaClient
+from llm_providers import discover_providers
 from cost_config import (
     PROVIDERS, EMBEDDING_PROVIDERS,
     estimate_cost, estimate_cost_all_providers,
@@ -83,6 +85,12 @@ def about():
     return render_template('about.html')
 
 
+@novelty_bp.route('/compare', methods=['GET'])
+def compare_page():
+    """Compare providers page."""
+    return render_template('compare.html')
+
+
 # ── API Routes ───────────────────────────────────────────────────────
 
 @novelty_bp.route('/api/health', methods=['GET'])
@@ -91,7 +99,7 @@ def health_check():
     return jsonify({
         'status': 'healthy',
         'service': 'PDF Novelty Detection Server',
-        'version': '2.0.0'
+        'version': '2.1.0'
     })
 
 
@@ -178,12 +186,14 @@ def upload_and_analyze():
         k_neighbors = int(request.form.get('k_neighbors', 5))
         embedding_provider = request.form.get('embedding_provider', 'local')
         embedding_model = request.form.get('embedding_model', '') or None
+        chunking_mode = request.form.get('chunking_mode', 'overlap')
 
         # Extract user API keys from headers
         api_keys = extract_api_keys(request)
 
         # Initialize processors
-        pdf_processor = PDFProcessor(chunk_size=chunk_size, overlap=overlap)
+        pdf_processor = PDFProcessor(chunk_size=chunk_size, overlap=overlap,
+                                     chunking_mode=chunking_mode)
         novelty_detector = NoveltyDetector(
             llm_provider=llm_provider,
             llm_model=llm_model,
@@ -280,10 +290,12 @@ def analyze_text():
         overlap = data.get('overlap', 20)
         llm_provider = data.get('llm_provider', 'ollama')
         llm_model = data.get('llm_model')
+        chunking_mode = data.get('chunking_mode', 'overlap')
 
         api_keys = extract_api_keys(request)
 
-        pdf_processor = PDFProcessor(chunk_size=chunk_size, overlap=overlap)
+        pdf_processor = PDFProcessor(chunk_size=chunk_size, overlap=overlap,
+                                     chunking_mode=chunking_mode)
         novelty_detector = NoveltyDetector(
             llm_provider=llm_provider,
             llm_model=llm_model,
@@ -336,6 +348,82 @@ def estimate_cost_endpoint():
         return jsonify({'error': str(e)}), 500
 
 
+@novelty_bp.route('/api/compare', methods=['POST'])
+def compare_providers():
+    """
+    Run novelty analysis with multiple providers for side-by-side comparison.
+    Accepts JSON body with text or form-upload with PDF.
+    """
+    try:
+        api_keys = extract_api_keys(request)
+
+        # Accept either JSON text or form-uploaded PDF
+        if request.content_type and 'json' in request.content_type:
+            data = request.get_json()
+            if not data or 'text' not in data:
+                return jsonify({'error': 'No text provided'}), 400
+            text = data['text']
+            provider_names = data.get('providers')
+            chunk_size = data.get('chunk_size', 150)
+            overlap = data.get('overlap', 20)
+            chunking_mode = data.get('chunking_mode', 'overlap')
+        else:
+            return jsonify({'error': 'Send JSON with "text" field'}), 400
+
+        pdf_processor = PDFProcessor(chunk_size=chunk_size, overlap=overlap,
+                                     chunking_mode=chunking_mode)
+        novelty_detector = NoveltyDetector(
+            llm_provider='ollama',
+            api_keys=api_keys,
+        )
+
+        chunks = pdf_processor.chunk_text(text)
+        results = novelty_detector.analyze_document_multi(
+            chunks, pdf_processor, provider_names=provider_names
+        )
+
+        # Summarize per provider
+        provider_summaries = {}
+        for name, scores in results.items():
+            score_vals = [s['novelty_score'] for s in scores]
+            provider_summaries[name] = {
+                'scores': score_vals,
+                'mean': float(np.mean(score_vals)) if score_vals else 0,
+                'high_count': sum(1 for s in score_vals if s > 0.7),
+                'low_count': sum(1 for s in score_vals if s < 0.2),
+            }
+
+        return jsonify({
+            'success': True,
+            'chunks_analyzed': len(chunks),
+            'chunks': [
+                {'chunk_index': i, 'text_preview': c['text'][:100]}
+                for i, c in enumerate(chunks)
+            ],
+            'providers': provider_summaries,
+        })
+
+    except Exception as e:
+        print(f"Error in comparison: {e}")
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@novelty_bp.route('/api/providers/status', methods=['GET'])
+def providers_status():
+    """List discovered providers with live availability check."""
+    api_keys = extract_api_keys(request)
+    providers = discover_providers(api_keys)
+    info = {}
+    for name, provider in providers.items():
+        info[name] = {
+            'name': name,
+            'available': provider.is_available(),
+            'model': getattr(provider, 'model', None),
+        }
+    return jsonify({'providers': info})
+
+
 @novelty_bp.route('/api/ollama/status', methods=['GET'])
 def ollama_status():
     """Check Ollama connectivity."""
@@ -359,6 +447,15 @@ def create_app():
     CORS(app)
     app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
     app.register_blueprint(novelty_bp)
+
+    # Register validator sidecar API (System 2 support)
+    try:
+        from validator_api import validator_bp
+        app.register_blueprint(validator_bp)
+        print("Validator API registered at /api/validator/")
+    except ImportError as e:
+        print(f"Validator API not available: {e}")
+
     return app
 
 

@@ -1,9 +1,11 @@
 """
 Novelty detection module using LLM-based prompt generation and FAISS similarity search.
 Supports Ollama (local), Anthropic, OpenAI, and Google providers with per-request API keys.
+Includes provider abstraction with automatic fallback and multi-provider comparison.
 """
 
 import os
+import logging
 import numpy as np
 from typing import List, Dict, Optional
 from sentence_transformers import SentenceTransformer
@@ -12,6 +14,11 @@ from tqdm import tqdm
 
 from ollama_client import OllamaClient
 from cost_config import PROVIDERS
+from llm_providers import (
+    LLMProvider, FallbackProvider, discover_providers,
+)
+
+logger = logging.getLogger(__name__)
 
 
 class NoveltyDetector:
@@ -28,7 +35,7 @@ class NoveltyDetector:
 
         Args:
             embedding_model: Name of sentence transformer model (for local provider)
-            llm_provider: LLM provider ('ollama', 'anthropic', 'openai', 'google')
+            llm_provider: LLM provider ('ollama', 'anthropic', 'openai', 'google', 'fallback')
             llm_model: Specific model override (uses provider default if None)
             embedding_provider: Embedding provider ('local', 'ollama', 'openai')
             embedding_model_name: Override embedding model name
@@ -46,22 +53,29 @@ class NoveltyDetector:
         provider_config = PROVIDERS.get(llm_provider, PROVIDERS["ollama"])
         self.llm_model = llm_model or provider_config["default_model"]
 
+        # Discover all available LLM providers (used for compare and fallback)
+        self.providers = discover_providers(api_keys)
+
+        # Set active provider
+        if llm_provider in self.providers:
+            self.active_provider = self.providers[llm_provider]
+        else:
+            self.active_provider = self.providers.get("fallback", FallbackProvider())
+            logger.warning(f"Provider '{llm_provider}' not available, using fallback")
+
         # Initialize embedding model
-        if embedding_provider == "local":
+        if self.embedding_provider == "local":
             model_name = embedding_model_name or embedding_model
             self.embedding_model = SentenceTransformer(model_name)
-        elif embedding_provider == "ollama":
+        elif self.embedding_provider == "ollama":
             self.ollama_embed_model = embedding_model_name or os.getenv(
                 "OLLAMA_EMBED_MODEL", "nomic-embed-text")
             self.ollama_client_embed = OllamaClient()
-        elif embedding_provider == "openai":
+        elif self.embedding_provider == "openai":
             import openai as openai_mod
             key = self._get_api_key("openai")
             self.openai_embed_client = openai_mod.OpenAI(api_key=key)
             self.openai_embed_model = embedding_model_name or "text-embedding-3-small"
-
-        # Initialize LLM client
-        self._init_llm_client()
 
     def _get_api_key(self, provider: str) -> str:
         """Get API key from per-request keys or environment."""
@@ -79,23 +93,6 @@ class NoveltyDetector:
                 f"Provide via request header or set {env_map.get(provider)} env var."
             )
         return key
-
-    def _init_llm_client(self):
-        """Initialize the LLM client based on provider."""
-        if self.llm_provider == "ollama":
-            self.llm_client = OllamaClient()
-        elif self.llm_provider == "anthropic":
-            from anthropic import Anthropic
-            self.llm_client = Anthropic(api_key=self._get_api_key("anthropic"))
-        elif self.llm_provider == "openai":
-            import openai as openai_mod
-            self.llm_client = openai_mod.OpenAI(api_key=self._get_api_key("openai"))
-        elif self.llm_provider == "google":
-            import google.generativeai as genai
-            genai.configure(api_key=self._get_api_key("google"))
-            self.llm_client = genai
-        else:
-            raise ValueError(f"Unsupported LLM provider: {self.llm_provider}")
 
     def _encode_texts(self, texts: List[str]) -> np.ndarray:
         """Encode texts to embeddings using the configured provider."""
@@ -122,58 +119,29 @@ class NoveltyDetector:
             raise ValueError(f"Unsupported embedding provider: {self.embedding_provider}")
 
     def generate_prompt_for_chunk(self, chunk_text: str, before_context: str = "",
-                                  after_context: str = "") -> str:
+                                  after_context: str = "",
+                                  provider: Optional[LLMProvider] = None) -> str:
         """
         Use LLM to generate a prompt that captures the essence of the text chunk.
+        Falls back to keyword extraction if the active provider fails.
 
         Args:
             chunk_text: The main text chunk
             before_context: Context before the chunk
             after_context: Context after the chunk
+            provider: Optional provider override for this call
 
         Returns:
             Generated prompt that could regenerate this text
         """
-        analysis_prompt = f"""Analyze the following text passage and create a concise prompt that captures its core meaning and could be used to regenerate similar content.
-
-Context before: {before_context if before_context else "[Beginning of document]"}
-
-TARGET TEXT: {chunk_text}
-
-Context after: {after_context if after_context else "[End of document]"}
-
-Generate a prompt (2-3 sentences max) that captures the essential meaning, topic, and key points of the TARGET TEXT. This prompt should be specific enough that someone could use it to write similar content.
-
-Respond with ONLY the prompt, no additional explanation."""
-
+        use_provider = provider or self.active_provider
         try:
-            if self.llm_provider == "ollama":
-                return self.llm_client.generate(analysis_prompt, model=self.llm_model)
-
-            elif self.llm_provider == "anthropic":
-                response = self.llm_client.messages.create(
-                    model=self.llm_model,
-                    max_tokens=200,
-                    messages=[{"role": "user", "content": analysis_prompt}]
-                )
-                return response.content[0].text.strip()
-
-            elif self.llm_provider == "openai":
-                response = self.llm_client.chat.completions.create(
-                    model=self.llm_model,
-                    max_tokens=200,
-                    messages=[{"role": "user", "content": analysis_prompt}]
-                )
-                return response.choices[0].message.content.strip()
-
-            elif self.llm_provider == "google":
-                model = self.llm_client.GenerativeModel(self.llm_model)
-                response = model.generate_content(analysis_prompt)
-                return response.text.strip()
-
+            return use_provider.generate_prompt(chunk_text, before_context, after_context)
         except Exception as e:
-            print(f"Error generating prompt: {e}")
-            return chunk_text
+            logger.error(f"Error generating prompt with {use_provider.name}: {e}")
+            # Fall back to keyword-based extraction
+            fallback = self.providers.get("fallback", FallbackProvider())
+            return fallback.generate_prompt(chunk_text, before_context, after_context)
 
     def analyze_chunks(self, chunks: List[Dict], pdf_processor) -> List[str]:
         """
@@ -289,6 +257,65 @@ Respond with ONLY the prompt, no additional explanation."""
         self.build_faiss_index(prompts)
         novelty_scores = self.calculate_novelty_scores(k)
         return novelty_scores
+
+    def analyze_document_multi(self, chunks: List[Dict], pdf_processor,
+                               provider_names: Optional[List[str]] = None,
+                               k: int = 5) -> Dict[str, List[Dict]]:
+        """
+        Run novelty analysis with multiple providers for comparison.
+
+        Args:
+            chunks: List of text chunks
+            pdf_processor: PDFProcessor instance
+            provider_names: List of provider names to use. If None, uses all discovered.
+            k: Number of neighbors for novelty calculation
+
+        Returns:
+            Dict mapping provider name to list of novelty score dicts.
+        """
+        if provider_names:
+            providers_to_use = {
+                name: self.providers[name]
+                for name in provider_names
+                if name in self.providers
+            }
+        else:
+            # Exclude fallback from comparison unless explicitly requested
+            providers_to_use = {
+                name: p for name, p in self.providers.items()
+                if name != "fallback"
+            }
+            if not providers_to_use:
+                providers_to_use = {"fallback": self.providers["fallback"]}
+
+        results = {}
+        for name, provider in providers_to_use.items():
+            logger.info(f"Running comparison analysis with provider: {name}")
+            try:
+                # Generate prompts with this specific provider
+                prompts = []
+                for i, chunk in enumerate(chunks):
+                    before_context, chunk_text, after_context = pdf_processor.get_chunk_context(
+                        chunks, i
+                    )
+                    prompt = self.generate_prompt_for_chunk(
+                        chunk_text, before_context, after_context, provider=provider
+                    )
+                    prompts.append(prompt)
+
+                self.chunk_prompts = prompts
+                self.build_faiss_index(prompts)
+                scores = self.calculate_novelty_scores(k)
+                results[name] = scores
+            except Exception as e:
+                logger.error(f"Error with provider {name}: {e}")
+                results[name] = [
+                    {"chunk_index": i, "novelty_score": 0.5, "avg_similarity": 0.5,
+                     "similar_chunks": [], "text_preview": "Error during analysis"}
+                    for i in range(len(chunks))
+                ]
+
+        return results
 
     def get_summary_statistics(self, novelty_scores: List[Dict]) -> Dict:
         """

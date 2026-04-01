@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submission Validator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-3xl mx-auto p-6">
+        <h1 class="text-2xl font-bold mb-2">Submission Validator</h1>
+        <p class="text-sm text-gray-500 mb-6">Upload your PDF, then answer confidence-based questions to validate your understanding.</p>
+
+        <!-- Step 1: Upload -->
+        <div id="upload-section">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="font-semibold text-lg mb-3">Step 1: Upload Your PDF</h2>
+                <div id="drop-zone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-blue-500 transition-colors"
+                    ondragover="event.preventDefault(); this.classList.add('border-blue-500')"
+                    ondragleave="this.classList.remove('border-blue-500')"
+                    ondrop="event.preventDefault(); this.classList.remove('border-blue-500'); document.getElementById('file-input').files = event.dataTransfer.files; onFile()"
+                    onclick="document.getElementById('file-input').click()">
+                    <p class="text-gray-600">Drag & drop PDF here, or click to select</p>
+                    <p id="file-name" class="text-sm font-medium text-blue-600 mt-2 hidden"></p>
+                    <input type="file" id="file-input" accept=".pdf" class="hidden" onchange="onFile()">
+                </div>
+                <button id="upload-btn" onclick="uploadPDF()" disabled
+                    class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg disabled:opacity-50">
+                    Upload & Analyze
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Processing -->
+        <div id="processing-section" class="hidden">
+            <div class="bg-white rounded-lg shadow p-6 text-center">
+                <svg class="animate-spin h-8 w-8 text-blue-600 mx-auto mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                <p id="processing-status" class="text-gray-600">Analyzing your submission...</p>
+                <p class="text-xs text-gray-400 mt-1">This may take a minute</p>
+            </div>
+        </div>
+
+        <!-- Step 3: Answer Questions -->
+        <div id="quiz-section" class="hidden space-y-4">
+            <div class="bg-white rounded-lg shadow p-4">
+                <h2 class="font-semibold text-lg">Step 2: Answer Validation Questions</h2>
+                <p class="text-sm text-gray-500 mt-1" id="quiz-info"></p>
+                <div id="deadline-warning" class="text-sm text-orange-600 mt-1 hidden"></div>
+            </div>
+
+            <!-- Scoring info (same as quiz.html) -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <table class="w-full text-sm">
+                    <thead><tr class="text-left text-blue-800">
+                        <th class="py-1">Confidence</th><th>If Correct</th><th>If Wrong</th>
+                    </tr></thead>
+                    <tbody id="scoring-table"></tbody>
+                </table>
+                <p class="text-xs text-blue-600 mt-2" id="mult-note"></p>
+            </div>
+
+            <div id="v-questions" class="space-y-4"></div>
+
+            <button id="v-submit-btn" onclick="submitAnswers()" disabled
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg disabled:opacity-50">
+                Submit Answers
+            </button>
+        </div>
+
+        <!-- Step 4: Waiting (deferred mode) -->
+        <div id="waiting-section" class="hidden">
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+                <h2 class="font-semibold text-lg text-yellow-800">Assessment Not Yet Available</h2>
+                <p class="text-sm text-yellow-700 mt-2" id="waiting-msg"></p>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="results-section" class="hidden space-y-4">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-bold mb-4">Validation Results</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-gray-50 rounded p-3 text-center">
+                        <div id="r-score" class="text-2xl font-bold">—</div>
+                        <div class="text-xs text-gray-500">Raw Score</div>
+                    </div>
+                    <div class="bg-gray-50 rounded p-3 text-center">
+                        <div id="r-correct" class="text-2xl font-bold text-green-700">—</div>
+                        <div class="text-xs text-gray-500">Correct</div>
+                    </div>
+                    <div class="bg-gray-50 rounded p-3 text-center">
+                        <div id="r-grade" class="text-2xl font-bold text-blue-700">—</div>
+                        <div class="text-xs text-gray-500">Grade %</div>
+                    </div>
+                    <div class="bg-gray-50 rounded p-3 text-center">
+                        <div id="r-conf" class="text-2xl font-bold text-purple-700">—</div>
+                        <div class="text-xs text-gray-500">Avg Confidence</div>
+                    </div>
+                </div>
+                <div id="r-grade-status" class="text-sm text-center py-2 rounded mt-4"></div>
+            </div>
+            <div id="r-details" class="space-y-2"></div>
+        </div>
+    </div>
+
+    <script>
+    const params = new URLSearchParams(window.location.search);
+    const CONFIG_ID = params.get('config_id') || '';
+    const STUDENT_ID = params.get('user_id') || 'demo_student';
+    const STUDENT_NAME = params.get('name') || 'Student';
+    const TOKEN_DATA = params.get('token') || '';
+
+    let submissionId = null;
+    let vQuestions = [];
+    let vAnswers = {};
+
+    function onFile() {
+        const f = document.getElementById('file-input').files[0];
+        if (!f) return;
+        const el = document.getElementById('file-name');
+        el.textContent = f.name + ' (' + (f.size/1024).toFixed(0) + ' KB)';
+        el.classList.remove('hidden');
+        document.getElementById('upload-btn').disabled = false;
+    }
+
+    async function uploadPDF() {
+        const file = document.getElementById('file-input').files[0];
+        if (!file) return;
+
+        document.getElementById('upload-section').classList.add('hidden');
+        document.getElementById('processing-section').classList.remove('hidden');
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('config_id', CONFIG_ID);
+        formData.append('student_id', STUDENT_ID);
+        formData.append('student_name', STUDENT_NAME);
+        if (TOKEN_DATA) formData.append('token_data', TOKEN_DATA);
+
+        try {
+            const resp = await fetch('/api/validator/submit', { method: 'POST', body: formData });
+            const data = await resp.json();
+            if (!data.success) throw new Error(data.error);
+            submissionId = data.submission_id;
+            pollStatus();
+        } catch (err) {
+            document.getElementById('processing-status').textContent = 'Error: ' + err.message;
+        }
+    }
+
+    async function pollStatus() {
+        const resp = await fetch(`/api/validator/status/${submissionId}`);
+        const data = await resp.json();
+
+        if (data.status === 'analyzing') {
+            document.getElementById('processing-status').textContent =
+                'Analyzing... ' + (data.word_count ? `(${data.word_count} words)` : '');
+            setTimeout(pollStatus, 3000);
+        } else if (data.status === 'ready' || data.status === 'completed') {
+            if (data.assessment?.status === 'pending') {
+                document.getElementById('processing-section').classList.add('hidden');
+                document.getElementById('waiting-section').classList.remove('hidden');
+                document.getElementById('waiting-msg').textContent =
+                    'Your assessment will be activated by your instructor during the tutorial session. Check back later.';
+                setTimeout(pollStatus, 10000);
+            } else if (data.assessment?.status === 'available' || data.assessment?.status === 'in_progress') {
+                loadQuestions();
+            } else if (data.assessment?.status === 'submitted') {
+                document.getElementById('processing-section').classList.add('hidden');
+                document.getElementById('results-section').classList.remove('hidden');
+            } else {
+                loadQuestions();
+            }
+        } else if (data.status === 'error') {
+            document.getElementById('processing-status').textContent = 'Error: ' + data.error_message;
+        }
+    }
+
+    async function loadQuestions() {
+        document.getElementById('processing-section').classList.add('hidden');
+        document.getElementById('waiting-section').classList.add('hidden');
+
+        const resp = await fetch(`/api/validator/questions/${submissionId}`);
+        if (!resp.ok) {
+            const err = await resp.json();
+            document.getElementById('waiting-section').classList.remove('hidden');
+            document.getElementById('waiting-msg').textContent = err.error;
+            return;
+        }
+        const data = await resp.json();
+        vQuestions = data.questions;
+
+        // Scoring table
+        document.getElementById('scoring-table').innerHTML = data.scoring_table.map(r => `
+            <tr class="border-t border-blue-100">
+                <td class="py-1">${r.label} (${r.confidence_level})</td>
+                <td class="text-green-700">+${r.correct_score.toFixed(1)}</td>
+                <td class="text-red-700">${r.incorrect_score.toFixed(1)}</td>
+            </tr>
+        `).join('');
+        document.getElementById('mult-note').textContent =
+            `Max grade = ${data.max_grade_multiplier}x questions. Recovery margin for ambiguous questions.`;
+
+        document.getElementById('quiz-info').textContent =
+            `${vQuestions.length} questions | Answer with confidence`;
+
+        if (data.deadline_at) {
+            const dl = new Date(data.deadline_at);
+            document.getElementById('deadline-warning').textContent =
+                'Deadline: ' + dl.toLocaleString();
+            document.getElementById('deadline-warning').classList.remove('hidden');
+        }
+
+        // Render (reusing same pattern as quiz.html)
+        const container = document.getElementById('v-questions');
+        container.innerHTML = vQuestions.map((q, i) => {
+            const catBadge = q.category === 'novel'
+                ? '<span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded">Generated</span>'
+                : '<span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">From bank</span>';
+            return `
+            <div class="bg-white rounded-lg shadow p-5" id="vq-${i}">
+                <div class="flex items-start gap-3 mb-3">
+                    <span class="bg-gray-200 text-gray-700 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold flex-shrink-0">${i+1}</span>
+                    <div class="flex-1">
+                        <p class="text-gray-800">${q.question_text}</p>
+                        <div class="mt-1">${catBadge}</div>
+                    </div>
+                </div>
+                <div class="space-y-2 ml-11 mb-4">
+                    ${q.options.map(o => `
+                        <label class="flex items-center gap-2 p-2 rounded hover:bg-gray-50 cursor-pointer border border-transparent hover:border-gray-200">
+                            <input type="radio" name="va-${i}" value="${o.id}" onchange="vSelect(${i},'${o.id}')" class="text-blue-600">
+                            <span class="text-sm">${o.text}</span>
+                        </label>
+                    `).join('')}
+                </div>
+                <div class="ml-11">
+                    <p class="text-sm font-medium text-gray-600 mb-2">Confidence:</p>
+                    <div class="flex gap-2">
+                        <button onclick="vConf(${i},1)" class="confidence-btn c1 px-3 py-1.5 rounded border text-sm bg-green-50 border-green-200 hover:bg-green-100">Low</button>
+                        <button onclick="vConf(${i},2)" class="confidence-btn c2 px-3 py-1.5 rounded border text-sm bg-yellow-50 border-yellow-200 hover:bg-yellow-100">Medium</button>
+                        <button onclick="vConf(${i},3)" class="confidence-btn c3 px-3 py-1.5 rounded border text-sm bg-red-50 border-red-200 hover:bg-red-100">High</button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+
+        document.getElementById('quiz-section').classList.remove('hidden');
+    }
+
+    function vSelect(i, optId) {
+        if (!vAnswers[i]) vAnswers[i] = {};
+        vAnswers[i].question_id = vQuestions[i].id;
+        vAnswers[i].selected_answer = optId;
+        checkReady();
+    }
+    function vConf(i, level) {
+        if (!vAnswers[i]) vAnswers[i] = {};
+        vAnswers[i].confidence_level = level;
+        const div = document.getElementById(`vq-${i}`);
+        div.querySelectorAll('.confidence-btn').forEach(b => {
+            b.classList.remove('ring-2', 'ring-offset-1', 'font-bold');
+        });
+        div.querySelector(`.c${level}`).classList.add('ring-2', 'ring-offset-1', 'font-bold');
+        checkReady();
+    }
+    function checkReady() {
+        const done = Object.values(vAnswers).filter(a => a.selected_answer && a.confidence_level).length;
+        document.getElementById('v-submit-btn').disabled = done < vQuestions.length;
+    }
+
+    async function submitAnswers() {
+        const btn = document.getElementById('v-submit-btn');
+        btn.disabled = true;
+        btn.textContent = 'Submitting...';
+
+        const resp = await fetch('/api/validator/answer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ submission_id: submissionId, answers: Object.values(vAnswers) }),
+        });
+        const data = await resp.json();
+        if (!data.success) { alert(data.error); btn.disabled = false; btn.textContent = 'Submit Answers'; return; }
+
+        document.getElementById('quiz-section').classList.add('hidden');
+        const r = data.result;
+        document.getElementById('r-score').textContent = r.raw_total.toFixed(1);
+        document.getElementById('r-correct').textContent = `${r.num_correct}/${r.num_questions}`;
+        document.getElementById('r-grade').textContent = r.normalized.toFixed(1) + '%';
+        document.getElementById('r-conf').textContent = r.avg_confidence.toFixed(1);
+
+        const gs = document.getElementById('r-grade-status');
+        gs.textContent = data.grade_submitted ? 'Grade submitted to Canvas' : 'Standalone mode';
+        gs.className = 'text-sm text-center py-2 rounded mt-4 ' +
+            (data.grade_submitted ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800');
+
+        document.getElementById('r-details').innerHTML = data.details.map((d, i) => `
+            <div class="bg-white rounded-lg shadow p-3 border-l-4 ${d.is_correct ? 'border-green-500' : 'border-red-500'}">
+                <div class="flex justify-between">
+                    <span class="text-sm">${i+1}. ${d.question_text?.substring(0, 80)}...</span>
+                    <span class="font-mono font-bold ${d.cbm_score >= 0 ? 'text-green-700' : 'text-red-700'}">
+                        ${d.cbm_score >= 0 ? '+' : ''}${d.cbm_score.toFixed(1)}
+                    </span>
+                </div>
+                <span class="text-xs ${d.category === 'novel' ? 'text-purple-600' : 'text-gray-500'}">${d.category}</span>
+            </div>
+        `).join('');
+
+        document.getElementById('results-section').classList.remove('hidden');
+    }
+    </script>
+</body>
+</html>

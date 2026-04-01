@@ -1,0 +1,108 @@
+version: '3.8'
+
+# CBM LTI Plugin — Docker Compose
+#
+# Deploys on simonmccallum.org.nz behind Nginx Proxy Manager.
+# Two options for routing:
+#   Option A: Path prefix  → NPM routes /cbm-quiz/* → cbm-lti:3000
+#   Option B: Subdomain    → cbm.simonmccallum.org.nz → cbm-lti:3000
+#                          → or ludogogy.co.nz → cbm-lti:3000 (when DNS is ready)
+#
+# The novelty-detector sidecar handles PDF analysis, FAISS matching, and MCQ generation.
+
+services:
+  # ── CBM LTI Plugin (Node.js) ──
+  cbm-lti:
+    build: .
+    container_name: cbm-lti
+    ports:
+      - "3001:3000"  # Exposed on host:3001, internal:3000
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_PATH=/app/data/cbm-lti.db
+      - SIDECAR_URL=http://novelty-detector:5000
+      - MONGODB_URI=mongodb://mongo:27017/cbm-lti
+      - EXTERNAL_URL=${EXTERNAL_URL:-https://simonmccallum.org.nz/cbm-quiz}
+      - LTI_KEY=${LTI_KEY:-cbm-lti-prod-key-change-me}
+    env_file:
+      - .env
+    volumes:
+      - lti-data:/app/data
+      - lti-uploads:/app/uploads
+    depends_on:
+      mongo:
+        condition: service_healthy
+      novelty-detector:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - cbm-network
+
+  # ── Novelty Detector Sidecar (Python/Flask) ──
+  novelty-detector:
+    build:
+      context: ../novelty_detector
+      dockerfile: Dockerfile
+    container_name: cbm-novelty-detector
+    ports:
+      - "5001:5000"  # Exposed on host:5001, internal:5000
+    environment:
+      - FLASK_ENV=production
+      - EMBEDDING_MODEL=all-MiniLM-L6-v2
+      - EMBEDDING_PROVIDER=local
+      - DEFAULT_LLM_PROVIDER=ollama
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - CBM_DATABASE_PATH=/app/shared-data/cbm-lti.db
+    env_file:
+      - ../novelty_detector/.env
+    volumes:
+      - novelty-uploads:/app/uploads
+      - lti-data:/app/shared-data:ro  # Read-only access to LTI database
+    restart: unless-stopped
+    networks:
+      - cbm-network
+
+  # ── MongoDB (required by ltijs for LTI state) ──
+  mongo:
+    image: mongo:7-jammy
+    container_name: cbm-mongo
+    volumes:
+      - mongo-data:/data/db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    networks:
+      - cbm-network
+
+  # ── Ollama (optional — local LLM for question generation) ──
+  # Uncomment if you want to run a local LLM instead of using API keys.
+  # Requires GPU support or large CPU allocation.
+  #
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   container_name: cbm-ollama
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - ollama-data:/root/.ollama
+  #   restart: unless-stopped
+  #   networks:
+  #     - cbm-network
+  #   # After first start, pull a model:
+  #   # docker exec cbm-ollama ollama pull qwen2.5:7b
+
+networks:
+  cbm-network:
+    driver: bridge
+
+volumes:
+  lti-data:
+  lti-uploads:
+  novelty-uploads:
+  mongo-data:
+  # ollama-data:
