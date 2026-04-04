@@ -1,0 +1,246 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{natbib}
+
+\title{When the Model Knows It Doesn't Know:\\Activation-Guided Confidence for Educational AI}
+
+\author{Simon McCallum\\
+Norwegian University of Science and Technology (NTNU)\\
+\texttt{simon.mccallum@ntnu.no}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Large language models used in educational settings are systematically overconfident: they express maximum certainty on questions they answer incorrectly, receiving large penalties under confidence-based marking (CBM) schemes that reward calibrated self-assessment.
+We bridge three lines of work---pre-normalisation activation probing, asymmetric confidence scoring (HLCC), and confidence-based marking---to propose a system where an LLM's \emph{internal} uncertainty signal, extracted from pre-LayerNorm activations, is used to modulate its expressed confidence before scoring.
+On a 10-question game design assessment, 7 of 11 LLMs selected maximum confidence on every question; under CBM scoring, wrong-but-confident answers incurred an average penalty of $-1.8$ points each.
+Activation probing can detect when a model is unfamiliar with a question (AUC $= 0.994$ for answerability detection on Mistral-7B) and when it is likely to answer incorrectly (AUROC $= 0.70$ on MMLU).
+We propose using this signal to: (1) lower the model's expressed CBM confidence level on uncertain questions, avoiding the $-2.0$ penalty; (2) trigger chain-of-thought retry on flagged questions; and (3) abstain entirely when familiarity is very low.
+Preliminary results show that familiarity-gated confidence reduces Expected Calibration Error by 70\% on MMLU, and selective answering at 80\% coverage improves accuracy from 42\% to 46\%.
+The combination produces an AI system that behaves more like a well-calibrated human student under CBM: confident when knowledgeable, cautious when uncertain, and willing to say ``I don't know.''
+\end{abstract}
+
+\section{Introduction}
+
+Consider an AI teaching assistant answering student questions under confidence-based marking.
+The student asks: ``In game design, what distinguishes emergent gameplay from scripted progression?''
+The AI answers correctly with high confidence: $+2.0$ points.
+The student then asks about an obscure mechanic from a niche genre.
+The AI answers confidently and incorrectly: $-2.0$ points.
+
+A well-calibrated human tutor would have said ``I'm not sure about that one''---selecting confidence level 1 under CBM, scoring $0.0$ instead of $-2.0$.
+The AI lacks this metacognitive ability.
+Its softmax confidence is equally high for both questions, because LayerNorm erases the magnitude information that carries the uncertainty signal before it reaches the output~\citep{mccallum2026activation}.
+
+We show that this signal can be recovered and used to produce AI systems that behave more like calibrated human assessors.
+The work connects three separate contributions:
+
+\begin{enumerate}
+    \item \textbf{Activation forensics}~\citep{mccallum2026activation}: Pre-normalisation activation statistics detect model uncertainty with near-perfect accuracy (AUC $= 0.994$), but the signal is erased by LayerNorm before reaching the output.
+
+    \item \textbf{HLCC scoring}~\citep{mccallum2026hlcc}: The Hybrid Linear-Convex Confidence framework provides an asymmetric scoring rule ($R(c) = 1+c$, $P(c) = -2c^2$) that penalises overconfidence quadratically, creating a principled optimal confidence $c^* = p/[4(1-p)]$.
+
+    \item \textbf{Confidence-based marking}: The educational CBM scheme rewards metacognitive accuracy, and our data from 129 students shows humans naturally calibrate their confidence to their knowledge ($r = 0.91$) while AI models do not.
+\end{enumerate}
+
+The bridge: if we use the activation signal to estimate $P(\text{correct})$, then compute the HLCC-optimal confidence, and discretise it into CBM levels, we get an AI system that expresses appropriate confidence.
+The system is confident when the activations indicate familiarity, cautious when they do not, and abstains when the signal is very weak.
+
+\section{Background}
+
+\subsection{The Overconfidence Problem}
+
+Under our 3-level CBM scheme (guessing: $+1/0$; somewhat confident: $+1.5/-0.5$; confident: $+2/-2$), 129 human students achieved a score-per-correct ratio of 1.39, while 11 LLMs achieved 1.59.
+The difference is small because AI models are more accurate (83\% vs 63\%).
+But the confidence \emph{pattern} is radically different: 64\% of AI models selected maximum confidence on every question, incurring the maximum $-2.0$ penalty on every wrong answer.
+Humans adapted their confidence: students getting 4/10 correct used effectively level-1 confidence (score $\approx$ 4.1, close to the expected 4.0 for all-guessing), while students getting 8/10 used level 2--3 (score $\approx$ 12.7).
+
+The HLCC framework~\citep{mccallum2026hlcc} formalises why this matters.
+At 80\% accuracy, the HLCC-optimal confidence is $c^* = 0.80/[4 \times 0.20] = 1.0$---full confidence.
+At 60\% accuracy, $c^* = 0.60/[4 \times 0.40] = 0.375$---cautious.
+Below 50\%, the optimal strategy is near-zero confidence.
+A model that always expresses $c = 1.0$ is optimal only when it is always right.
+
+\subsection{The Activation Signal}
+
+Pre-normalisation activation probing~\citep{mccallum2026activation} extracts five statistics from the SwiGLU feed-forward layers before LayerNorm:
+\begin{enumerate}
+    \item Pre-norm magnitude ($\|h\|_2$)
+    \item Near-zero gate ratio
+    \item Gate standard deviation
+    \item SwiGLU output sparsity
+    \item Excess kurtosis
+\end{enumerate}
+
+These capture \emph{structural} properties of the computation that are erased by normalisation.
+On Mistral-7B, a 6-parameter logistic regression on these features achieves AUC $= 0.994$ for answerability detection (does the model recognise this question type?) and AUROC $= 0.70$ for error detection on MMLU (will the model get this question wrong?).
+
+The signal exists inside the model but is invisible at the output.
+LayerNorm divides by the standard deviation, collapsing uncertain (small magnitude) and confident (large magnitude) representations into the same unit-norm space.
+
+\subsection{Two Signals at Different Depths}
+
+The activation probe reveals two distinct signals~\citep{mccallum2026activation}:
+\begin{itemize}
+    \item \textbf{Familiarity} (layers 6--13): Does the model recognise this question type? Transfers across tasks without retraining.
+    \item \textbf{Confidence} (layers 20--31): Is the model converging on a specific answer? Task-specific, does not transfer.
+\end{itemize}
+
+For CBM purposes, the familiarity signal is more useful: it tells us whether the model has been trained on this type of question, which determines whether its answer should be trusted at all.
+The confidence signal tells us whether the model is committed to a specific answer, but commitment does not imply correctness.
+
+\section{Proposed System}
+
+\subsection{Architecture}
+
+For each question presented to the AI system:
+
+\begin{enumerate}
+    \item Run a standard forward pass, extracting both the answer and activation statistics from all SwiGLU layers.
+    \item Compute $\hat{p} = P(\text{correct})$ from the activation probe (logistic regression on 5 features, trained on non-target data).
+    \item Compute HLCC-optimal confidence: $c^* = \hat{p}/[4(1-\hat{p})]$.
+    \item Discretise into CBM levels:
+    \begin{itemize}
+        \item $c^* < 0.25$: Level 1 (guessing, $+1/0$)
+        \item $0.25 \leq c^* < 0.75$: Level 2 (somewhat confident, $+1.5/-0.5$)
+        \item $c^* \geq 0.75$: Level 3 (confident, $+2/-2$)
+    \end{itemize}
+    \item If $\hat{p} < 0.3$ (very unfamiliar), trigger one of:
+    \begin{itemize}
+        \item Retry with chain-of-thought prompting
+        \item Abstain (select ``I don't know'')
+        \item Escalate to instructor
+    \end{itemize}
+\end{enumerate}
+
+The probe adds negligible computational cost---five scalar statistics from tensors already computed in the forward pass, fed to a 6-parameter linear classifier.
+
+\subsection{Expected Behaviour}
+
+Under this system, the AI behaves like a well-calibrated student:
+
+\begin{table}[H]
+\centering
+\caption{Expected behaviour comparison under CBM scoring.}
+\label{tab:behaviour}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Scenario} & \textbf{Raw AI} & \textbf{Human} & \textbf{Probe-Gated AI} \\
+\midrule
+Familiar + correct & Level 3 ($+2$) & Level 3 ($+2$) & Level 3 ($+2$) \\
+Familiar + wrong & Level 3 ($-2$) & Level 2 ($-0.5$) & Level 2 ($-0.5$) \\
+Unfamiliar + correct & Level 3 ($+2$) & Level 1 ($+1$) & Level 1 ($+1$) \\
+Unfamiliar + wrong & Level 3 ($-2$) & Level 1 ($0$) & Level 1 ($0$) or abstain \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The critical change is in the ``unfamiliar + wrong'' cell: raw AI loses $-2.0$, the probe-gated AI loses $0.0$ (or abstains).
+Over 10 questions with 2 wrong answers, this changes the CBM score from $12.0$ to $16.0$---a 33\% improvement from confidence modulation alone, with no change in accuracy.
+
+\subsection{Connection to HLCC Theory}
+
+The HLCC optimal confidence $c^* = p/[4(1-p)]$ has a natural interpretation in the CBM context.
+The CBM level thresholds (0.25 and 0.75 in $c^*$ space) correspond to:
+\begin{itemize}
+    \item Level 1 ($c^* < 0.25$): $p < 0.50$---the model thinks it is more likely wrong than right.
+    \item Level 2 ($0.25 \leq c^* < 0.75$): $0.50 \leq p < 0.75$---the model has partial confidence.
+    \item Level 3 ($c^* \geq 0.75$): $p \geq 0.75$---the model is genuinely confident.
+\end{itemize}
+
+These thresholds are derived from the scoring theory, not arbitrary.
+The transition from level 2 to level 3 at $p = 0.75$ matches the HLCC crossover point---the accuracy level at which the optimal confidence equals the accuracy itself.
+Below this point, the HLCC framework recommends \emph{under-reporting} confidence; above it, confidence can equal or exceed the accuracy estimate.
+
+\section{Preliminary Evidence}
+
+Three pieces of evidence support the feasibility of this approach:
+
+\textbf{1. The activation signal is strong.}
+On Mistral-7B, the familiarity probe achieves AUC $= 0.994$ for answerability detection.
+On MMLU, it achieves AUROC $= 0.70$ for error detection---modest, but sufficient to shift CBM levels on the most uncertain questions.
+
+\textbf{2. Calibration improves dramatically.}
+Familiarity-gated confidence reduces ECE from 0.498 to 0.152 on MMLU (70\% reduction).
+This means the probe-modulated confidence actually \emph{predicts} accuracy---a basic requirement for meaningful CBM scoring.
+
+\textbf{3. Selective answering works.}
+At 80\% coverage on MMLU, selective accuracy rises from 42\% to 46\%.
+At 50\% coverage, it reaches 56\%.
+The probe identifies questions where the model is guessing, and these questions contribute disproportionately to errors.
+
+\textbf{4. Humans set the benchmark.}
+The human score--correct correlation of $r = 0.91$ under CBM shows what good calibration looks like.
+The goal is not perfection but parity: an AI system whose CBM score distribution resembles that of a well-performing student cohort.
+
+\section{Remaining Work}
+
+\textbf{Full-scale MMLU evaluation.}
+The probe has been tested on 100 MMLU questions locally; full 14,000-question results are in progress on A100 GPUs.
+These will provide tighter estimates of selective accuracy and per-subject analysis.
+
+\textbf{CBM simulation.}
+Apply the probe-gated confidence scheme to the game design MCQs and compute the resulting CBM scores.
+Compare against the raw-AI and human distributions.
+
+\textbf{Retry experiment.}
+The MMLU retry experiment (chain-of-thought on flagged questions) will quantify how much accuracy improves when the probe triggers a second attempt.
+Preliminary results from TruthfulQA show that retry helps on questions where the model ``knows the domain but recalls the wrong answer.''
+
+\textbf{70B+ scale.}
+Testing on larger Mistral models (currently running on HPC) will show whether the signal scales.
+Existing results (7B to 24B) show Cohen's $d$ increasing from 0.278 to 0.731.
+
+\section{Discussion}
+
+\subsection{The Pedagogical Argument}
+
+An AI system that can express calibrated uncertainty is qualitatively different from one that cannot.
+In educational settings---tutoring, practice assessment, study assistance---overconfident AI is actively harmful.
+A student who trusts an AI that says ``I'm sure this is right'' when it is wrong develops a false sense of understanding.
+A student whose AI says ``I'm not confident about this---you should check'' learns both the content and the limits of AI.
+
+CBM provides a simple, interpretable framework for this.
+Students already understand the scoring matrix: ``if you're not sure, select 'guessing' to avoid the penalty.''
+Extending this to AI systems makes the calibration quality visible in a form that educators and students can directly evaluate.
+
+\subsection{The Technical Argument}
+
+The technical contribution is the specific pipeline: pre-norm activation statistics $\to$ logistic regression $\to$ HLCC-optimal $c^*$ $\to$ discretised CBM level.
+Each step is lightweight and interpretable:
+\begin{itemize}
+    \item Five scalar features (not a 4096-dimensional hidden state)
+    \item Six learned parameters (not a fine-tuned neural network)
+    \item A closed-form optimal confidence (not a heuristic threshold)
+    \item A pedagogically-motivated discretisation (not an arbitrary binning)
+\end{itemize}
+
+The system adds no additional forward passes, no model retraining, and negligible latency.
+It could be deployed as a wrapper around any SwiGLU-based LLM.
+
+\subsection{Limitations}
+
+The probe is trained on non-target data (ARC, HellaSwag) and applied to the target (MMLU, game design).
+Transfer may degrade on domains far from the training distribution.
+The MMLU error detection AUROC of 0.70 is modest---the probe is better at detecting unfamiliarity than predicting specific errors.
+The CBM level discretisation introduces quantisation error: the continuous HLCC confidence is more informative than a 3-level signal.
+
+\section{Conclusion}
+
+We propose connecting three lines of work---activation probing, HLCC scoring theory, and confidence-based marking---to create AI systems that express calibrated uncertainty in educational settings.
+The activation probe detects when the model is unfamiliar with a question; the HLCC framework computes the optimal confidence; the CBM discretisation makes it legible to students and educators.
+The result is an AI that behaves more like a thoughtful student: confident when it knows, cautious when it does not, and honest about the difference.
+
+\bibliographystyle{plainnat}
+\bibliography{acm-reference}
+
+\end{document}

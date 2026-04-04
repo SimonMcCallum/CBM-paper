@@ -1,0 +1,280 @@
+\documentclass[sigconf]{acmart}
+
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{url}
+
+\copyrightyear{2026}
+\acmYear{2026}
+\setcopyright{acmlicensed}
+\acmConference[SIGCSE '26]{Proceedings of the 57th ACM Technical Symposium on Computer Science Education}{March 2026}{Pittsburgh, PA, USA}
+\acmBooktitle{Proceedings of the 57th ACM Technical Symposium on Computer Science Education (SIGCSE '26), March 2026, Pittsburgh, PA, USA}
+\acmPrice{15.00}
+\acmDOI{10.1145/xxxxxxx.xxxxxxx}
+\acmISBN{978-x-xxxx-xxxx-x/xx/xx}
+
+% Auto-generated data macros --- single source of truth
+% Regenerate with: python Code/generate_paper_b_macros.py
+\input{Documentation/generated/paper_b_macros}
+
+\begin{document}
+
+\title{Metacognitive Asymmetry: How Confidence-Based Marking Reveals What AI Gets Wrong About Being Wrong}
+
+\author{Simon McCallum}
+\email{simon.mccallum@ntnu.no}
+\affiliation{%
+  \institution{Norwegian University of Science and Technology}
+  \city{Trondheim}
+  \country{Norway}
+}
+
+\begin{abstract}
+Confidence-based marking (CBM) rewards students who accurately assess their own certainty and penalises those who are confidently wrong.
+We administered the same \nQuestions{}-question multiple-choice assessment to \humanN{} undergraduate students and \aiNInitial{} contemporary large language models (LLMs), scoring all responses under a \nConfLevels{}-level CBM scheme (guessing: $+1/0$; somewhat confident: $+1.5/-0.5$; confident: $+2/-2$).
+The AI models answered more questions correctly (\aiAccuracy\% vs \humanAccuracy\%) yet revealed a striking metacognitive deficit: \aiMaxConfPct\% of models selected maximum confidence on every question, incurring an average penalty of \aiAvgPenalty{} points per wrong answer.
+Human students adapted their confidence to their knowledge state---the correlation between CBM score and number correct was $r = \humanScoreCorrectCorr$---producing a score-per-correct ratio of \humanSPC{} compared with \aiSPC{} for AI.
+Students getting only 4/10 correct averaged a CBM score of \humanAvgScoreAt4{}, close to the all-guessing expected value of 4.0, demonstrating appropriate caution.
+When AI models were given a second attempt with combined prompting, some improved (Claude 3.5 Sonnet: 7$\to$9 correct) while others regressed (ChatGPT o1: 10$\to$9), suggesting that retry strategies require uncertainty-aware gating rather than blanket resubmission.
+We argue that CBM provides a practical, interpretable lens for evaluating AI calibration in educational settings, and that the metacognitive gap it reveals has direct implications for the deployment of AI in assessment.
+\end{abstract}
+
+\begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10003456.10003457.10003527.10003531</concept_id>
+<concept_desc>Social and professional topics~Computing education</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+<concept>
+<concept_id>10010147.10010257.10010293.10010294</concept_id>
+<concept_desc>Computing methodologies~Machine learning</concept_desc>
+<concept_significance>300</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Social and professional topics~Computing education}
+\ccsdesc[300]{Computing methodologies~Machine learning}
+
+\keywords{confidence-based marking, metacognition, large language models, educational assessment, overconfidence, calibration}
+
+\maketitle
+
+% ============================================================
+\section{Introduction}
+% ============================================================
+
+When a student answers a multiple-choice question, the interesting information is not just whether they got it right, but whether they \emph{knew} they got it right. A student who guesses correctly has learned nothing; a student who is confident and wrong has a misconception that needs addressing. Traditional assessment captures neither distinction.
+
+Confidence-based marking (CBM), advocated by Gardner-Medwin~\cite{gardner2006confidence, gardner2011learning}, addresses this by requiring students to declare their confidence alongside each answer. Correct answers at high confidence earn bonus marks; incorrect answers at high confidence incur penalties. The scoring rule creates an incentive for honest self-assessment: the optimal strategy is to report your actual certainty.
+
+We have used CBM in computer science courses across New Zealand and Norway for over a decade. The pedagogical benefits are well established: students develop metacognitive awareness, identify knowledge gaps more precisely, and engage more deeply with material they would otherwise skim~\cite{gardner2006confidence}. The scoring system we use awards $+1.0/0$ for guessing, $+1.5/-0.5$ for somewhat confident, and $+2.0/-2.0$ for confident. These specific values were chosen through iterative refinement informed by game theory and student feedback---the asymmetry between the ``somewhat confident'' level ($+1.5/-0.5$, a 3:1 risk--reward ratio) and the ``confident'' level ($+2.0/-2.0$, a 1:1 ratio) creates a natural decision boundary that students learn to calibrate against.
+
+The emergence of large language models raises a new question: how do AI systems perform under CBM? If we grade LLMs the same way we grade students---rewarding calibrated confidence and penalising overconfidence---what do we learn?
+
+We administered the same \nQuestions{}-question game design assessment to \humanN{} students and \aiNInitial{} LLMs. The results reveal a systematic metacognitive asymmetry: AI models are more accurate but less calibrated, and CBM scoring exposes this gap in a way that raw accuracy does not.
+
+% ============================================================
+\section{Related Work}
+% ============================================================
+
+\subsection{Confidence-Based Marking}
+
+Gardner-Medwin introduced CBM as a mechanism for encouraging metacognitive engagement in medical education~\cite{gardner2006confidence}. The approach has since been adopted across disciplines, with evidence that it improves learning outcomes, promotes reflection, and provides instructors with richer diagnostic information than binary correct/incorrect scoring~\cite{gardner2011learning}. The theoretical foundation rests on proper scoring rules---the CBM scheme is incentive-compatible, meaning that honest confidence reporting maximises expected score~\cite{brier1950verification}.
+
+\subsection{AI Calibration and Overconfidence}
+
+Large language models are known to be poorly calibrated. The softmax distribution over the vocabulary is not a reliable indicator of answer correctness~\cite{guo2017calibration, kadavath2022language}. Post-hoc calibration techniques (temperature scaling, isotonic regression) can improve Expected Calibration Error (ECE) but often at the cost of discrimination~\cite{guo2017calibration}. Recent work on uncertainty quantification in LLMs has explored semantic entropy~\cite{kuhn2023semantic}, internal probing~\cite{burns2023discovering}, and proper scoring frameworks~\cite{mccallum2026hlcc}. However, most evaluations use metrics designed for ML practitioners (ECE, AUROC) rather than metrics meaningful to educators.
+
+\subsection{AI in Educational Assessment}
+
+The integration of AI into assessment raises questions about validity, fairness, and the changing role of evaluation~\cite{khan2024ai}. As generative AI becomes capable of producing student-quality work, assessment must shift from evaluating output quality to evaluating understanding~\cite{flavell1976metacognitive}. CBM provides one such mechanism: it tests not what you can produce, but what you know about what you know.
+
+% ============================================================
+\section{Method}
+% ============================================================
+
+\subsection{Assessment Instrument}
+
+The assessment comprises \nQuestions{} multiple-choice questions drawn from a second-year game design course. Questions cover game theory (meaningful play, emergent vs. progression rules), design patterns, and player experience. Each question has 5 options (a--e) with one correct answer. The questions were developed over multiple years and calibrated against student performance data.
+
+\subsection{Confidence-Based Marking Scheme}
+
+For each question, participants select both an answer and a confidence level:
+
+\begin{table}[h]
+\centering
+\caption{CBM scoring matrix. Confidence level determines both the reward for correct answers and the penalty for incorrect ones.}
+\label{tab:cbm}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Level} & \textbf{Label} & \textbf{Correct} & \textbf{Incorrect} \\
+\midrule
+1 & Guessing & $+1.0$ & $0.0$ \\
+2 & Somewhat confident & $+1.5$ & $-0.5$ \\
+3 & Confident & $+2.0$ & $-2.0$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The maximum possible score is $20.0$ (10 correct at confidence 3). The minimum is $-20.0$ (10 incorrect at confidence 3). A student answering all questions at confidence 1 (guessing) receives a score equal to the number correct, with no risk of penalty.
+
+The scoring values were chosen to create specific decision-theoretic properties. At confidence level 2, the expected value is positive whenever $P(\text{correct}) > 0.25$---approximately the chance level for 5-option questions. At confidence level 3, the expected value is positive only when $P(\text{correct}) > 0.50$. This means a rational agent should select confidence 3 only when it believes it is more likely right than wrong, and confidence 2 whenever it has any information beyond random guessing.
+
+\subsection{Participants}
+
+\textbf{Human students.} \humanN{} undergraduate students enrolled in a game design course completed the assessment under standard examination conditions across multiple cohorts. All responses were anonymised.
+
+\textbf{AI models.} \aiNInitial{} large language models were tested: Claude 3.5 Sonnet, Claude 3 Opus, ChatGPT o1, ChatGPT 4o, ChatGPT 4, Gemini 2.0 Advanced, Gemini 2.0 Flash, Gemini 1.5 Pro, DeepSeek, and DeepSeek R1. Each model received the same questions in the same format, with instructions to select both an answer and a confidence level (1, 2, or 3). Additionally, \aiNCombined{} models were tested with a ``combined'' prompt that provided additional context.
+
+\subsection{Metrics}
+
+We report:
+\begin{itemize}
+    \item \textbf{Accuracy}: number of correct answers out of \nQuestions{}.
+    \item \textbf{CBM score}: total points under the scoring matrix.
+    \item \textbf{Score per correct (SPC)}: CBM score divided by number correct. This measures calibration efficiency---how many points you earn for each correct answer. Perfect calibration at confidence 3 yields SPC $= 2.0$; overconfidence on wrong answers reduces it.
+    \item \textbf{Confidence distribution}: how often each confidence level is selected.
+\end{itemize}
+
+% ============================================================
+\section{Results}
+% ============================================================
+
+\subsection{Overall Performance}
+
+\begin{table}[h]
+\centering
+\caption{Summary statistics for human students ($n = \humanN$) and AI models ($n = \aiNInitial$, initial run). SPC = score per correct answer.}
+\label{tab:summary}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Metric} & \textbf{Humans} & \textbf{AI (initial)} \\
+\midrule
+Mean accuracy & \humanAccuracy\% & \aiAccuracy\% \\
+Mean CBM score & \humanScoreMean{} & \aiScoreMean{} \\
+Score per correct (SPC) & \humanSPC{} & \aiSPC{} \\
+Score range & [\humanScoreMin, \humanScoreMax] & [5.5, 20.0] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+AI models outperform humans on raw accuracy by \accuracyGap{} percentage points (\aiAccuracy\% vs \humanAccuracy\%). However, the score-per-correct ratio reveals that AI's higher accuracy does not translate proportionally into CBM score: AI earns \aiSPC{} points per correct answer versus \humanSPC{} for humans. The gap (\spcGap{}) is smaller than the accuracy gap suggests because AI incurs heavier penalties when wrong. Figure~\ref{fig:distribution} shows the score distributions.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{Documentation/generated/figures/score_distribution.pdf}
+\caption{CBM score distributions. The human distribution (blue histogram) is broad, reflecting varying accuracy and confidence strategies. AI model scores (red vertical lines) cluster at high values but include outliers penalised by overconfidence.}
+\label{fig:distribution}
+\end{figure}
+
+\subsection{Confidence Calibration}
+
+The key finding is the difference in confidence adaptation.
+
+\textbf{Human students adapt their confidence to their knowledge state.} The correlation between CBM score and number correct is $r = \humanScoreCorrectCorr$ ($n = \humanN$). Students who know more also calibrate better. Table~\ref{tab:human_calibration} shows how students at different accuracy levels adjust their effective confidence.
+
+\begin{table}[h]
+\centering
+\caption{Human confidence adaptation by accuracy level. Expected scores assume all questions answered at a single confidence level. Actual scores fall between levels, indicating mixed confidence selection.}
+\label{tab:human_calibration}
+\begin{tabular}{cccccc}
+\toprule
+\textbf{Correct} & $n$ & \textbf{Avg score} & \textbf{All conf-1} & \textbf{All conf-2} & \textbf{All conf-3} \\
+\midrule
+4/10 & \humanCountAt4 & \humanAvgScoreAt4 & 4.0 & 3.0 & $-4.0$ \\
+6/10 & \humanCountAt6 & \humanAvgScoreAt6 & 6.0 & 7.0 & 4.0 \\
+8/10 & \humanCountAt8 & \humanAvgScoreAt8 & 8.0 & 11.0 & 12.0 \\
+10/10 & \humanCountAt10 & \humanAvgScoreAt10 & 10.0 & 15.0 & 20.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Students getting 4/10 correct average \humanAvgScoreAt4{} points---close to the all-guessing expected value of 4.0. They have learned, through experience with CBM, that expressing high confidence on uncertain questions is costly. Students getting 8/10 average \humanAvgScoreAt8{}, between the all-conf-2 (11.0) and all-conf-3 (12.0) expected values, indicating they use high confidence on most questions but hedge on a few. Students with perfect accuracy (10/10) average only \humanAvgScoreAt10{}---below the maximum of 20.0---showing that even top performers maintain some caution.
+
+\textbf{AI models do not adapt.} \aiMaxConfPct\% of models (\aiMaxConfCount/\aiNInitial) selected confidence level 3 on every question. When wrong, this produces the maximum penalty of $-2.0$ per question. The average penalty per wrong answer across all AI models is \aiAvgPenalty{} points---close to the theoretical maximum of $-2.0$. AI models treat every question as equally certain, regardless of difficulty.
+
+Only \humanNegScores{} human students (\humanNegPct\%) achieved negative total scores. The detailed per-question data (from the full assessment matrix) reveals the mechanism: AI models that selected confidence level 3 on every question lost $-2.0$ for each wrong answer, while humans who were unsure selected lower confidence levels, limiting their downside.
+
+Figure~\ref{fig:calibration} shows the relationship between accuracy and CBM score for both populations. Humans cluster between the conf-1 and conf-2 reference lines, indicating mixed confidence strategies. AI models cluster near the conf-3 line---maximum confidence regardless of accuracy. Figure~\ref{fig:spc} decomposes this into score-per-correct ratios.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{Documentation/generated/figures/calibration_by_accuracy.pdf}
+\caption{Confidence calibration: CBM score vs number correct. Dashed lines show expected scores if all questions are answered at a single confidence level. Human students (blue dots) fall between the guessing and somewhat-confident lines, adapting their strategy. AI models (red diamonds) cluster near the all-confident line.}
+\label{fig:calibration}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{Documentation/generated/figures/spc_comparison.pdf}
+\caption{Score per correct answer. Left: human students adapt confidence to accuracy---students with fewer correct answers use lower confidence, earning close to 1.0 points per correct (guessing level). Right: AI models vary in efficiency; those with wrong-but-confident answers (red bars) earn less per correct answer than the human mean (blue dashed line).}
+\label{fig:spc}
+\end{figure}
+
+\subsection{Second Attempts}
+
+Six models were retested with a ``combined'' prompt providing additional context. Results were mixed:
+
+\begin{table}[h]
+\centering
+\caption{Combined prompting results. Some models improve; others regress.}
+\label{tab:combined}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{Correct (1st)} & \textbf{Correct (2nd)} & \textbf{Score (1st)} & \textbf{Score (2nd)} \\
+\midrule
+Claude 3.5 Sonnet & 7 & 9 & 8.0 & 16.0 \\
+Claude 3 Opus & 6 & 9 & 5.5 & 14.5 \\
+ChatGPT o1 & 10 & 9 & 20.0 & 17.5 \\
+ChatGPT 4o & 8 & 8 & 14.5 & 13.5 \\
+ChatGPT 4 & 8 & 8 & 13.0 & 13.0 \\
+Gemini 2.0 Advanced & 9 & 8 & 16.0 & 12.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Claude models showed large improvements ($+8.0$ and $+9.0$ points), while ChatGPT o1 and Gemini 2.0 Advanced regressed ($-2.5$ and $-4.0$). This suggests that blanket retry strategies are counterproductive: a second attempt helps models that were uncertain but hurts models that were already correct. An uncertainty-aware gating mechanism---retrying only when the model's internal state indicates low confidence---would avoid this regression.
+
+% ============================================================
+\section{Discussion}
+% ============================================================
+
+\subsection{CBM as an AI Evaluation Tool}
+
+Standard AI evaluation reports accuracy. CBM adds a dimension that accuracy misses: the \emph{quality} of knowledge, not just the quantity. An AI model that gets 8/10 correct at maximum confidence (score: 12.0) is qualitatively different from one that gets 8/10 correct while hedging appropriately on uncertain questions (score: 14.5). The CBM score captures this distinction.
+
+This connects to broader work on AI calibration. The Expected Calibration Error (ECE) and AUROC metrics used in the ML literature measure the same underlying phenomenon---the gap between stated confidence and actual accuracy---but in a form that requires access to probability distributions and large sample sizes. CBM measures it with a simple scoring matrix that any educator can understand and any student can compute by hand.
+
+\subsection{The Metacognitive Gap}
+
+The core finding is not that AI is overconfident---this is well documented~\cite{guo2017calibration}. The finding is that CBM makes the overconfidence \emph{legible} in an educational context. When a student sees that their AI study partner always selects ``confident'' and gets penalised for wrong answers, they learn something about the limits of AI that no disclaimer can convey.
+
+The human calibration pattern---cautious when uncertain, confident when knowledgeable, with a strong score--accuracy correlation ($r = \humanScoreCorrectCorr$)---is exactly what CBM is designed to reward. It represents functional metacognition: knowing what you know and what you do not. AI models lack this entirely. Their ``confidence'' is not confidence in the epistemic sense; it is a property of the softmax distribution that happens to map onto a high numerical value regardless of the question.
+
+\subsection{Implications for AI in Assessment}
+
+The second-attempt results have practical implications. If AI tools are used to help students practice, the tools should not retry indiscriminately. A model that was already correct may change its answer on a second attempt (ChatGPT o1: 10$\to$9). A model that was genuinely uncertain may benefit from rethinking (Claude 3 Opus: 6$\to$9). The challenge is distinguishing these cases automatically.
+
+Recent work on activation probing~\cite{mccallum2026activation} suggests that language models do encode internal uncertainty signals that are erased before output. Combining CBM evaluation with internal confidence probing could enable AI systems that know when to express caution---bridging the metacognitive gap that CBM reveals.
+
+\subsection{Limitations}
+
+The assessment uses \nQuestions{} questions from a single domain (game design). The findings should be replicated across disciplines. The AI models were tested with a single prompt format; different prompting strategies may produce different confidence patterns. The human cohort spans multiple years, introducing potential cohort effects. The sample of AI models, while covering major providers, is a snapshot of a rapidly evolving field.
+
+% ============================================================
+\section{Conclusion}
+% ============================================================
+
+Confidence-based marking reveals a systematic metacognitive asymmetry between human students and large language models. On the same \nQuestions{}-question assessment, AI models achieve \aiAccuracy\% accuracy versus \humanAccuracy\% for humans, but the CBM scoring matrix exposes qualitatively different confidence strategies. Humans adapt their confidence to their knowledge state ($r = \humanScoreCorrectCorr$); AI models do not (\aiMaxConfPct\% always select maximum confidence).
+
+This asymmetry has practical consequences. In educational settings where AI tools are used for practice or assessment support, CBM provides a simple, interpretable mechanism for surfacing the limits of AI confidence. It teaches students---through direct experience with scoring consequences---that high accuracy does not imply reliable self-knowledge, and that the ability to say ``I am not sure'' is itself a form of expertise.
+
+The CBM framework also provides a bridge between educational assessment and the technical AI calibration literature: the score-per-correct ratio (\humanSPC{} for humans, \aiSPC{} for AI) is an accessible analogue of Expected Calibration Error that requires no probability distributions, no binning, and no specialised software. We recommend its adoption as a standard metric when evaluating AI systems in educational contexts.
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{acm-reference}
+
+\end{document}

@@ -1,0 +1,228 @@
+\documentclass[sigconf]{acmart}
+
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage{listings}
+
+\lstset{
+  basicstyle=\small\ttfamily,
+  frame=single,
+  breaklines=true,
+  backgroundcolor=\color{gray!10}
+}
+
+\copyrightyear{2026}
+\acmYear{2026}
+\setcopyright{acmlicensed}
+\acmConference[L@S '26]{Proceedings of the Ninth ACM Conference on Learning @ Scale}{July 2026}{Copenhagen, Denmark}
+\acmBooktitle{Proceedings of the Ninth ACM Conference on Learning @ Scale (L@S '26), July 2026, Copenhagen, Denmark}
+\acmPrice{15.00}
+\acmDOI{10.1145/xxxxxxx.xxxxxxx}
+\acmISBN{978-x-xxxx-xxxx-x/xx/xx}
+
+\begin{document}
+
+\title{Submission as Claim: Confidence-Based Assessment for AI-Augmented Education}
+
+\author{Simon McCallum}
+\email{simon.mccallum@ntnu.no}
+\affiliation{%
+  \institution{Norwegian University of Science and Technology}
+  \city{Trondheim}
+  \country{Norway}
+}
+
+\begin{abstract}
+Generative AI has made the traditional proxy for understanding---the ability to produce a written artefact---unreliable. Students can submit polished work without the cognitive engagement that creates understanding. We propose reframing the submission as a \emph{claim of understanding} rather than evidence of it, and testing that claim through AI-generated multiple-choice questions scored with confidence-based marking (CBM). The student submits work, an LLM generates targeted comprehension questions from the submission, and the student answers under a CBM scheme that rewards accurate self-assessment. Three types of questions are generated: common questions (shared across all students for cohort benchmarking), claim-specific questions (targeting concepts the individual submission asserts), and manipulation questions (asking which edit would achieve a given change). CBM compensates for variable AI-generated question quality by allowing students to signal problematic questions through low-confidence responses. We describe the architecture, discuss the theoretical motivation from metacognition research and game-theoretic scoring design, and present a proof-of-concept implementation using existing MCQ infrastructure. Preliminary results from confidence-based assessment in game design courses demonstrate that CBM reliably distinguishes calibrated knowledge from guessing ($r = 0.91$ between CBM score and number correct across 129 students). We argue this framework shifts the pedagogical emphasis from content creation to content evaluation---the skill that remains valuable when AI can produce the content.
+\end{abstract}
+
+\begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10003456.10003457.10003527.10003531</concept_id>
+<concept_desc>Social and professional topics~Computing education</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+<concept>
+<concept_id>10003120.10003130.10003131</concept_id>
+<concept_desc>Human-centered computing~Collaborative and social computing systems and tools</concept_desc>
+<concept_significance>300</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Social and professional topics~Computing education}
+\ccsdesc[300]{Human-centered computing~Collaborative and social computing systems and tools}
+
+\keywords{confidence-based marking, AI-generated assessment, metacognition, claim-based evaluation, educational technology}
+
+\maketitle
+
+% ============================================================
+\section{Introduction}
+% ============================================================
+
+The traditional educational bargain is simple: we assign work that requires understanding, and the quality of the output tells us whether understanding was achieved. Essays test synthesis, code submissions test programming skill, lab reports test experimental reasoning. The proxy works because producing the output requires the cognitive effort that creates learning.
+
+Generative AI breaks this proxy. A student can submit a well-structured essay, correctly-commented code, or a thorough lab report without having engaged in the cognitive processes these artefacts were meant to evidence. The output is indistinguishable from genuine understanding, but the brain has not changed.
+
+We do not argue that AI use should be prohibited. We argue that the assessment model must change. If the output is no longer a reliable signal of understanding, we must test understanding directly. The submission becomes a \emph{claim}---``I understand this material''---and the assessment tests whether the claim is true.
+
+This mirrors a practice we adopted in the 2010s for programming courses: students submitted code via version control, then were interviewed about their submission. The interview questions targeted specific design decisions: ``Why did you structure it this way?'' and ``How would you change this to achieve X?'' The submission provided context; the interview tested understanding.
+
+We propose automating this pattern with AI. The student submits work. An LLM analyses the submission and generates targeted multiple-choice questions. The student answers under confidence-based marking---a scoring scheme that rewards accurate self-assessment and penalises overconfidence. The combination tests not just what the student knows, but how well they know what they know.
+
+% ============================================================
+\section{Theoretical Foundations}
+% ============================================================
+
+\subsection{Metacognition and Learning}
+
+Metacognitive knowledge---awareness of one's own cognitive processes---is a critical predictor of learning outcomes~\cite{flavell1976metacognitive}. Students who accurately assess their own understanding are better positioned to allocate study effort, identify knowledge gaps, and seek help appropriately~\cite{dunlosky2011four}. Traditional assessment provides no incentive for metacognitive accuracy: a student receives the same mark whether they were confident or guessing.
+
+Confidence-based marking addresses this directly. By rewarding confident correct answers more than guessing-and-getting-lucky, and penalising confident wrong answers more than cautious errors, CBM creates an incentive structure where the optimal strategy is honest self-assessment~\cite{gardner2006confidence}.
+
+\subsection{The Scoring Game Theory}
+
+Our CBM scheme uses three levels:
+
+\begin{table}[h]
+\centering
+\caption{CBM scoring matrix. The asymmetry between levels 2 and 3 creates a natural decision boundary.}
+\label{tab:cbm_scoring}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Level} & \textbf{Label} & \textbf{Correct} & \textbf{Incorrect} \\
+\midrule
+1 & Guessing & $+1.0$ & $0.0$ \\
+2 & Somewhat confident & $+1.5$ & $-0.5$ \\
+3 & Confident & $+2.0$ & $-2.0$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+These values were refined over a decade of use in New Zealand and Norway. The choice of specific values matters psychologically, not just mathematically. Level 2 ($+1.5/-0.5$) ``feels'' like partial credit---``you get an extra half mark, but risk half a mark.'' Level 3 ($+2.0/-2.0$) feels like a bet. This framing encourages engagement: students at level 2 feel they are getting something for their partial knowledge, while level 3 requires genuine commitment.
+
+The expected value at each level determines the rational threshold:
+\begin{itemize}
+    \item Level 1: $E = P(\text{correct}) \times 1.0 + P(\text{wrong}) \times 0 = P(\text{correct})$. Always non-negative.
+    \item Level 2: $E = P(\text{correct}) \times 1.5 - P(\text{wrong}) \times 0.5$. Positive when $P(\text{correct}) > 0.25$.
+    \item Level 3: $E = P(\text{correct}) \times 2.0 - P(\text{wrong}) \times 2.0$. Positive when $P(\text{correct}) > 0.50$.
+\end{itemize}
+
+For 5-option questions with a random baseline of 20\%, level 2 is rational for any student with partial knowledge, and level 3 requires genuine confidence. This creates a natural three-zone partition: ``I'm guessing,'' ``I know something,'' and ``I know this.''
+
+\subsection{Why Not Just Interview?}
+
+Manual interviews do not scale. A course with 200 students and 15-minute interviews requires 50 hours of instructor time per assessment. AI-generated questions, scored automatically under CBM, require minutes of instructor time for setup and review. The trade-off is precision for scale: interviews can probe deeply into reasoning, while MCQs test recognition and discrimination. CBM partially compensates by adding the metacognitive dimension that MCQs otherwise lack.
+
+% ============================================================
+\section{System Architecture}
+% ============================================================
+
+\subsection{Overview}
+
+The claim-based assessment pipeline has five stages:
+
+\begin{enumerate}
+    \item \textbf{Submission}: Student submits work via the LMS (Canvas, Blackboard, Moodle).
+    \item \textbf{Framing}: The instructor defines assessment parameters---what understanding is being claimed, at what level, and what areas to emphasise.
+    \item \textbf{Generation}: An LLM analyses the submission against the instructor's framing and generates targeted MCQs.
+    \item \textbf{Assessment}: The student answers the generated questions under CBM.
+    \item \textbf{Review}: The instructor reviews aggregate results, flags questions that many students marked as ``guessing'' (potential quality issues), and assigns final grades.
+\end{enumerate}
+
+\subsection{Question Types}
+
+Three types of questions are generated per assessment:
+
+\textbf{Common questions} are shared across all students. They test baseline course knowledge and enable cohort-level benchmarking. These can be drawn from an instructor-curated question bank.
+
+\textbf{Claim-specific questions} target concepts that the individual submission asserts. If a student's essay argues that emergent gameplay creates deeper player engagement, the AI generates questions testing whether the student understands what ``emergent gameplay'' means, can distinguish it from scripted gameplay, and knows the theoretical basis for the claim.
+
+\textbf{Manipulation questions} present the student's own submission with proposed modifications and ask which change would achieve a specified goal. For code submissions: ``Which of these changes would make the function handle edge case X?'' For essays: ``Which edit would strengthen the argument about Y?'' These test the ability to reason about the artefact, not just reproduce it.
+
+\subsection{CBM as Quality Assurance}
+
+AI-generated questions vary in quality. Some may be ambiguous, poorly worded, or test peripheral rather than central knowledge. CBM provides a natural quality assurance mechanism: students can signal problematic questions by selecting confidence level 1 (guessing). When many students mark the same question as a guess, the instructor is alerted to review it.
+
+This transforms a potential weakness---variable AI question quality---into a pedagogical feature. Students learn to evaluate assessment items critically, which is itself a valuable metacognitive skill.
+
+\subsection{Implementation}
+
+The current implementation uses:
+\begin{itemize}
+    \item Question generation: GPT-4 / Gemini with structured JSON output and instructor-provided framing prompts.
+    \item Quiz delivery: QTI-format export to Canvas LMS.
+    \item CBM scoring: Custom scoring engine that applies the 3-level matrix to student responses.
+    \item Question bank: JSON format with correct answers, distractors, and difficulty metadata.
+\end{itemize}
+
+The generation prompt is templated with the instructor's framing:
+
+\begin{lstlisting}[language={}]
+You are generating assessment questions for
+a {course_level} course on {subject}.
+
+The student's submission claims understanding
+of: {extracted_claims}
+
+Generate {n} multiple-choice questions that
+test whether the student genuinely understands
+these claims. Each question should have 5
+options (a-e) with one correct answer.
+
+Focus on: {instructor_emphasis}
+\end{lstlisting}
+
+% ============================================================
+\section{Preliminary Evidence}
+% ============================================================
+
+We have not yet conducted a full trial of the claim-based pipeline. However, the components have been validated independently:
+
+\textbf{CBM scoring works.} Across 129 undergraduate students in a game design course, the correlation between CBM score and number correct was $r = 0.91$ under the 3-level scheme. Students adapted their confidence to their knowledge state: those getting 4/10 correct scored as if using level 1 (cautious guessing), while those getting 8/10 scored between levels 2 and 3 (appropriately confident)~\cite{mccallum2026metacognition}.
+
+\textbf{AI models reveal calibration failures under CBM.} When 11 large language models were tested on the same assessment, 64\% selected maximum confidence on every question, incurring large penalties for wrong answers. This demonstrates that CBM is sensitive to calibration quality---it does not just reward accuracy~\cite{mccallum2026metacognition}.
+
+\textbf{Question generation infrastructure exists.} The QTI quiz creation pipeline generates Canvas-compatible assessment packages from JSON question banks. The multi-model testing framework supports OpenAI, Claude, Gemini, and DeepSeek APIs with configurable persona and confidence prompts.
+
+\textbf{The submit-and-interview pattern works.} Over five years of manual interviews in programming courses, the pattern of testing understanding against the student's own submission proved effective at distinguishing genuine understanding from copied work. The claim-based framework automates this pattern.
+
+% ============================================================
+\section{Discussion}
+% ============================================================
+
+\subsection{Shifting the Proxy}
+
+The claim-based framework shifts assessment from ``can you produce good output?'' to ``do you understand what you submitted?'' This is the right shift for an AI-augmented world. Students who use AI to produce their submission must still understand it well enough to answer targeted questions confidently. The CBM scoring ensures that bluffing is costly---randomly guessing at level 3 yields an expected score of $-1.2$ per question on 5-option MCQs.
+
+\subsection{The Three-Question Architecture}
+
+The combination of common, claim-specific, and manipulation questions serves three purposes:
+\begin{itemize}
+    \item Common questions anchor individual scores against the cohort, controlling for question difficulty variation.
+    \item Claim-specific questions make the assessment personal---they cannot be answered by memorising a study guide.
+    \item Manipulation questions test active understanding rather than passive recognition.
+\end{itemize}
+
+This mirrors Bloom's taxonomy in a compact format: common questions test knowledge/comprehension, claim-specific questions test analysis, and manipulation questions test application/synthesis.
+
+\subsection{Limitations and Future Work}
+
+The primary limitation is the absence of a full trial. The claim-based generation pipeline exists conceptually and the components are validated independently, but the end-to-end system has not been deployed with students. A controlled trial comparing claim-based CBM assessment against traditional assessment on learning outcomes and assessment validity is the critical next step.
+
+Additional concerns include AI-generated question quality (partially addressed by CBM quality signalling), student perception of AI-generated assessment fairness, and the computational cost of per-student question generation at scale.
+
+% ============================================================
+\section{Conclusion}
+% ============================================================
+
+Generative AI has broken the traditional proxy for understanding. We propose replacing it with a claim-based assessment model where the submission is the claim and AI-generated questions---scored with confidence-based marking---test whether the claim is genuine. The framework leverages AI's strength (generating targeted questions at scale) while preserving the human element that matters most (metacognitive self-assessment). Preliminary evidence from CBM deployment in game design courses shows that the scoring mechanism reliably distinguishes calibrated knowledge from guessing. A full trial of the integrated pipeline is planned.
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{acm-reference}
+
+\end{document}

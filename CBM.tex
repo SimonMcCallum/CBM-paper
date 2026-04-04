@@ -19,19 +19,16 @@
 
 \title{Confidence-Based Marking in Educational Assessment}
 
-\author{[Simon McCallum]}
-\email{[simon.mccallum@vuw.ac.nz]}
+\author{Simon McCallum}
+\email{simon.mccallum@ntnu.no}
 \affiliation{%
-  \institution{[Victoria University of Wellington]}
-  \streetaddress{[Kelburn Terrace, Wellington]}
-  \city{[Wellington]}
-  \state{[Wellington]}
-  \postcode{[6402]}
-  \country{[New Zealand]}
+  \institution{Norwegian University of Science and Technology}
+  \city{Trondheim}
+  \country{Norway}
 }
 
 \begin{abstract}
-  Testing with confidence-based marking (CBM) was implemented across multiple cohorts and responses were compaired wtih contemporary AI systems. The analysis demonstrates systematic overconfidence in AI responses to multiple-choice questions. We propose that human confidence assessments incorporate multifaceted metacognitive strategies including internal certainty evaluation, contextual alignment consideration, and strategic test-taking behaviors, while AI systems exhibit consistent overconfidence patterns attributable to training data characteristics and lack of metacognitive utility during training. We propose a framework for AI-generated assessment that leverages CBM to identify potentially problematic questions while shifting pedagogical emphasis from content creation to content evaluation, addressing the evolving landscape of generative AI in education.
+  Testing with confidence-based marking (CBM) was implemented across multiple cohorts and responses were compared with contemporary AI systems. The analysis demonstrates systematic overconfidence in AI responses to multiple-choice questions. We propose that human confidence assessments incorporate multifaceted metacognitive strategies including internal certainty evaluation, contextual alignment consideration, and strategic test-taking behaviors, while AI systems exhibit consistent overconfidence patterns attributable to training data characteristics and lack of metacognitive utility during training. We propose a framework for AI-generated assessment that leverages CBM to identify potentially problematic questions while shifting pedagogical emphasis from content creation to content evaluation, addressing the evolving landscape of generative AI in education.
 \end{abstract}
 
 \begin{CCSXML}
@@ -75,15 +72,24 @@ Metacognitive knowledge, defined as awareness and understanding of one's own tho
 
 The CBM approach transforms traditional binary correct/incorrect scoring into a multidimensional assessment that rewards accurate self-knowledge while penalizing overconfidence. This methodology encourages students to develop metacognitive awareness by explicitly requiring them to evaluate their certainty levels, thereby promoting more reflective learning approaches.
 
-We have used CBM over many years both in Norway and New Zealand to improve the quality of feedback to students, improve question quality, and emphasis the importance of meta-cognition. We have a three level confidence system where students select their confidence per question:
-\begin{tabular}
-  level| Correct | incorrect |
-  guessing:| 1.0 | 0.0 |
-  somewhat confident:| 1.5 | -0.5 |
-  confident:| 2.0 | -2.0 |
-\end{tabular}
+We have used CBM over many years both in Norway and New Zealand to improve the quality of feedback to students, improve question quality, and emphasise the importance of meta-cognition. We have a three level confidence system where students select their confidence per question:
 
-These numbers have been carefully chosen based on game theory and student feedback.  Although there are many options which are mathematically equivalent or that preserve rank order, there is a difference in the mind of the student answering between this system and the double of the system: 2, 0 ; 3, -1 ; 4,-4.  The 2 for a right answer already feels different to 1 for a right answer.  3 for somewhat confident feels proportially larger then 2 as opposed to 1.5 being greater than 1.0.  The idea of an fractional mark increase "feels" like a partial credit.  It also places the somewhat confident mark as a partial confidence.  The phase "you get an extra half mark, but risk half a mark" feels more symmetric than larger marks.
+\begin{table}[h]
+\centering
+\caption{CBM scoring matrix used in our courses.}
+\label{tab:cbm_scoring}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Level} & \textbf{Label} & \textbf{Correct} & \textbf{Incorrect} \\
+\midrule
+1 & Guessing & $+1.0$ & $0.0$ \\
+2 & Somewhat confident & $+1.5$ & $-0.5$ \\
+3 & Confident & $+2.0$ & $-2.0$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+These numbers have been carefully chosen based on game theory and student feedback. Although there are many options which are mathematically equivalent or that preserve rank order, there is a difference in the mind of the student answering between this system and the double of the system: 2, 0; 3, $-1$; 4, $-4$. The 2 for a right answer already feels different to 1 for a right answer. 3 for somewhat confident feels proportionally larger than 2 as opposed to 1.5 being greater than 1.0. The idea of a fractional mark increase ``feels'' like partial credit. It also places the somewhat confident mark as a partial confidence. The phrase ``you get an extra half mark, but risk half a mark'' feels more symmetric than larger marks.
 
 
 \subsection{Confidence versus Certainty}
