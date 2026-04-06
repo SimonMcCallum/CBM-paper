@@ -1,6 +1,89 @@
-# Deploying CBM LTI Plugin on simonmccallum.org.nz
+# Deploying CBM LTI Plugin
 
-## Quick Start
+## Environments
+
+| Environment | Runtime | Purpose |
+|-------------|---------|---------|
+| **Windows dev machine** | Podman | Local testing with Moodle LTI harness |
+| **simonmccallum.org.nz** | Docker | Production deployment |
+
+---
+
+## Local Development (Windows + Podman)
+
+### Start Podman machine (first time / after reboot)
+
+```powershell
+podman machine init    # first time only — downloads ~800MB VM image
+podman machine start
+```
+
+### Start Moodle for LTI testing
+
+```powershell
+# Quick Moodle instance for LTI 1.3 testing (bitnami legacy image)
+podman run -d --name moodle -p 8080:8080 `
+  -e MOODLE_USERNAME=admin `
+  -e MOODLE_PASSWORD=admin123 `
+  -e MOODLE_SITE_NAME="CBM Test" `
+  docker.io/bitnamilegacy/moodle:4.5
+
+# Access at http://localhost:8080 (takes 2-3 minutes on first start)
+# Login: admin / admin123
+```
+
+### Start the CBM LTI stack
+
+```powershell
+cd cbm-lti-plugin
+
+cp .env.example .env
+# Edit .env: set EXTERNAL_URL=http://localhost:3001
+
+podman compose up -d --build
+
+# Check health
+curl http://localhost:3001/health
+curl http://localhost:5001/novelty/api/health
+```
+
+### Register in Moodle
+
+1. Site Admin → Plugins → Activity Modules → External Tool → Manage Tools
+2. Click **configure a tool manually**
+3. Fill in:
+   - Tool name: `CBM Assessment`
+   - Tool URL: `http://host.containers.internal:3001`
+   - LTI version: `LTI 1.3`
+   - Initiate login URL: `http://host.containers.internal:3001/login`
+   - Redirection URI: `http://host.containers.internal:3001`
+   - Public keyset URL: `http://host.containers.internal:3001/keys`
+4. Save → Moodle gives you a Client ID and Deployment ID
+5. Use the dynamic registration endpoint if manual doesn't work:
+   `http://localhost:3001/register`
+
+### Podman tips for Windows
+
+```powershell
+# Use fully-qualified image names to avoid registry prompts
+podman pull docker.io/library/mongo:7-jammy
+
+# If containers can't reach each other, check the network
+podman network ls
+podman network inspect cbm-lti-plugin_cbm-network
+
+# Logs
+podman compose logs -f cbm-lti
+
+# Tear down
+podman compose down
+```
+
+---
+
+## Production Deployment (simonmccallum.org.nz + Docker)
+
+### Quick Start
 
 ```bash
 # On the server (ssh simon@simonmccallum.org.nz)
@@ -19,7 +102,7 @@ curl http://localhost:3001/health
 curl http://localhost:5001/novelty/api/health
 ```
 
-## Architecture on simonmccallum.org.nz
+### Architecture on simonmccallum.org.nz
 
 ```
 Internet
@@ -31,15 +114,15 @@ Internet
   │                └── ludogogy.co.nz → cbm-lti :3001        ← FUTURE
   │
   └── Docker containers:
-        ├── cbm-lti          :3001 (Node.js LTI plugin)
+        ├── cbm-lti              :3001 (Node.js LTI plugin)
         ├── cbm-novelty-detector :5001 (Python FAISS/LLM sidecar)
-        ├── cbm-mongo        :27017 (MongoDB for ltijs state)
-        └── cbm-ollama       :11434 (optional local LLM)
+        ├── cbm-mongo            :27017 (MongoDB for ltijs state)
+        └── cbm-ollama           :11434 (optional local LLM)
 ```
 
-## Routing Options
+### Routing Options
 
-### Option A: Path prefix (immediate — no DNS changes)
+#### Option A: Path prefix (immediate — no DNS changes)
 
 Route `https://simonmccallum.org.nz/cbm-quiz/` to the plugin.
 
@@ -65,7 +148,7 @@ Then set in `.env`:
 EXTERNAL_URL=https://simonmccallum.org.nz/cbm-quiz
 ```
 
-### Option B: Subdomain (when DNS is ready)
+#### Option B: Subdomain (when DNS is ready)
 
 Route `https://ludogogy.co.nz` or `https://cbm.simonmccallum.org.nz` to the plugin.
 
@@ -90,9 +173,9 @@ Then set in `.env`:
 EXTERNAL_URL=https://ludogogy.co.nz
 ```
 
-## Environment Configuration
+### Environment Configuration
 
-### cbm-lti-plugin/.env
+#### cbm-lti-plugin/.env
 ```bash
 PORT=3000
 NODE_ENV=production
@@ -105,7 +188,7 @@ EXTERNAL_URL=https://simonmccallum.org.nz/cbm-quiz
 SIDECAR_URL=http://novelty-detector:5000
 ```
 
-### novelty_detector/.env
+#### novelty_detector/.env
 ```bash
 # At least one API key for System 2 question generation
 ANTHROPIC_API_KEY=sk-ant-...
@@ -119,24 +202,24 @@ DEFAULT_LLM_PROVIDER=ollama
 OLLAMA_BASE_URL=http://ollama:11434
 ```
 
-## Canvas LTI Registration
+### Canvas LTI Registration
 
 Once running, register the tool in Canvas:
 
-### For Institution Admins (Dynamic Registration)
+#### For Institution Admins (Dynamic Registration)
 
 1. In Canvas Admin → Developer Keys → `+ Developer Key` → LTI Key
 2. Method: **Enter URL**
 3. Enter: `https://simonmccallum.org.nz/cbm-quiz/register`
 4. Canvas will auto-discover the OIDC, JWKS, and redirect URLs
 
-### For Course-Level Testing
+#### For Course-Level Testing
 
 1. In Canvas course → Settings → Apps → `+ App`
 2. Configuration Type: **By URL**
 3. Config URL: `https://simonmccallum.org.nz/cbm-quiz/register`
 
-### Manual Registration
+#### Manual Registration
 
 If dynamic registration doesn't work:
 
@@ -148,14 +231,14 @@ If dynamic registration doesn't work:
 | JWK Set URL | `https://simonmccallum.org.nz/cbm-quiz/keys` |
 | Redirect URIs | `https://simonmccallum.org.nz/cbm-quiz/` |
 
-## Operations
+### Operations
 
 ```bash
 # View logs
 docker compose logs -f cbm-lti
 docker compose logs -f novelty-detector
 
-# Restart
+# Restart a service
 docker compose restart cbm-lti
 
 # Rebuild after code changes
@@ -176,7 +259,7 @@ curl -X POST http://localhost:5001/api/validator/embed-bank \
   -d '{"course_id": "your-course-id"}'
 ```
 
-## Upgrading
+### Upgrading
 
 ```bash
 cd /opt/cbm-lti-plugin

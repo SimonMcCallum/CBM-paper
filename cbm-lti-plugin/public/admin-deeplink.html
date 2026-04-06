@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBM Assessment — Select Activity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-2xl mx-auto p-6">
+        <h1 class="text-2xl font-bold mb-2">Add CBM Assessment</h1>
+        <p class="text-sm text-gray-500 mb-6">Select which type of assessment to add to your course.</p>
+
+        <!-- Existing Configs -->
+        <div id="existing-section" class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="font-semibold text-lg mb-3">Existing Assessments</h2>
+            <div id="existing-list" class="space-y-2">
+                <p class="text-sm text-gray-400">Loading...</p>
+            </div>
+        </div>
+
+        <!-- Create New -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="font-semibold text-lg mb-4">Create New Assessment</h2>
+
+            <div class="grid grid-cols-2 gap-4">
+                <a href="#" onclick="createNew('quiz_runner')" class="block border-2 border-gray-200 rounded-lg p-5 hover:border-blue-500 hover:bg-blue-50 transition-colors text-center">
+                    <div class="text-3xl mb-2">&#x1F4DD;</div>
+                    <div class="font-semibold">Quiz Runner</div>
+                    <p class="text-xs text-gray-500 mt-1">Import QTI quiz with confidence-based marking</p>
+                </a>
+                <a href="#" onclick="createNew('submission_validator')" class="block border-2 border-gray-200 rounded-lg p-5 hover:border-purple-500 hover:bg-purple-50 transition-colors text-center">
+                    <div class="text-3xl mb-2">&#x1F4C4;</div>
+                    <div class="font-semibold">Submission Validator</div>
+                    <p class="text-xs text-gray-500 mt-1">Students upload PDF, answer generated MCQs</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const params = new URLSearchParams(window.location.search);
+    const COURSE_ID = params.get('course_id') || '';
+
+    async function loadExisting() {
+        try {
+            const resp = await fetch(`/api/quiz/configs/${COURSE_ID}`);
+            const data = await resp.json();
+            const list = document.getElementById('existing-list');
+
+            if (!data.configs || data.configs.length === 0) {
+                list.innerHTML = '<p class="text-sm text-gray-400">No assessments configured yet for this course.</p>';
+                return;
+            }
+
+            list.innerHTML = data.configs.map(c => `
+                <div class="flex items-center justify-between p-3 border rounded hover:bg-gray-50 cursor-pointer"
+                     onclick="selectConfig('${c.id}')">
+                    <div>
+                        <div class="font-medium text-sm">${c.title}</div>
+                        <div class="text-xs text-gray-500">
+                            ${c.tool_mode === 'quiz_runner' ? 'Quiz' : 'Validator'} |
+                            ${c.question_count || '?'} questions |
+                            ${c.scoring_model}
+                        </div>
+                    </div>
+                    <span class="text-xs px-2 py-1 rounded ${c.tool_mode === 'quiz_runner' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}">
+                        ${c.tool_mode === 'quiz_runner' ? 'Quiz' : 'Validator'}
+                    </span>
+                </div>
+            `).join('');
+        } catch (err) {
+            document.getElementById('existing-list').innerHTML =
+                '<p class="text-sm text-red-500">Could not load existing configs</p>';
+        }
+    }
+
+    function selectConfig(configId) {
+        // In a real LTI Deep Linking flow, this would return a content item to the LMS.
+        // For now, redirect to the launch page with the config ID.
+        const url = `/launch?config_id=${configId}&course_id=${COURSE_ID}`;
+        window.location.href = url;
+    }
+
+    function createNew(mode) {
+        window.location.href = `/admin/setup?course_id=${COURSE_ID}&mode=${mode}`;
+    }
+
+    loadExisting();
+    </script>
+</body>
+</html>

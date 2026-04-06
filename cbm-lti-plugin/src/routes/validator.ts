@@ -177,8 +177,8 @@ async function analyzePipeline(submissionId: string, config: any) {
   // Create deferred assessment based on timing
   const deferredId = uuid();
   const now = new Date().toISOString();
-  let availableAt = now;
-  let deadlineAt = null;
+  let availableAt: string | null = now;
+  let deadlineAt: string | null = null;
   let status = 'available';
 
   if (config.timing_mode === 'deadline') {
