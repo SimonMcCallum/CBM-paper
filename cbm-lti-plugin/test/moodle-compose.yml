@@ -1,0 +1,60 @@
+# Moodle + MariaDB for local LTI testing
+# Usage: podman compose -f test/moodle-compose.yml up -d
+#
+# Once up: http://localhost:8080 (admin / admin123)
+
+services:
+  mariadb:
+    image: docker.io/library/mariadb:10.11
+    container_name: moodle-db
+    environment:
+      - MARIADB_ROOT_PASSWORD=moodleroot
+      - MARIADB_DATABASE=moodle
+      - MARIADB_USER=moodle
+      - MARIADB_PASSWORD=moodle
+    volumes:
+      - moodle-db-data:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+    networks:
+      - moodle-net
+
+  moodle:
+    image: docker.io/bitnamilegacy/moodle:4.5
+    container_name: moodle
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    environment:
+      - MOODLE_USERNAME=admin
+      - MOODLE_PASSWORD=admin123
+      - MOODLE_SITE_NAME=CBM Test
+      - MOODLE_DATABASE_HOST=mariadb
+      - MOODLE_DATABASE_PORT_NUMBER=3306
+      - MOODLE_DATABASE_USER=moodle
+      - MOODLE_DATABASE_PASSWORD=moodle
+      - MOODLE_DATABASE_NAME=moodle
+      - ALLOW_EMPTY_PASSWORD=no
+    volumes:
+      - moodle-data:/bitnami/moodle
+      - moodle-moodledata:/bitnami/moodledata
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - moodle-net
+
+volumes:
+  moodle-db-data:
+  moodle-data:
+  moodle-moodledata:
+
+networks:
+  moodle-net:
+    driver: bridge

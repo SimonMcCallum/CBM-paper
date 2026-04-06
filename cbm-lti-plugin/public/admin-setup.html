@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBM Assessment — Setup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-2xl mx-auto p-6">
+        <h1 class="text-2xl font-bold mb-2">CBM Assessment Setup</h1>
+        <p class="text-sm text-gray-500 mb-6">Configure this assignment as a Quiz Runner or Submission Validator.</p>
+
+        <!-- Mode Selection -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="font-semibold text-lg mb-4">Assessment Mode</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <label class="border-2 rounded-lg p-4 cursor-pointer hover:border-blue-500 transition-colors has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                    <input type="radio" name="mode" value="quiz_runner" checked class="sr-only">
+                    <div class="font-semibold">Quiz Runner</div>
+                    <p class="text-sm text-gray-500 mt-1">Import a QTI quiz. Students answer with confidence levels.</p>
+                </label>
+                <label class="border-2 rounded-lg p-4 cursor-pointer hover:border-purple-500 transition-colors has-[:checked]:border-purple-500 has-[:checked]:bg-purple-50">
+                    <input type="radio" name="mode" value="submission_validator" class="sr-only">
+                    <div class="font-semibold">Submission Validator</div>
+                    <p class="text-sm text-gray-500 mt-1">Students upload PDF. System generates MCQs to validate understanding.</p>
+                </label>
+            </div>
+        </div>
+
+        <!-- Quiz Runner Config -->
+        <div id="quiz-config" class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="font-semibold text-lg mb-4">Quiz Runner Settings</h2>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Upload QTI Quiz (ZIP)</label>
+                <input type="file" id="qti-file" accept=".zip" class="w-full text-sm border rounded p-2">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Quiz Title</label>
+                <input type="text" id="quiz-title" value="CBM Quiz" class="w-full border rounded p-2 text-sm">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Scoring Model</label>
+                    <select id="scoring-model" class="w-full border rounded p-2 text-sm">
+                        <option value="hlcc">HLCC (Continuous)</option>
+                        <option value="discrete_cbm">Discrete CBM (3-level)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Max Grade Multiplier</label>
+                    <input type="number" id="max-multiplier" value="1.5" step="0.1" min="1" max="3" class="w-full border rounded p-2 text-sm">
+                </div>
+            </div>
+        </div>
+
+        <!-- Validator Config -->
+        <div id="validator-config" class="bg-white rounded-lg shadow p-6 mb-6 hidden">
+            <h2 class="font-semibold text-lg mb-4">Submission Validator Settings</h2>
+
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">MCQ Count</label>
+                    <input type="number" id="mcq-count" value="10" min="3" max="30" class="w-full border rounded p-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Oral Questions</label>
+                    <input type="number" id="oral-count" value="3" min="0" max="10" class="w-full border rounded p-2 text-sm">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Timing Mode</label>
+                    <select id="timing-mode" class="w-full border rounded p-2 text-sm">
+                        <option value="immediate">Immediate (after upload)</option>
+                        <option value="deadline">Deadline (X hours)</option>
+                        <option value="tutorial">Tutorial (instructor activates)</option>
+                    </select>
+                </div>
+                <div id="deadline-hours-div" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Deadline (hours)</label>
+                    <input type="number" id="deadline-hours" value="24" min="1" max="168" class="w-full border rounded p-2 text-sm">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Scoring Model</label>
+                    <select id="v-scoring-model" class="w-full border rounded p-2 text-sm">
+                        <option value="hlcc">HLCC (Continuous)</option>
+                        <option value="discrete_cbm">Discrete CBM (3-level)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Max Grade Multiplier</label>
+                    <input type="number" id="v-max-multiplier" value="1.5" step="0.1" min="1" max="3" class="w-full border rounded p-2 text-sm">
+                </div>
+            </div>
+        </div>
+
+        <!-- Save -->
+        <button id="save-btn" onclick="saveConfig()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg">
+            Save Configuration
+        </button>
+
+        <div id="save-result" class="hidden mt-4 p-4 rounded-lg text-sm"></div>
+    </div>
+
+    <script>
+    const params = new URLSearchParams(window.location.search);
+    const COURSE_ID = params.get('course_id') || '';
+    const IS_INSTRUCTOR = params.get('is_instructor') === '1';
+
+    // Toggle mode panels
+    document.querySelectorAll('input[name="mode"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            const mode = document.querySelector('input[name="mode"]:checked').value;
+            document.getElementById('quiz-config').classList.toggle('hidden', mode !== 'quiz_runner');
+            document.getElementById('validator-config').classList.toggle('hidden', mode !== 'submission_validator');
+        });
+    });
+
+    // Toggle deadline hours
+    document.getElementById('timing-mode').addEventListener('change', (e) => {
+        document.getElementById('deadline-hours-div').classList.toggle('hidden', e.target.value !== 'deadline');
+    });
+
+    async function saveConfig() {
+        const mode = document.querySelector('input[name="mode"]:checked').value;
+        const resultEl = document.getElementById('save-result');
+
+        if (mode === 'quiz_runner') {
+            const file = document.getElementById('qti-file').files[0];
+            if (!file) { alert('Please select a QTI ZIP file'); return; }
+
+            const formData = new FormData();
+            formData.append('qti_file', file);
+            formData.append('course_id', COURSE_ID);
+            formData.append('assignment_id', 'setup_' + Date.now());
+            formData.append('title', document.getElementById('quiz-title').value);
+            formData.append('scoring_model', document.getElementById('scoring-model').value);
+            formData.append('max_grade_multiplier', document.getElementById('max-multiplier').value);
+
+            try {
+                const resp = await fetch('/api/quiz/import', { method: 'POST', body: formData });
+                const data = await resp.json();
+                resultEl.classList.remove('hidden');
+                if (data.success) {
+                    resultEl.className = 'mt-4 p-4 rounded-lg text-sm bg-green-100 text-green-800';
+                    resultEl.innerHTML = `Imported ${data.questions_imported} questions.<br>Config ID: <code class="font-mono">${data.config_id}</code><br>Use this ID when creating the LTI assignment.`;
+                } else {
+                    resultEl.className = 'mt-4 p-4 rounded-lg text-sm bg-red-100 text-red-800';
+                    resultEl.textContent = 'Error: ' + data.error;
+                }
+            } catch (err) {
+                resultEl.className = 'mt-4 p-4 rounded-lg text-sm bg-red-100 text-red-800';
+                resultEl.textContent = 'Error: ' + err.message;
+                resultEl.classList.remove('hidden');
+            }
+        } else {
+            // Submission validator — no file upload needed, just save config
+            resultEl.classList.remove('hidden');
+            resultEl.className = 'mt-4 p-4 rounded-lg text-sm bg-yellow-100 text-yellow-800';
+            resultEl.textContent = 'Submission Validator config saved. Students will see the upload page when they launch this assignment.';
+        }
+    }
+    </script>
+</body>
+</html>
