@@ -12,6 +12,7 @@ import { Router, Request, Response } from 'express';
 import { v4 as uuid } from 'uuid';
 import multer from 'multer';
 import path from 'path';
+import axios from 'axios';
 import { getDB } from '../models/database';
 import { parseQTIZip } from '../services/qtiParser';
 import { scoreAssessment, canvasGrade, getScoringTable, AnswerInput } from '../services/scoring';
@@ -22,6 +23,21 @@ const upload = multer({
   dest: path.join(__dirname, '../../uploads/qti'),
   limits: { fileSize: 50 * 1024 * 1024 },
 });
+
+const SIDECAR_URL = process.env.SIDECAR_URL || 'http://localhost:5000';
+
+/**
+ * Ask the Python sidecar to embed any unembedded question-bank entries for a
+ * course. Best-effort: failures (e.g. sidecar down) must not fail the import,
+ * since embeddings are only needed later by System 2's matcher. The bank can
+ * always be re-embedded via POST /api/validator/embed-bank.
+ */
+function triggerBankEmbedding(courseId: string | null): void {
+  axios
+    .post(`${SIDECAR_URL}/api/validator/embed-bank`, { course_id: courseId }, { timeout: 300000 })
+    .then(r => console.log(`Bank embedding: ${JSON.stringify(r.data)}`))
+    .catch(err => console.warn(`Bank embedding deferred (sidecar unavailable): ${err.message}`));
+}
 
 // ── Import QTI Quiz (instructor) ──
 
@@ -71,6 +87,10 @@ router.post('/import', upload.single('qti_file'), async (req: Request, res: Resp
         JSON.stringify(q.options), q.correct_answer, q.topic || null, q.qti_identifier
       );
     }
+
+    // Embed the newly imported questions so System 2's matcher can use them.
+    // Fire-and-forget: the import response should not wait on embedding.
+    triggerBankEmbedding(course_id || null);
 
     res.json({
       success: true,

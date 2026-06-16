@@ -47,6 +47,15 @@ class LLMProvider:
                         context_after: str = "") -> str:
         raise NotImplementedError
 
+    def complete(self, prompt: str, system: str = "", max_tokens: int = 1500) -> str:
+        """Run a raw completion for an arbitrary prompt.
+
+        Unlike generate_prompt (which is specialised for novelty prompt
+        generation), this passes the prompt through untouched. Used by the
+        submission validator for MCQ / oral / topic-expansion generation.
+        """
+        raise NotImplementedError
+
     def is_available(self) -> bool:
         """Check if this provider is ready to use."""
         return True
@@ -75,6 +84,15 @@ class AnthropicProvider(LLMProvider):
         )
         return message.content[0].text.strip()
 
+    def complete(self, prompt: str, system: str = "", max_tokens: int = 1500) -> str:
+        message = self.client.messages.create(
+            model=self.model,
+            max_tokens=max_tokens,
+            system=system or "You are a helpful assistant. Respond exactly as instructed.",
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return message.content[0].text.strip()
+
 
 class OpenAIProvider(LLMProvider):
     """OpenAI ChatGPT provider."""
@@ -100,6 +118,19 @@ class OpenAIProvider(LLMProvider):
         )
         return response.choices[0].message.content.strip()
 
+    def complete(self, prompt: str, system: str = "", max_tokens: int = 1500) -> str:
+        messages = []
+        if system:
+            messages.append({"role": "system", "content": system})
+        messages.append({"role": "user", "content": prompt})
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=messages,
+            max_tokens=max_tokens,
+            temperature=0.3,
+        )
+        return response.choices[0].message.content.strip()
+
 
 class GoogleProvider(LLMProvider):
     """Google Gemini provider."""
@@ -118,6 +149,12 @@ class GoogleProvider(LLMProvider):
         model = self.genai.GenerativeModel(self.model)
         prompt = SYSTEM_PROMPT + "\n\n" + _build_user_message(chunk, context_before, context_after)
         response = model.generate_content(prompt)
+        return response.text.strip()
+
+    def complete(self, prompt: str, system: str = "", max_tokens: int = 1500) -> str:
+        model = self.genai.GenerativeModel(self.model)
+        full = (system + "\n\n" + prompt) if system else prompt
+        response = model.generate_content(full)
         return response.text.strip()
 
 
@@ -139,6 +176,10 @@ class OllamaProvider(LLMProvider):
         prompt = SYSTEM_PROMPT + "\n\n" + _build_user_message(chunk, context_before, context_after)
         return self.client.generate(prompt, model=self.model)
 
+    def complete(self, prompt: str, system: str = "", max_tokens: int = 1500) -> str:
+        full = (system + "\n\n" + prompt) if system else prompt
+        return self.client.generate(full, model=self.model)
+
 
 class FallbackProvider(LLMProvider):
     """Fallback provider that extracts key words without an LLM.
@@ -150,6 +191,11 @@ class FallbackProvider(LLMProvider):
                         context_after: str = "") -> str:
         words = chunk.split()[:50]
         return f"Write about: {' '.join(words)}"
+
+    def complete(self, prompt: str, system: str = "", max_tokens: int = 1500) -> str:
+        # No LLM available: return an empty JSON array so JSON-expecting callers
+        # (MCQ / oral generation) degrade gracefully to "generated nothing".
+        return "[]"
 
 
 def discover_providers(api_keys: Optional[Dict[str, str]] = None) -> Dict[str, LLMProvider]:

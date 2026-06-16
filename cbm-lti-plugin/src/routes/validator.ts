@@ -445,4 +445,23 @@ router.post('/activate', async (req: Request, res: Response) => {
   res.json({ success: true, message: 'Assessment activated for student' });
 });
 
+// ── Admin: (Re)embed the question bank ──
+// Proxies to the Python sidecar. Use after importing/editing questions, or with
+// { force: true, expand: true } to rebuild embeddings with topic-expansion.
+
+router.post('/embed-bank', async (req: Request, res: Response) => {
+  try {
+    const { course_id, force, expand } = req.body || {};
+    const resp = await axios.post(
+      `${SIDECAR_URL}/api/validator/embed-bank`,
+      { course_id: course_id || null, force: !!force, expand: !!expand },
+      { timeout: 600000 }
+    );
+    res.json(resp.data);
+  } catch (err: any) {
+    console.error('embed-bank proxy error:', err.message);
+    res.status(502).json({ error: `Sidecar embed-bank failed: ${err.message}` });
+  }
+});
+
 export default router;

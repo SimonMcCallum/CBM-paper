@@ -10,7 +10,11 @@
       "Bash(python -c \"import ast; [ast.parse\\(open\\(f\\).read\\(\\)\\) for f in [''llm_providers.py'', ''novelty_detector.py'', ''server.py'', ''pdf_processor.py'']]; print\\(''All files parse OK''\\)\")",
       "Bash(grep -E \"\\\\.\\(sql|ts\\)$\")",
       "Bash(python -c \"import ast; ast.parse\\(open\\(''validator_api.py''\\).read\\(\\)\\); print\\(''validator_api.py OK''\\)\")",
-      "Bash(find . -type f \\\\\\(-name Dockerfile* -o -name docker-compose* -o -name .env* -o -name *.conf -o -name nginx* \\\\\\))"
+      "Bash(find . -type f \\\\\\(-name Dockerfile* -o -name docker-compose* -o -name .env* -o -name *.conf -o -name nginx* \\\\\\))",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)"
     ],
     "deny": []
   }
