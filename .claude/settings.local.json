@@ -14,7 +14,13 @@
       "Bash(git add:*)",
       "Bash(git commit -m ':*)",
       "Bash(git pull:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(sudo docker:*)",
+      "Bash(openssl rand:*)",
+      "Bash(env)",
+      "Bash(npm install:*)",
+      "Read(//usr/local/bin/**)",
+      "Read(//home/simon/.nvm/versions/**)"
     ],
     "deny": []
   }
